@@ -1,3 +1,23 @@
+## Trying things out
+
+SQL playground: https://sqlime.org
+
+You might also have `sqlite` already installed on your computer. 
+
+If running in terminal, remember to add semicolon `;` at the end of each query.
+
+First, `CREATE TABLE t (x int, y int)`
+
+Add data by `INSERT INTO t VALUES (1, 5), (2, 4), (3, 3), (4, 2), (5, 1)`
+
+Check with `SELECT * FROM t` (`*` = all the columns)
+
+To remove rows, `DELETE FROM t WHERE x = 1 AND y = 5` (how do you delete all rows?)
+
+To remove table, `DROP TABLE t`
+
+## Basic SQL
+
 What does the following queries return given input?
 
 | x | y |
@@ -57,7 +77,7 @@ for (x, y) in table:
     print(e(x, y))
 ```
 
-Next, aggregates
+## Aggregates
 
 ```
 SELECT SUM(x) FROM t
@@ -67,8 +87,7 @@ SELECT AVG(x) FROM t
 SELECT COUNT(x) FROM t
 ```
 
-Next, grouping
-
+Aggregate by groups:
 
 | x | y |
 | - | - |
@@ -121,8 +140,7 @@ Current general form:
 3. Group rows
 4. Run aggregate & return
 
-Relational algebra
-
+## Relational algebra
 
 | Name | Notation | Meaning |
 | - | - | - |
@@ -131,4 +149,3 @@ Relational algebra
 | aggregation | $\gamma_{x, F(y)}(t)$ | group by $x$, aggregate over $y$ using $F$ |
 
 Can you write out SQL query for each operation?
-
