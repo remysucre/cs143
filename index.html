@@ -30,14 +30,24 @@ CREATE TABLE t (x int, y int);
 INSERT INTO t VALUES (1, 5), (2, 4), (3, 3), (1, 2), (2, 1);
 ##CODE##
 </script>
-<h2 id="why-databases">Why databases?</h2>
-<p>What’s the most popular programming language?</p>
-<p>How many databases are out there? (1 trillion sqlite DB)</p>
-<p>How old is the oldest DB? (~3500 BC, 5k years old)</p>
-<p>DB’s fun: - rite of passage of a systems hacker: write a compiler,
-write an OS, write a DB - beautiful algorithms &amp; theory</p>
+<h2 id="why-cs-143">Why CS 143?</h2>
+<p>What’s the <a href="https://spectrum.ieee.org/the-rise-of-sql">most
+popular programming language</a>?</p>
+<p>How many databases are out there? (<a
+href="https://sqlite.org/mostdeployed.html">1 trillion sqlite
+DB</a>)</p>
+<p>How old is the oldest DB? (<a
+href="https://en.wikipedia.org/wiki/Kish_tablet">~3500 BC</a>, 5k years
+old)</p>
+<p>DB’s fun:</p>
+<ul>
+<li>Rite of passage of a systems hacker: write a compiler, write an OS,
+write a DB</li>
+<li>Beautiful <a href="http://webdam.inria.fr/Alice/">algorithms &amp;
+theory</a></li>
+</ul>
 <h2 id="trying-things-out">Trying things out</h2>
-<p>SQL playground: https://sqlime.org</p>
+<p><a href="https://sqlime.org">SQL playground</a></p>
 <p>You might also have <code>sqlite</code> already installed on your
 computer.</p>
 <p>If running in terminal, remember to add semicolon <code>;</code> at
@@ -183,7 +193,6 @@ class="sourceCode sql"><code class="sourceCode sql"><span id="cb15-1"><a href="#
 class="sourceCode sql"><code class="sourceCode sql"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>  <span class="kw">SELECT</span> <span class="op">..</span>.</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">FROM</span> t</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> x</span></code></pre></div>
-<codapi-snippet sandbox="sqlite" editor="basic" template="#setup-agg"></codapi-snippet>
 <table>
 <thead>
 <tr class="header">
@@ -235,7 +244,7 @@ class="sourceCode sql"><code class="sourceCode sql"><span id="cb16-1"><a href="#
 </tbody>
 </table>
 <div class="sourceCode" id="cb17"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>  <span class="kw">SELECT</span> x, <span class="fu">SUM</span><span class="op">/</span><span class="fu">MIN</span><span class="op">/</span><span class="fu">MAX</span><span class="op">/</span><span class="fu">AVG</span><span class="op">/</span><span class="fu">COUNT</span>(y)</span>
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>  <span class="kw">SELECT</span> x, <span class="fu">SUM</span>(y)</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">FROM</span> t</span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> x</span></code></pre></div>
 <codapi-snippet sandbox="sqlite" editor="basic" template="#setup-agg"></codapi-snippet>

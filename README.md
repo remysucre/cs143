@@ -2,21 +2,22 @@
 title: CS 143
 ---
 
-## Why databases?
+## Why CS 143?
 
-What's the most popular programming language?
+What's the [most popular programming language](https://spectrum.ieee.org/the-rise-of-sql)?
 
-How many databases are out there? (1 trillion sqlite DB)
+How many databases are out there? ([1 trillion sqlite DB](https://sqlite.org/mostdeployed.html))
 
-How old is the oldest DB? (~3500 BC, 5k years old)
+How old is the oldest DB? ([~3500 BC](https://en.wikipedia.org/wiki/Kish_tablet), 5k years old)
 
 DB's fun:
-- rite of passage of a systems hacker: write a compiler, write an OS, write a DB
-- beautiful algorithms & theory
+
+- Rite of passage of a systems hacker: write a compiler, write an OS, write a DB
+- Beautiful [algorithms & theory](http://webdam.inria.fr/Alice/)
 
 ## Trying things out
 
-SQL playground: https://sqlime.org
+[SQL playground](https://sqlime.org)
 
 You might also have `sqlite` already installed on your computer.
 
@@ -139,7 +140,7 @@ Aggregate by groups:
 | 1 | 2 |
 | 2 | 1 |
 
-```{.sql .run template="#setup-agg"}
+```SQL
   SELECT ...
     FROM t
 GROUP BY x
@@ -161,7 +162,7 @@ GROUP BY x
 
 
 ```{.sql .run template="#setup-agg"}
-  SELECT x, SUM/MIN/MAX/AVG/COUNT(y)
+  SELECT x, SUM(y)
     FROM t
 GROUP BY x
 ```
