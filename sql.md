@@ -120,3 +120,15 @@ Current general form:
 2. Check conditions
 3. Group rows
 4. Run aggregate & return
+
+Relational algebra
+
+
+| Name | Notation | Meaning |
+| - | - | - |
+| selection | $\sigma_p(t)$ | filter by condition $p$ |
+| projection | $\pi_{e(x, y)}$ | evaluate an expression $e$ over $x, y$ and return |
+| aggregation | $\gamma_{x, F(y)}$ | group by $x$, aggregate over $y$ using $F$ |
+
+Can you write out SQL query for each operation?
+
