@@ -1,12 +1,7 @@
-MDS = $(filter-out README.md, $(wildcard *.md))
-HTMLS = $(MDS:.md=.html)
-
-all: $(HTMLS)
-
-%.html: %.md template.html codapi.lua
+index.html: README.md template.html codapi.lua
 	pandoc $< -o $@ --template=template.html --lua-filter=codapi.lua --mathjax
 
 clean:
-	rm -f $(HTMLS)
+	rm -f index.html
 
-.PHONY: all clean
+.PHONY: clean
