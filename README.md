@@ -1,1 +1,3 @@
-# CS 143
+```sql
+SELECT NULL
+```
