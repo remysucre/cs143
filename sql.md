@@ -1,8 +1,12 @@
+---
+title: SQL
+---
+
 ## Trying things out
 
 SQL playground: https://sqlime.org
 
-You might also have `sqlite` already installed on your computer. 
+You might also have `sqlite` already installed on your computer.
 
 If running in terminal, remember to add semicolon `;` at the end of each query.
 
@@ -28,44 +32,58 @@ What does the following queries return given input?
 | 4 | 2 |
 | 5 | 1 |
 
-```SQL
-SELECT x 
-  FROM t 
+```{.sql .run template="#setup-basic"}
+SELECT x
+  FROM t
  WHERE x < 3
+```
 
-SELECT x, y 
-  FROM t 
+```{.sql .run template="#setup-basic"}
+SELECT x, y
+  FROM t
  WHERE y < 3
+```
 
-SELECT x 
-  FROM t 
+```{.sql .run template="#setup-basic"}
+SELECT x
+  FROM t
  WHERE y < 3
+```
 
-SELECT x+1 
-  FROM t 
+```{.sql .run template="#setup-basic"}
+SELECT x+1
+  FROM t
  WHERE y < 3
+```
 
-SELECT x+y 
-  FROM t 
+```{.sql .run template="#setup-basic"}
+SELECT x+y
+  FROM t
  WHERE y < 3
+```
 
-SELECT x+y 
-  FROM t 
+```{.sql .run template="#setup-basic"}
+SELECT x+y
+  FROM t
  WHERE NOT y < 3
+```
 
-SELECT x+y 
-  FROM t 
+```{.sql .run template="#setup-basic"}
+SELECT x+y
+  FROM t
  WHERE y < 3 AND x > 1
+```
 
-SELECT x+y 
-  FROM t 
+```{.sql .run template="#setup-basic"}
+SELECT x+y
+  FROM t
  WHERE y < 3 OR x > 1
 ```
 
-General form: 
-```SQL
-SELECT e(x, y) 
-  FROM table 
+General form:
+```sql
+SELECT e(x, y)
+  FROM table
  WHERE cond(x, y)
 ```
 
@@ -79,11 +97,23 @@ for (x, y) in table:
 
 ## Aggregates
 
-```
+```{.sql .run template="#setup-basic"}
 SELECT SUM(x) FROM t
+```
+
+```{.sql .run template="#setup-basic"}
 SELECT MIN(x) FROM t
+```
+
+```{.sql .run template="#setup-basic"}
 SELECT MAX(x) FROM t
+```
+
+```{.sql .run template="#setup-basic"}
 SELECT AVG(x) FROM t
+```
+
+```{.sql .run template="#setup-basic"}
 SELECT COUNT(x) FROM t
 ```
 
@@ -97,7 +127,7 @@ Aggregate by groups:
 | 1 | 2 |
 | 2 | 1 |
 
-```
+```{.sql .run template="#setup-agg"}
   SELECT ...
     FROM t
 GROUP BY x
@@ -118,7 +148,7 @@ GROUP BY x
 | ? | ? |
 
 
-```
+```{.sql .run template="#setup-agg"}
   SELECT x, SUM/MIN/MAX/AVG/COUNT(y)
     FROM t
 GROUP BY x
@@ -128,7 +158,7 @@ GROUP BY x
 
 Current general form:
 
-```SQL
+```sql
 4:   SELECT x, AGG(y)
 1:     FROM t
 2:    WHERE cond(x, y)
