@@ -35,7 +35,7 @@ To remove table, `DROP TABLE t`
 
 ## Basic SQL
 
-What does the following queries return given input?
+What do the following queries return given input?
 
 | x | y |
 | - | - |
