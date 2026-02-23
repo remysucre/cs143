@@ -61,32 +61,32 @@ columns)</p>
 do you delete all rows?)</p>
 <p>To remove table, <code>DROP TABLE t</code></p>
 <h2 id="basic-sql">Basic SQL</h2>
-<p>What does the following queries return given input?</p>
+<p>What do the following queries return given input?</p>
 <table>
 <thead>
-<tr class="header">
+<tr>
 <th>x</th>
 <th>y</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>1</td>
 <td>5</td>
 </tr>
-<tr class="even">
+<tr>
 <td>2</td>
 <td>4</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>3</td>
 <td>3</td>
 </tr>
-<tr class="even">
+<tr>
 <td>4</td>
 <td>2</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>5</td>
 <td>1</td>
 </tr>
@@ -161,29 +161,29 @@ class="sourceCode sql"><code class="sourceCode sql"><span id="cb15-1"><a href="#
 <p>Aggregate by groups:</p>
 <table>
 <thead>
-<tr class="header">
+<tr>
 <th>x</th>
 <th>y</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>1</td>
 <td>5</td>
 </tr>
-<tr class="even">
+<tr>
 <td>2</td>
 <td>4</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>3</td>
 <td>3</td>
 </tr>
-<tr class="even">
+<tr>
 <td>1</td>
 <td>2</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>2</td>
 <td>1</td>
 </tr>
@@ -195,17 +195,17 @@ class="sourceCode sql"><code class="sourceCode sql"><span id="cb16-1"><a href="#
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> x</span></code></pre></div>
 <table>
 <thead>
-<tr class="header">
+<tr>
 <th>x</th>
 <th>y</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>?</td>
 <td>?</td>
 </tr>
-<tr class="even">
+<tr>
 <td>?</td>
 <td>?</td>
 </tr>
@@ -213,17 +213,17 @@ class="sourceCode sql"><code class="sourceCode sql"><span id="cb16-1"><a href="#
 </table>
 <table>
 <thead>
-<tr class="header">
+<tr>
 <th>x</th>
 <th>y</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>?</td>
 <td>?</td>
 </tr>
-<tr class="even">
+<tr>
 <td>?</td>
 <td>?</td>
 </tr>
@@ -231,13 +231,13 @@ class="sourceCode sql"><code class="sourceCode sql"><span id="cb16-1"><a href="#
 </table>
 <table>
 <thead>
-<tr class="header">
+<tr>
 <th>x</th>
 <th>y</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>?</td>
 <td>?</td>
 </tr>
@@ -271,25 +271,25 @@ class="sourceCode sql"><code class="sourceCode sql"><span id="cb18-1"><a href="#
 <col style="width: 33%" />
 </colgroup>
 <thead>
-<tr class="header">
+<tr>
 <th>Name</th>
 <th>Notation</th>
 <th>Meaning</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>selection</td>
 <td><span class="math inline">\(\sigma_p(t)\)</span></td>
 <td>filter by condition <span class="math inline">\(p\)</span></td>
 </tr>
-<tr class="even">
+<tr>
 <td>projection</td>
 <td><span class="math inline">\(\pi_{e(x, y)}(t)\)</span></td>
 <td>evaluate an expression <span class="math inline">\(e\)</span> over
 <span class="math inline">\(x, y\)</span> and return</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>aggregation</td>
 <td><span class="math inline">\(\gamma_{x, F(y)}(t)\)</span></td>
 <td>group by <span class="math inline">\(x\)</span>, aggregate over
