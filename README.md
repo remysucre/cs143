@@ -169,6 +169,22 @@ GROUP BY x
 
 `GROUP BY` variable (`x`)  **must** be `SELECT`ed, `AGG` function applied per group.
 
+Multiple group-by & aggregate variables
+
+| x | y | z | w |
+| - | - | - | - |
+| 1 | 1 | 1 | 5 |
+| 1 | 1 | 2 | 4 |
+| 1 | 2 | 3 | 3 |
+| 2 | 3 | 1 | 2 |
+| 2 | 3 | 2 | 1 |
+
+```{.sql .run template="#setup-multi-agg"}
+  SELECT x, y, MIN(z), MAX(w)
+    FROM t
+GROUP BY x, y
+```
+
 Current general form:
 
 ```sql
@@ -188,7 +204,7 @@ Current general form:
 | Name | Notation | Meaning |
 | - | - | - |
 | selection | $\sigma_p(t)$ | filter by condition $p$ |
-| projection | $\pi_{e(x, y)}(t)$ | evaluate an expression $e$ over $x, y$ and return |
+| projection | $\pi_{e(x, y)}(t)$ | map an expression $e$ over $x, y$ |
 | aggregation | $\gamma_{x, F(y)}(t)$ | group by $x$, aggregate over $y$ using $F$ |
 
 Can you write out SQL query for each operation?

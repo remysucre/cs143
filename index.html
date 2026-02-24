@@ -30,6 +30,11 @@ CREATE TABLE t (x int, y int);
 INSERT INTO t VALUES (1, 5), (2, 4), (3, 3), (1, 2), (2, 1);
 ##CODE##
 </script>
+<script id="setup-multi-agg" type="text/plain">
+CREATE TABLE t (x int, y int, z int, w int);
+INSERT INTO t VALUES (1, 1, 1, 5), (1, 1, 2, 4), (1, 2, 3, 3), (2, 3, 1, 2), (2, 3, 2, 1);
+##CODE##
+</script>
 <h2 id="why-cs-143">Why CS 143?</h2>
 <p>What’s the <a href="https://spectrum.ieee.org/the-rise-of-sql">most
 popular programming language</a>?</p>
@@ -251,12 +256,60 @@ class="sourceCode sql"><code class="sourceCode sql"><span id="cb17-1"><a href="#
 <p><code>GROUP BY</code> variable (<code>x</code>) <strong>must</strong>
 be <code>SELECT</code>ed, <code>AGG</code> function applied per
 group.</p>
-<p>Current general form:</p>
+<p>Multiple group-by &amp; aggregate variables</p>
+<table>
+<thead>
+<tr>
+<th>x</th>
+<th>y</th>
+<th>z</th>
+<th>w</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>5</td>
+</tr>
+<tr>
+<td>1</td>
+<td>1</td>
+<td>2</td>
+<td>4</td>
+</tr>
+<tr>
+<td>1</td>
+<td>2</td>
+<td>3</td>
+<td>3</td>
+</tr>
+<tr>
+<td>2</td>
+<td>3</td>
+<td>1</td>
+<td>2</td>
+</tr>
+<tr>
+<td>2</td>
+<td>3</td>
+<td>2</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
 <div class="sourceCode" id="cb18"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="dv">4</span>:   <span class="kw">SELECT</span> x, AGG(y)</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span>:     <span class="kw">FROM</span> t</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="dv">2</span>:    <span class="kw">WHERE</span> cond(x, y)</span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="dv">3</span>: <span class="kw">GROUP</span> <span class="kw">BY</span> x</span></code></pre></div>
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>  <span class="kw">SELECT</span> x, y, <span class="fu">MIN</span>(z), <span class="fu">MAX</span>(w)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">FROM</span> t</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> x, y</span></code></pre></div>
+<codapi-snippet sandbox="sqlite" editor="basic" template="#setup-multi-agg"></codapi-snippet>
+<p>Current general form:</p>
+<div class="sourceCode" id="cb19"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="dv">4</span>:   <span class="kw">SELECT</span> x, AGG(y)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span>:     <span class="kw">FROM</span> t</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="dv">2</span>:    <span class="kw">WHERE</span> cond(x, y)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="dv">3</span>: <span class="kw">GROUP</span> <span class="kw">BY</span> x</span></code></pre></div>
 <ol type="1">
 <li>Where’s the data <code>FROM</code>?</li>
 <li>Check conditions</li>
@@ -286,8 +339,8 @@ class="sourceCode sql"><code class="sourceCode sql"><span id="cb18-1"><a href="#
 <tr>
 <td>projection</td>
 <td><span class="math inline">\(\pi_{e(x, y)}(t)\)</span></td>
-<td>evaluate an expression <span class="math inline">\(e\)</span> over
-<span class="math inline">\(x, y\)</span> and return</td>
+<td>map an expression <span class="math inline">\(e\)</span> over <span
+class="math inline">\(x, y\)</span></td>
 </tr>
 <tr>
 <td>aggregation</td>
