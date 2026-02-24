@@ -1,5 +1,5 @@
 ---
-title: CS 143
+title: "CS 143: Introduction to Databases"
 ---
 
 ## Why CS 143?
@@ -208,3 +208,101 @@ Current general form:
 | aggregation | $\gamma_{x, F(y)}(t)$ | group by $x$, aggregate over $y$ using $F$ |
 
 Can you write out SQL query for each operation?
+
+## More tables
+
+Meet my pets:
+
+| name | toy |
+| ---- | --- |
+| kira | 🛍️  |
+| kira | 🍼  |
+| casa | 🍼  |
+| casa | 🧻  |
+
+| name | food |
+| ---- | ---- |
+| kira | 🐟   |
+| kira | 🍗   |
+| casa | 🥬   |
+| casa | 🍗   |
+
+What do these queries return?
+
+```{.sql .run template="#setup-pets"}
+SELECT t.name
+  FROM t, f
+ WHERE t.name = f.name
+   AND t.toy = '🛍️'
+   AND f.food = '🐟'
+```
+
+```{.sql .run template="#setup-pets"}
+SELECT t.name
+  FROM t, f
+ WHERE t.name = f.name
+   AND t.toy = '🛍️'
+   AND f.food = '🍗'
+```
+
+```{.sql .run template="#setup-pets"}
+SELECT t.name
+  FROM t, f
+ WHERE t.name = f.name
+   AND t.toy = '🍼'
+   AND f.food = '🍗'
+```
+
+```{.sql .run template="#setup-pets"}
+SELECT t.name
+  FROM t, f
+ WHERE t.name = f.name
+   AND t.toy = '🛍️'
+   AND f.food = '🥬'
+```
+
+General form for **join**ing tables:
+
+```sql
+SELECT ...
+  FROM r, s
+ WHERE cond
+```
+
+Meaning:
+
+```python
+for x1, x2, ... in r:
+  for y1, y2, ... in s:
+    if cond(x1, x2, ..., y1, y2, ...):
+      return ...
+```
+
+Try all possible pairings of a row from `r` and a row from `s`.
+I.e., first compute the *Cartesian product* of `r` and `s` (how many rows does the following query return?):
+
+```{.sql .run template="#setup-pets"}
+SELECT *
+  FROM t, f
+```
+
+```python
+for t_row in t:
+  for f_row in f:
+    return t_row ++ f_row
+```
+
+Then evaluate rest of query using result.
+
+In relational algebra: $\sigma_p(t \times f)$, or $t \bowtie_p f$ (the **join**).
+
+Current general form:
+
+```SQL
+4.   SELECT R.x, AVG(T.z)
+1.     FROM R, S, T
+2.    WHERE R.x = S.x AND S.y = T.y
+3. GROUP BY R.x
+```
+
+<img src="assets/ra.svg" alt="Relational Algebra for query general form" width="30%">

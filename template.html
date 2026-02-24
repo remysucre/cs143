@@ -33,11 +33,22 @@ CREATE TABLE t (x int, y int);
 INSERT INTO t VALUES (1, 5), (2, 4), (3, 3), (1, 2), (2, 1);
 ##CODE##
 </script>
+<script id="setup-pets" type="text/plain">
+CREATE TABLE t (name text, toy text);
+INSERT INTO t VALUES ('kira', '🛍️'), ('kira', '🍼'), ('casa', '🍼'), ('casa', '🧻');
+CREATE TABLE f (name text, food text);
+INSERT INTO f VALUES ('kira', '🐟'), ('kira', '🍗'), ('casa', '🥬'), ('casa', '🍗');
+##CODE##
+</script>
 <script id="setup-multi-agg" type="text/plain">
 CREATE TABLE t (x int, y int, z int, w int);
 INSERT INTO t VALUES (1, 1, 1, 5), (1, 1, 2, 4), (1, 2, 3, 3), (2, 3, 1, 2), (2, 3, 2, 1);
 ##CODE##
 </script>
+<h1>$title$</h1>
+$if(toc)$
+<nav>$toc$</nav>
+$endif$
 $body$
 <script src="https://unpkg.com/@antonz/codapi@0.20.0/dist/snippet.js"></script>
 </body>

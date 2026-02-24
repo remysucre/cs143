@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>CS 143</title>
+  <title>CS 143: Introduction to Databases</title>
   <link rel="stylesheet" href="https://unpkg.com/@antonz/codapi@0.20.0/dist/snippet.css">
   <script
   src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"
@@ -30,11 +30,29 @@ CREATE TABLE t (x int, y int);
 INSERT INTO t VALUES (1, 5), (2, 4), (3, 3), (1, 2), (2, 1);
 ##CODE##
 </script>
+<script id="setup-pets" type="text/plain">
+CREATE TABLE t (name text, toy text);
+INSERT INTO t VALUES ('kira', '🛍️'), ('kira', '🍼'), ('casa', '🍼'), ('casa', '🧻');
+CREATE TABLE f (name text, food text);
+INSERT INTO f VALUES ('kira', '🐟'), ('kira', '🍗'), ('casa', '🥬'), ('casa', '🍗');
+##CODE##
+</script>
 <script id="setup-multi-agg" type="text/plain">
 CREATE TABLE t (x int, y int, z int, w int);
 INSERT INTO t VALUES (1, 1, 1, 5), (1, 1, 2, 4), (1, 2, 3, 3), (2, 3, 1, 2), (2, 3, 2, 1);
 ##CODE##
 </script>
+<h1>CS 143: Introduction to Databases</h1>
+<nav><ul>
+<li><a href="#why-cs-143" id="toc-why-cs-143">Why CS 143?</a></li>
+<li><a href="#trying-things-out" id="toc-trying-things-out">Trying
+things out</a></li>
+<li><a href="#basic-sql" id="toc-basic-sql">Basic SQL</a></li>
+<li><a href="#aggregates" id="toc-aggregates">Aggregates</a></li>
+<li><a href="#relational-algebra" id="toc-relational-algebra">Relational
+algebra</a></li>
+<li><a href="#more-tables" id="toc-more-tables">More tables</a></li>
+</ul></nav>
 <h2 id="why-cs-143">Why CS 143?</h2>
 <p>What’s the <a href="https://spectrum.ieee.org/the-rise-of-sql">most
 popular programming language</a>?</p>
@@ -352,6 +370,123 @@ class="math inline">\(F\)</span></td>
 </tbody>
 </table>
 <p>Can you write out SQL query for each operation?</p>
+<h2 id="more-tables">More tables</h2>
+<p>Meet my pets:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>toy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>kira</td>
+<td>🛍️</td>
+</tr>
+<tr>
+<td>kira</td>
+<td>🍼</td>
+</tr>
+<tr>
+<td>casa</td>
+<td>🍼</td>
+</tr>
+<tr>
+<td>casa</td>
+<td>🧻</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>food</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>kira</td>
+<td>🐟</td>
+</tr>
+<tr>
+<td>kira</td>
+<td>🍗</td>
+</tr>
+<tr>
+<td>casa</td>
+<td>🥬</td>
+</tr>
+<tr>
+<td>casa</td>
+<td>🍗</td>
+</tr>
+</tbody>
+</table>
+<p>What do these queries return?</p>
+<div class="sourceCode" id="cb20"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> t.name</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> t, f</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a> <span class="kw">WHERE</span> t.name <span class="op">=</span> f.name</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>   <span class="kw">AND</span> t.toy <span class="op">=</span> <span class="st">&#39;🛍️&#39;</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>   <span class="kw">AND</span> f.food <span class="op">=</span> <span class="st">&#39;🐟&#39;</span></span></code></pre></div>
+<codapi-snippet sandbox="sqlite" editor="basic" template="#setup-pets"></codapi-snippet>
+<div class="sourceCode" id="cb21"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> t.name</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> t, f</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a> <span class="kw">WHERE</span> t.name <span class="op">=</span> f.name</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>   <span class="kw">AND</span> t.toy <span class="op">=</span> <span class="st">&#39;🛍️&#39;</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>   <span class="kw">AND</span> f.food <span class="op">=</span> <span class="st">&#39;🍗&#39;</span></span></code></pre></div>
+<codapi-snippet sandbox="sqlite" editor="basic" template="#setup-pets"></codapi-snippet>
+<div class="sourceCode" id="cb22"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> t.name</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> t, f</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a> <span class="kw">WHERE</span> t.name <span class="op">=</span> f.name</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>   <span class="kw">AND</span> t.toy <span class="op">=</span> <span class="st">&#39;🍼&#39;</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>   <span class="kw">AND</span> f.food <span class="op">=</span> <span class="st">&#39;🍗&#39;</span></span></code></pre></div>
+<codapi-snippet sandbox="sqlite" editor="basic" template="#setup-pets"></codapi-snippet>
+<div class="sourceCode" id="cb23"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> t.name</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> t, f</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a> <span class="kw">WHERE</span> t.name <span class="op">=</span> f.name</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>   <span class="kw">AND</span> t.toy <span class="op">=</span> <span class="st">&#39;🛍️&#39;</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>   <span class="kw">AND</span> f.food <span class="op">=</span> <span class="st">&#39;🥬&#39;</span></span></code></pre></div>
+<codapi-snippet sandbox="sqlite" editor="basic" template="#setup-pets"></codapi-snippet>
+<p>General form for <strong>join</strong>ing tables:</p>
+<div class="sourceCode" id="cb24"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">..</span>.</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> r, s</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a> <span class="kw">WHERE</span> cond</span></code></pre></div>
+<p>Meaning:</p>
+<div class="sourceCode" id="cb25"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> x1, x2, ... <span class="kw">in</span> r:</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> y1, y2, ... <span class="kw">in</span> s:</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> cond(x1, x2, ..., y1, y2, ...):</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>      <span class="cf">return</span> ...</span></code></pre></div>
+<p>Try all possible pairings of a row from <code>r</code> and a row from
+<code>s</code>. I.e., first compute the <em>Cartesian product</em> of
+<code>r</code> and <code>s</code> (how many rows does the following
+query return?):</p>
+<div class="sourceCode" id="cb26"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> t, f</span></code></pre></div>
+<codapi-snippet sandbox="sqlite" editor="basic" template="#setup-pets"></codapi-snippet>
+<div class="sourceCode" id="cb27"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> t_row <span class="kw">in</span> t:</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> f_row <span class="kw">in</span> f:</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> t_row <span class="op">++</span> f_row</span></code></pre></div>
+<p>Then evaluate rest of query using result.</p>
+<p>In relational algebra: <span class="math inline">\(\sigma_p(t \times
+f)\)</span>, or <span class="math inline">\(t \bowtie_p f\)</span> (the
+<strong>join</strong>).</p>
+<p>Current general form:</p>
+<div class="sourceCode" id="cb28"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fl">4.</span>   <span class="kw">SELECT</span> R.x, <span class="fu">AVG</span>(T.z)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fl">1.</span>     <span class="kw">FROM</span> R, S, T</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="fl">2.</span>    <span class="kw">WHERE</span> R.x <span class="op">=</span> S.x <span class="kw">AND</span> S.y <span class="op">=</span> T.y</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="fl">3.</span> <span class="kw">GROUP</span> <span class="kw">BY</span> R.x</span></code></pre></div>
+<p><img src="assets/ra.svg" alt="Relational Algebra for query general form" width="30%"></p>
 <script src="https://unpkg.com/@antonz/codapi@0.20.0/dist/snippet.js"></script>
 </body>
 </html>
