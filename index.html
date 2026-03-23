@@ -66,6 +66,10 @@ Logic</a></li>
 <li><a href="#revisiting-examples"
 id="toc-revisiting-examples">Revisiting Examples</a></li>
 </ul></li>
+<li><a href="#make-nothing-out-of-something"
+id="toc-make-nothing-out-of-something">Make <code>NOTHING</code> out of
+something</a></li>
+<li><a href="#aggregates-1" id="toc-aggregates-1">Aggregates</a></li>
 </ul></nav>
 <h2 id="why-cs-143">Why CS 143?</h2>
 <p>What’s the <a href="https://spectrum.ieee.org/the-rise-of-sql">most
@@ -880,6 +884,84 @@ class="sourceCode sql"><code class="sourceCode sql"><span id="cb54-1"><a href="#
 <p>This time we have a nested operation. Just follow through with the
 rules and you’ll find when <code>WHERE</code> evaluates to
 <code>UNKNOWN</code>.</p>
+<h2 id="make-nothing-out-of-something">Make <code>NOTHING</code> out of
+something</h2>
+<p>Outer join: pad non-matching rows with <code>NULL</code> -
+<code>LEFT OUTER JOIN</code>: keep all rows in left table -
+<code>RIGHT OUTER JOIN</code>: keep all rows in right table -
+<code>FULL OUTER JOIN</code>: keep all rows in both tables</p>
+<h2 id="aggregates-1">Aggregates</h2>
+<p><strong>Aggregates ignore <code>NULL</code> values</strong></p>
+<p>What do these return on <code>R = {NULL, 1}</code>?</p>
+<div class="sourceCode" id="cb55"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="fu">COUNT</span>(x) <span class="kw">FROM</span> R;</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="fu">SUM</span>(x) <span class="kw">FROM</span> R;</span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="fu">AVG</span>(x) <span class="kw">FROM</span> R;</span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="fu">MIN</span>(x) <span class="kw">FROM</span> R;</span></code></pre></div>
+<p><em>But</em>, what if <code>R = {NULL}</code>?</p>
+<p>Challenge: how many offices per person?</p>
+<p>Attempt 1:</p>
+<div class="sourceCode" id="cb56"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> p.name, <span class="fu">COUNT</span>(e.addr)</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> p <span class="kw">JOIN</span> e</span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a><span class="kw">ON</span> p.job <span class="op">=</span> e.name</span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> p.name;</span></code></pre></div>
+<p>People with no offices are left out!</p>
+<p>Use outer join to include them:</p>
+<div class="sourceCode" id="cb57"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> p.name, <span class="fu">COUNT</span>(e.addr)</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> p <span class="kw">LEFT</span> <span class="kw">OUTER</span> <span class="kw">JOIN</span> e</span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a><span class="kw">ON</span> p.job <span class="op">=</span> e.name</span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> p.name;</span></code></pre></div>
+<p>Challenge: find the oldest cat, using <code>ORDER BY</code>,
+<code>DESC</code>, and <code>LIMIT</code>.</p>
+<div class="sourceCode" id="cb58"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> pets</span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> kind<span class="op">=</span><span class="ot">&quot;cat&quot;</span></span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> age <span class="kw">DESC</span></span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a><span class="kw">LIMIT</span> <span class="dv">1</span>;</span></code></pre></div>
+<p>Use a subquery:</p>
+<div class="sourceCode" id="cb59"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> pets.name, pets.age</span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> pets</span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> pets.kind<span class="op">=</span><span class="ot">&quot;cat&quot;</span></span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a><span class="kw">AND</span> pets.age<span class="op">=</span>(</span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">SELECT</span> <span class="fu">MAX</span>(age)</span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> pets</span>
+<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a>  <span class="kw">WHERE</span> kind<span class="op">=</span><span class="ot">&quot;cat&quot;</span></span>
+<span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a>);</span></code></pre></div>
+<p>Refactor with <code>WITH</code>:</p>
+<div class="sourceCode" id="cb60"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="kw">WITH</span> oldest <span class="kw">AS</span> (</span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">SELECT</span> <span class="fu">MAX</span>(age) <span class="kw">AS</span> a</span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> pets</span>
+<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">WHERE</span> kind<span class="op">=</span><span class="ot">&quot;cat&quot;</span></span>
+<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb60-6"><a href="#cb60-6" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> name, age</span>
+<span id="cb60-7"><a href="#cb60-7" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> pets, oldest</span>
+<span id="cb60-8"><a href="#cb60-8" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> kind<span class="op">=</span><span class="ot">&quot;cat&quot;</span> <span class="kw">AND</span> age<span class="op">=</span>oldest.a;</span></code></pre></div>
+<p>Oldest pet per kind:</p>
+<div class="sourceCode" id="cb61"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> pets.name, pets.age</span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> pets <span class="kw">AS</span> p1</span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> pets.age<span class="op">=</span>(</span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">SELECT</span> <span class="fu">MAX</span>(age)</span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> pets <span class="kw">AS</span> p2</span>
+<span id="cb61-6"><a href="#cb61-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">WHERE</span> p1.kind<span class="op">=</span>p2.kind</span>
+<span id="cb61-7"><a href="#cb61-7" aria-hidden="true" tabindex="-1"></a>);</span></code></pre></div>
+<p>Oldest per kind without nesting:</p>
+<div class="sourceCode" id="cb62"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="kw">WITH</span> max_per_kind <span class="kw">AS</span> (</span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> p2.kind, <span class="fu">MAX</span>(p2.age) <span class="kw">AS</span> max_age</span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> pets <span class="kw">AS</span> p2</span>
+<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> p2.kind</span>
+<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb62-6"><a href="#cb62-6" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> p1.name, p1.kind, p1.age</span>
+<span id="cb62-7"><a href="#cb62-7" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> pets <span class="kw">AS</span> p1, max_per_kind <span class="kw">AS</span> m</span>
+<span id="cb62-8"><a href="#cb62-8" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> p1.kind <span class="op">=</span> m.kind <span class="kw">AND</span> p1.age <span class="op">=</span> m.max_age;</span></code></pre></div>
+<p>Hard challenge: do this with one single “flat” query (i.e., without
+<code>WITH</code> or subqueries).</p>
 <script src="https://unpkg.com/@antonz/codapi@0.20.0/dist/snippet.js"></script>
 </body>
 </html>
