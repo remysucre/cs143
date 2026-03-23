@@ -632,3 +632,110 @@ WHERE NOT null <> null;
 ```
 
 This time we have a nested operation. Just follow through with the rules and you'll find when `WHERE` evaluates to `UNKNOWN`.
+
+## Make `NOTHING` out of something
+
+Outer join: pad non-matching rows with `NULL`
+- `LEFT OUTER JOIN`: keep all rows in left table
+- `RIGHT OUTER JOIN`: keep all rows in right table
+- `FULL OUTER JOIN`: keep all rows in both tables
+
+## Aggregates
+
+**Aggregates ignore `NULL` values**
+
+What do these return on `R = {NULL, 1}`?
+
+```sql
+SELECT COUNT(x) FROM R;
+SELECT SUM(x) FROM R;
+SELECT AVG(x) FROM R;
+SELECT MIN(x) FROM R;
+```
+
+*But*, what if `R = {NULL}`?
+
+Challenge: how many offices per person?
+
+Attempt 1: 
+
+```sql
+SELECT p.name, COUNT(e.addr)
+FROM p JOIN e
+ON p.job = e.name
+GROUP BY p.name;
+```
+
+People with no offices are left out!
+
+Use outer join to include them:
+
+```sql
+SELECT p.name, COUNT(e.addr)
+FROM p LEFT OUTER JOIN e
+ON p.job = e.name
+GROUP BY p.name;
+```
+
+Challenge: find the oldest cat, using `ORDER BY`, `DESC`, and `LIMIT`.
+
+```sql
+SELECT *
+FROM pets
+WHERE kind="cat"
+ORDER BY age DESC
+LIMIT 1;
+```
+
+Use a subquery:
+
+```sql
+SELECT pets.name, pets.age
+FROM pets
+WHERE pets.kind="cat"
+AND pets.age=(
+  SELECT MAX(age)
+  FROM pets
+  WHERE kind="cat"
+);
+```
+
+Refactor with `WITH`:
+
+```sql
+WITH oldest AS (
+  SELECT MAX(age) AS a
+  FROM pets
+  WHERE kind="cat"
+)
+SELECT name, age
+FROM pets, oldest
+WHERE kind="cat" AND age=oldest.a;
+```
+
+Oldest pet per kind:
+
+```sql
+SELECT pets.name, pets.age
+FROM pets AS p1
+WHERE pets.age=(
+  SELECT MAX(age)
+  FROM pets AS p2
+  WHERE p1.kind=p2.kind
+);
+```
+
+Oldest per kind without nesting:
+
+```sql
+WITH max_per_kind AS (
+SELECT p2.kind, MAX(p2.age) AS max_age
+FROM pets AS p2
+GROUP BY p2.kind
+)
+SELECT p1.name, p1.kind, p1.age
+FROM pets AS p1, max_per_kind AS m
+WHERE p1.kind = m.kind AND p1.age = m.max_age;
+```
+
+Hard challenge: do this with one single "flat" query (i.e., without `WITH` or subqueries).
