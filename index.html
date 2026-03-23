@@ -52,6 +52,20 @@ things out</a></li>
 <li><a href="#relational-algebra" id="toc-relational-algebra">Relational
 algebra</a></li>
 <li><a href="#more-tables" id="toc-more-tables">More tables</a></li>
+<li><a href="#more-queries" id="toc-more-queries">More queries</a></li>
+<li><a href="#variables-in-sql" id="toc-variables-in-sql">“Variables” in
+SQL</a></li>
+<li><a href="#nothing-is-more-confusing-than-sql"
+id="toc-nothing-is-more-confusing-than-sql"><code>NOTHING</code> is more
+confusing than SQL</a>
+<ul>
+<li><a href="#operators-with-null"
+id="toc-operators-with-null">Operators with <code>NULL</code></a></li>
+<li><a href="#valued-logic" id="toc-valued-logic">3 Valued
+Logic</a></li>
+<li><a href="#revisiting-examples"
+id="toc-revisiting-examples">Revisiting Examples</a></li>
+</ul></li>
 </ul></nav>
 <h2 id="why-cs-143">Why CS 143?</h2>
 <p>What’s the <a href="https://spectrum.ieee.org/the-rise-of-sql">most
@@ -87,29 +101,29 @@ do you delete all rows?)</p>
 <p>What do the following queries return given input?</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>x</th>
 <th>y</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>1</td>
 <td>5</td>
 </tr>
-<tr>
+<tr class="even">
 <td>2</td>
 <td>4</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>3</td>
 <td>3</td>
 </tr>
-<tr>
+<tr class="even">
 <td>4</td>
 <td>2</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>5</td>
 <td>1</td>
 </tr>
@@ -184,29 +198,29 @@ class="sourceCode sql"><code class="sourceCode sql"><span id="cb15-1"><a href="#
 <p>Aggregate by groups:</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>x</th>
 <th>y</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>1</td>
 <td>5</td>
 </tr>
-<tr>
+<tr class="even">
 <td>2</td>
 <td>4</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>3</td>
 <td>3</td>
 </tr>
-<tr>
+<tr class="even">
 <td>1</td>
 <td>2</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>2</td>
 <td>1</td>
 </tr>
@@ -218,17 +232,17 @@ class="sourceCode sql"><code class="sourceCode sql"><span id="cb16-1"><a href="#
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> x</span></code></pre></div>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>x</th>
 <th>y</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>?</td>
 <td>?</td>
 </tr>
-<tr>
+<tr class="even">
 <td>?</td>
 <td>?</td>
 </tr>
@@ -236,17 +250,17 @@ class="sourceCode sql"><code class="sourceCode sql"><span id="cb16-1"><a href="#
 </table>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>x</th>
 <th>y</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>?</td>
 <td>?</td>
 </tr>
-<tr>
+<tr class="even">
 <td>?</td>
 <td>?</td>
 </tr>
@@ -254,13 +268,13 @@ class="sourceCode sql"><code class="sourceCode sql"><span id="cb16-1"><a href="#
 </table>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>x</th>
 <th>y</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>?</td>
 <td>?</td>
 </tr>
@@ -277,7 +291,7 @@ group.</p>
 <p>Multiple group-by &amp; aggregate variables</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>x</th>
 <th>y</th>
 <th>z</th>
@@ -285,31 +299,31 @@ group.</p>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>1</td>
 <td>1</td>
 <td>1</td>
 <td>5</td>
 </tr>
-<tr>
+<tr class="even">
 <td>1</td>
 <td>1</td>
 <td>2</td>
 <td>4</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>1</td>
 <td>2</td>
 <td>3</td>
 <td>3</td>
 </tr>
-<tr>
+<tr class="even">
 <td>2</td>
 <td>3</td>
 <td>1</td>
 <td>2</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>2</td>
 <td>3</td>
 <td>2</td>
@@ -342,25 +356,25 @@ class="sourceCode sql"><code class="sourceCode sql"><span id="cb19-1"><a href="#
 <col style="width: 33%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>Name</th>
 <th>Notation</th>
 <th>Meaning</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>selection</td>
 <td><span class="math inline">\(\sigma_p(t)\)</span></td>
 <td>filter by condition <span class="math inline">\(p\)</span></td>
 </tr>
-<tr>
+<tr class="even">
 <td>projection</td>
 <td><span class="math inline">\(\pi_{e(x, y)}(t)\)</span></td>
 <td>map an expression <span class="math inline">\(e\)</span> over <span
 class="math inline">\(x, y\)</span></td>
 </tr>
-<tr>
+<tr class="odd">
 <td>aggregation</td>
 <td><span class="math inline">\(\gamma_{x, F(y)}(t)\)</span></td>
 <td>group by <span class="math inline">\(x\)</span>, aggregate over
@@ -374,25 +388,25 @@ class="math inline">\(F\)</span></td>
 <p>Meet my pets:</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>name</th>
 <th>toy</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>kira</td>
 <td>🛍️</td>
 </tr>
-<tr>
+<tr class="even">
 <td>kira</td>
 <td>🍼</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>casa</td>
 <td>🍼</td>
 </tr>
-<tr>
+<tr class="even">
 <td>casa</td>
 <td>🧻</td>
 </tr>
@@ -400,25 +414,25 @@ class="math inline">\(F\)</span></td>
 </table>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>name</th>
 <th>food</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>kira</td>
 <td>🐟</td>
 </tr>
-<tr>
+<tr class="even">
 <td>kira</td>
 <td>🍗</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>casa</td>
 <td>🥬</td>
 </tr>
-<tr>
+<tr class="even">
 <td>casa</td>
 <td>🍗</td>
 </tr>
@@ -487,6 +501,385 @@ class="sourceCode sql"><code class="sourceCode sql"><span id="cb28-1"><a href="#
 <span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="fl">2.</span>    <span class="kw">WHERE</span> R.x <span class="op">=</span> S.x <span class="kw">AND</span> S.y <span class="op">=</span> T.y</span>
 <span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="fl">3.</span> <span class="kw">GROUP</span> <span class="kw">BY</span> R.x</span></code></pre></div>
 <p><img src="assets/ra.svg" alt="Relational Algebra for query general form" width="30%"></p>
+<h2 id="more-queries">More queries</h2>
+<pre><code>sqlite&gt; SELECT * FROM pets;
+┌──────┬───────────────┬─────┬─────────┬──────┬────────┐
+│ name │     breed     │ age │ origin  │ kind │ person │
+├──────┼───────────────┼─────┼─────────┼──────┼────────┤
+│ casa │ tabby         │ 8   │ seattle │ cat  │ remy   │
+│ kira │ tuxedo        │ 6   │ hawaii  │ cat  │ remy   │
+│ toby │ border collie │ 17  │ seattle │ dog  │ remy   │
+│ maya │ husky         │ 10  │ LA      │ dog  │ sam    │
+└──────┴───────────────┴─────┴─────────┴──────┴────────┘</code></pre>
+<p>How to find people with both a cat and a dog?</p>
+<p>Attempt 1:</p>
+<div class="sourceCode" id="cb30"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> pets.person <span class="kw">FROM</span> pets</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> pets.kind<span class="op">=</span><span class="ot">&quot;cat&quot;</span> <span class="kw">AND</span> pets.kind<span class="op">=</span><span class="ot">&quot;dog&quot;</span>;</span></code></pre></div>
+<p>Attempt 2:</p>
+<div class="sourceCode" id="cb31"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> pets.person <span class="kw">FROM</span> pets</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> pets.kind<span class="op">=</span><span class="ot">&quot;cat&quot;</span> <span class="kw">OR</span> pets.kind<span class="op">=</span><span class="ot">&quot;dog&quot;</span>;</span></code></pre></div>
+<p>Take a step back: how do we find cat people?</p>
+<div class="sourceCode" id="cb32"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> pets.person <span class="kw">FROM</span> pets</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> pets.kind<span class="op">=</span><span class="ot">&quot;cat&quot;</span>;</span></code></pre></div>
+<p>How do we find dog people?</p>
+<div class="sourceCode" id="cb33"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> pets.person <span class="kw">FROM</span> pets</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> pets.kind<span class="op">=</span><span class="ot">&quot;dog&quot;</span>;</span></code></pre></div>
+<p>Guess what this does?</p>
+<div class="sourceCode" id="cb34"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> pets.person <span class="kw">FROM</span> pets</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> pets.kind<span class="op">=</span><span class="ot">&quot;cat&quot;</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="kw">INTERSECT</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> pets.person <span class="kw">FROM</span> pets</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> pets.kind<span class="op">=</span><span class="ot">&quot;dog&quot;</span>;</span></code></pre></div>
+<p>How about this:</p>
+<div class="sourceCode" id="cb35"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> pets.person <span class="kw">FROM</span> pets</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> pets.kind<span class="op">=</span><span class="ot">&quot;cat&quot;</span></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="kw">UNION</span></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> pets.person <span class="kw">FROM</span> pets</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> pets.kind<span class="op">=</span><span class="ot">&quot;dog&quot;</span>;</span></code></pre></div>
+<h2 id="variables-in-sql">“Variables” in SQL</h2>
+<table>
+<thead>
+<tr class="header">
+<th>SQL</th>
+<th>Python</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>WITH</code></td>
+<td>Local variable</td>
+</tr>
+<tr class="even">
+<td><code>CREATE TABLE</code></td>
+<td>Global variable</td>
+</tr>
+<tr class="odd">
+<td><code>CREATE VIEW</code></td>
+<td>Helper function</td>
+</tr>
+<tr class="even">
+<td><code>CREATE MATERIALIZED VIEW</code></td>
+<td>Cached helper function</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb36"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span><span class="op">/</span>(<span class="kw">MATERIALIZED</span>) <span class="kw">VIEW</span> cat_people <span class="kw">AS</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> pets.person <span class="kw">FROM</span> pets</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> pets.kind<span class="op">=</span><span class="ot">&quot;cat&quot;</span>;</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span><span class="op">/</span>(<span class="kw">MATERIALIZED</span>) <span class="kw">VIEW</span> dog_people <span class="kw">AS</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> pets.person <span class="kw">FROM</span> pets</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> pets.kind<span class="op">=</span><span class="ot">&quot;dog&quot;</span>;</span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a><span class="co">-- What happens if we run the following query twice?</span></span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a><span class="co">-- What happens if we insert into `pets` then run the following query?</span></span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a><span class="co">-- INSERT INTO pets VALUES (&quot;casa&quot;, &quot;tabby&quot;, 8, &quot;seattle&quot;, &quot;cat&quot;, &quot;remy&quot;);</span></span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> cat_people.person <span class="kw">FROM</span> cat_people</span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a><span class="kw">INTERSECT</span></span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> dog_people.person <span class="kw">FROM</span> dog_people;</span></code></pre></div>
+<p><code>WITH</code> has a slightly different syntax as it’s local to
+the query:</p>
+<div class="sourceCode" id="cb37"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="kw">WITH</span> cat_people <span class="kw">AS</span> (</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">SELECT</span> pets.person <span class="kw">FROM</span> pets</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">WHERE</span> pets.kind<span class="op">=</span><span class="ot">&quot;cat&quot;</span></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>),   dog_people <span class="kw">AS</span> (</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">SELECT</span> pets.person <span class="kw">FROM</span> pets</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">WHERE</span> pets.kind<span class="op">=</span><span class="ot">&quot;dog&quot;</span></span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> cat_people.person <span class="kw">FROM</span> cat_people</span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a><span class="kw">INTERSECT</span></span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> dog_people.person <span class="kw">FROM</span> dog_people;</span></code></pre></div>
+<p>How do we find pet kind with average age &gt; 10? (Hint: find the
+average age for each kind first, then filter)</p>
+<p>Does this work?</p>
+<div class="sourceCode" id="cb38"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> kind, <span class="fu">AVG</span>(age) <span class="kw">FROM</span> pets</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> <span class="fu">AVG</span>(age) <span class="op">&gt;</span> <span class="dv">10</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> kind;</span></code></pre></div>
+<p>Average age per kind:</p>
+<div class="sourceCode" id="cb39"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> kind, <span class="fu">AVG</span>(age)</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> pets</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> kind;</span></code></pre></div>
+<p>Two queries:</p>
+<div class="sourceCode" id="cb40"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> averages <span class="kw">AS</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> kind, <span class="fu">AVG</span>(age) <span class="kw">AS</span> a</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> pets</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> kind;</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a><span class="co">-- Now we just filter for over 10:</span></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> averages</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> averages.a <span class="op">&gt;</span> <span class="fl">10.0</span>;</span></code></pre></div>
+<p>“One” query:</p>
+<div class="sourceCode" id="cb41"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="kw">WITH</span> averages <span class="kw">AS</span> (<span class="kw">SELECT</span> kind, <span class="fu">AVG</span>(age) <span class="kw">AS</span> a <span class="kw">FROM</span> pets <span class="kw">GROUP</span> <span class="kw">BY</span> kind)</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> averages <span class="kw">WHERE</span> averages.a <span class="op">&gt;</span> <span class="fl">10.0</span>;</span></code></pre></div>
+<p>ONE query:</p>
+<div class="sourceCode" id="cb42"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> kind, <span class="fu">AVG</span>(age) <span class="kw">FROM</span> pets</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> kind</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a><span class="kw">HAVING</span> <span class="fu">AVG</span>(age) <span class="op">&gt;</span> <span class="dv">10</span> <span class="co">-- condition on each group</span></span></code></pre></div>
+<h2 id="nothing-is-more-confusing-than-sql"><code>NOTHING</code> is more
+confusing than SQL</h2>
+<p>What does the following query return?</p>
+<div class="sourceCode" id="cb43"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> R</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> R.x <span class="op">=</span> R.x;</span></code></pre></div>
+<p>How about this?</p>
+<div class="sourceCode" id="cb44"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> R</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> R.x <span class="op">=</span> R.x</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a><span class="kw">OR</span> R.x <span class="op">&lt;&gt;</span> R.x;</span></code></pre></div>
+<p>And this?</p>
+<div class="sourceCode" id="cb45"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> R</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> <span class="kw">null</span> <span class="op">=</span> <span class="kw">null</span>;</span></code></pre></div>
+<p>In fact, none of these return anything:</p>
+<div class="sourceCode" id="cb46"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> R</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> <span class="kw">null</span> <span class="op">&lt;&gt;</span> <span class="kw">null</span>;</span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> R</span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> <span class="kw">NOT</span> <span class="kw">null</span> <span class="op">&lt;&gt;</span> <span class="kw">null</span>;</span></code></pre></div>
+<p><strong><code>NULL</code> transcends truth</strong>.</p>
+<p>Two kinds of values in SQL:</p>
+<ul>
+<li><strong>Data values</strong>: 1, “hello”, …, <code>NULL</code></li>
+<li><strong>Truth values</strong>: <code>TRUE</code>,
+<code>FALSE</code>, <code>UNKNOWN</code></li>
+</ul>
+<p><em>Making things worse, some DB uses <code>NULL</code> for
+<code>UNKNOWN</code>. To protect our sanity, we treat them as
+different.</em></p>
+<p>There are 3 kinds of operators in SQL:</p>
+<p><strong>Data operators</strong>:</p>
+<pre><code>      1             +             2
+&lt;data value&gt; &lt;data operator&gt; &lt;data value&gt;</code></pre>
+<p>The entire expression evaluates to itself another <strong>data
+value</strong>.</p>
+<p><strong>Predicates</strong>:</p>
+<pre><code>      1               &lt;             2
+&lt;data value&gt; &lt;predicate operator&gt; &lt;data value&gt;</code></pre>
+<p>The entire expression evaluates to a <strong>logical
+value</strong>.</p>
+<p><strong>Logical connectives</strong>:</p>
+<pre><code>      true              AND               false
+&lt;logical value&gt; &lt;logical operator&gt; &lt;logical value&gt;</code></pre>
+<p>The entire expression evaluates to itself another <strong>logical
+value</strong>.</p>
+<p>Conveniently summarized:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Operator kind</th>
+<th>Example</th>
+<th>Input -&gt; Output</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Data</td>
+<td>+ - * /</td>
+<td>data -&gt; data</td>
+</tr>
+<tr class="even">
+<td>Predicate</td>
+<td>&gt; &lt; =</td>
+<td>data -&gt; logic</td>
+</tr>
+<tr class="odd">
+<td>Logical</td>
+<td>AND OR NOT</td>
+<td>logic -&gt; logic</td>
+</tr>
+</tbody>
+</table>
+<p>Note that you can’t go from logic -&gt; data.</p>
+<h3 id="operators-with-null">Operators with <code>NULL</code></h3>
+<p>These operators all behave as you would expect if <code>NULL</code>
+is <em>not</em> involved. When <code>NULL</code> <em>is</em> involved,
+there are special rules:</p>
+<table>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 15%" />
+<col style="width: 64%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Operator Kind</th>
+<th>Example</th>
+<th>Output when <code>NULL</code> is &gt;= 1 of the operands</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Data</td>
+<td>+ - * /</td>
+<td><code>NULL</code></td>
+</tr>
+<tr class="even">
+<td>Predicate</td>
+<td>&gt; &lt; =</td>
+<td><code>UNKNOWN</code></td>
+</tr>
+<tr class="odd">
+<td>Logical</td>
+<td>AND OR NOT</td>
+<td><a href="#3-valued-logic">3 Valued Logic</a></td>
+</tr>
+</tbody>
+</table>
+<p>For <strong>data</strong>, it’s intuitive: if either operand is
+<code>NULL</code> (it’s “missing” or “unknown”), the result should also
+be “missing” or “unknown”, so the expression evaluates to
+<code>NULL</code> as well.</p>
+<p>For <strong>predicate</strong>, it’s also intuitive: the same reason
+as for data, but because we’re dealing with logical types, we have the
+logical equivalent of <code>NULL</code>, <code>UNKNOWN</code>.</p>
+<blockquote>
+<p>There is one exception for <strong>predicates</strong>: To explicitly
+check if <code>x</code> is <code>NULL</code>, you use:
+<code>x IS NULL</code>, which will return T/F on whether <code>x</code>
+is indeed <code>NULL</code>. It <em>won’t</em> return <code>NULL</code>
+despite the RHS being <code>NULL</code>.</p>
+</blockquote>
+<p>For <strong>logical</strong>, we apply <strong>3 valued
+logic</strong>:</p>
+<h3 id="valued-logic">3 Valued Logic</h3>
+<table>
+<thead>
+<tr class="header">
+<th>AND</th>
+<th>true</th>
+<th>false</th>
+<th>UNKNOWN</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>true</td>
+<td>true</td>
+<td>false</td>
+<td><strong>UNKNOWN</strong></td>
+</tr>
+<tr class="even">
+<td>false</td>
+<td>false</td>
+<td>false</td>
+<td><strong>false</strong></td>
+</tr>
+<tr class="odd">
+<td>UNKNOWN</td>
+<td><strong>UNKNOWN</strong></td>
+<td><strong>false</strong></td>
+<td><strong>UNKNOWN</strong></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr class="header">
+<th>OR</th>
+<th>true</th>
+<th>false</th>
+<th>UNKNOWN</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>true</td>
+<td>true</td>
+<td>true</td>
+<td><strong>true</strong></td>
+</tr>
+<tr class="even">
+<td>false</td>
+<td>true</td>
+<td>false</td>
+<td><strong>UNKNOWN</strong></td>
+</tr>
+<tr class="odd">
+<td>UNKNOWN</td>
+<td><strong>true</strong></td>
+<td><strong>UNKNOWN</strong></td>
+<td><strong>UNKNOWN</strong></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr class="header">
+<th>NOT</th>
+<th>true</th>
+<th>false</th>
+<th>UNKNOWN</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td></td>
+<td>false</td>
+<td>true</td>
+<td><strong>UNKNOWN</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Don’t memorize these! Deduce by short-circuiting rules.</p>
+<h3 id="revisiting-examples">Revisiting Examples</h3>
+<p>When in doubt, use <a href="#operators-with-null">the
+<code>NULL</code> rules from earlier</a> and <a href="#3-valued-logic">3
+valued logic</a> to determine what the <code>WHERE</code> clause is
+actually saying and how it would affect the queries.</p>
+<div class="sourceCode" id="cb50"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> R</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> R.x<span class="op">=</span>R.x; <span class="co">-- NULL=NULL =&gt; UNKNOWN</span></span></code></pre></div>
+<p>Where <code>R.x</code> is <a
+href="#operators-with-null"><code>NULL</code>, the <code>WHERE</code>
+clause evaluates to <code>UNKNOWN</code></a>, so that row is
+<em>excluded</em>. The return table is <em>not</em> necessarily the same
+as <code>R</code>.</p>
+<div class="sourceCode" id="cb51"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> R</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> R.x <span class="op">=</span> R.x</span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a><span class="kw">OR</span> R.x <span class="op">&lt;&gt;</span> R.x; <span class="co">-- NULL &lt;&gt; NULL =&gt; UNKNOWN</span></span></code></pre></div>
+<p>Same as above.</p>
+<div class="sourceCode" id="cb52"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> R</span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> <span class="kw">null</span> <span class="op">=</span> <span class="kw">null</span>; <span class="co">-- NULL=NULL =&gt; UNKNOWN</span></span></code></pre></div>
+<p>Same as above. It’s just explicit this time.</p>
+<div class="sourceCode" id="cb53"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> R</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> <span class="kw">null</span> <span class="op">&lt;&gt;</span> <span class="kw">null</span>; <span class="co">-- NULL &lt;&gt; NULL =&gt; UNKNOWN</span></span></code></pre></div>
+<p>Same as above. It’s just explicit this time.</p>
+<div class="sourceCode" id="cb54"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> R</span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a><span class="co">-- NULL &lt;&gt; NULL =&gt; UNKNOWN</span></span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a><span class="co">-- NOT UNKNOWN =&gt; still UNKNOWN</span></span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> <span class="kw">NOT</span> <span class="kw">null</span> <span class="op">&lt;&gt;</span> <span class="kw">null</span>;</span></code></pre></div>
+<p>This time we have a nested operation. Just follow through with the
+rules and you’ll find when <code>WHERE</code> evaluates to
+<code>UNKNOWN</code>.</p>
 <script src="https://unpkg.com/@antonz/codapi@0.20.0/dist/snippet.js"></script>
 </body>
 </html>

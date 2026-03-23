@@ -306,3 +306,329 @@ Current general form:
 ```
 
 <img src="assets/ra.svg" alt="Relational Algebra for query general form" width="30%">
+
+## More queries
+
+```
+sqlite> SELECT * FROM pets;
+┌──────┬───────────────┬─────┬─────────┬──────┬────────┐
+│ name │     breed     │ age │ origin  │ kind │ person │
+├──────┼───────────────┼─────┼─────────┼──────┼────────┤
+│ casa │ tabby         │ 8   │ seattle │ cat  │ remy   │
+│ kira │ tuxedo        │ 6   │ hawaii  │ cat  │ remy   │
+│ toby │ border collie │ 17  │ seattle │ dog  │ remy   │
+│ maya │ husky         │ 10  │ LA      │ dog  │ sam    │
+└──────┴───────────────┴─────┴─────────┴──────┴────────┘
+```
+
+How to find people with both a cat and a dog?
+
+Attempt 1:
+
+```sql
+SELECT pets.person FROM pets
+WHERE pets.kind="cat" AND pets.kind="dog";
+```
+
+Attempt 2:
+
+```sql
+SELECT pets.person FROM pets
+WHERE pets.kind="cat" OR pets.kind="dog";
+```
+
+Take a step back: how do we find cat people?
+
+```sql
+SELECT pets.person FROM pets
+WHERE pets.kind="cat";
+```
+
+How do we find dog people?
+
+```sql
+SELECT pets.person FROM pets
+WHERE pets.kind="dog";
+```
+
+Guess what this does?
+
+```sql
+SELECT pets.person FROM pets
+WHERE pets.kind="cat"
+INTERSECT
+SELECT pets.person FROM pets
+WHERE pets.kind="dog";
+```
+
+How about this:
+
+```sql
+SELECT pets.person FROM pets
+WHERE pets.kind="cat"
+UNION
+SELECT pets.person FROM pets
+WHERE pets.kind="dog";
+```
+
+## "Variables" in SQL
+
+| SQL                        | Python          |
+| -------------------------- | --------------- |
+| `WITH`                     | Local variable  |
+| `CREATE TABLE`             | Global variable |
+| `CREATE VIEW`              | Helper function |
+| `CREATE MATERIALIZED VIEW` | Cached helper function |
+
+```sql
+CREATE TABLE/(MATERIALIZED) VIEW cat_people AS
+SELECT pets.person FROM pets
+WHERE pets.kind="cat";
+CREATE TABLE/(MATERIALIZED) VIEW dog_people AS
+SELECT pets.person FROM pets
+WHERE pets.kind="dog";
+
+-- What happens if we run the following query twice?
+-- What happens if we insert into `pets` then run the following query?
+
+-- INSERT INTO pets VALUES ("casa", "tabby", 8, "seattle", "cat", "remy");
+
+SELECT cat_people.person FROM cat_people
+INTERSECT
+SELECT dog_people.person FROM dog_people;
+```
+
+`WITH` has a slightly different syntax as it's local to the query:
+
+```sql
+WITH cat_people AS (
+  SELECT pets.person FROM pets
+  WHERE pets.kind="cat"
+),   dog_people AS (
+  SELECT pets.person FROM pets
+  WHERE pets.kind="dog"
+)
+SELECT cat_people.person FROM cat_people
+INTERSECT
+SELECT dog_people.person FROM dog_people;
+```
+
+How do we find pet kind with average age > 10?
+(Hint: find the average age for each kind first, then filter)
+
+Does this work?
+
+```sql
+SELECT kind, AVG(age) FROM pets
+WHERE AVG(age) > 10
+GROUP BY kind;
+```
+
+Average age per kind:
+
+```sql
+SELECT kind, AVG(age)
+FROM pets
+GROUP BY kind;
+```
+
+Two queries:
+
+```sql
+CREATE TABLE averages AS
+SELECT kind, AVG(age) AS a
+FROM pets
+GROUP BY kind;
+
+-- Now we just filter for over 10:
+SELECT * FROM averages
+WHERE averages.a > 10.0;
+```
+
+"One" query:
+
+```sql
+WITH averages AS (SELECT kind, AVG(age) AS a FROM pets GROUP BY kind)
+SELECT * FROM averages WHERE averages.a > 10.0;
+```
+
+ONE query:
+
+```sql
+SELECT kind, AVG(age) FROM pets
+GROUP BY kind
+HAVING AVG(age) > 10 -- condition on each group
+```
+
+## `NOTHING` is more confusing than SQL
+
+What does the following query return?
+
+```sql
+SELECT *
+FROM R
+WHERE R.x = R.x;
+```
+
+How about this?
+
+```sql
+SELECT *
+FROM R
+WHERE R.x = R.x
+OR R.x <> R.x;
+```
+
+And this?
+
+```sql
+SELECT *
+FROM R
+WHERE null = null;
+```
+
+In fact, none of these return anything:
+
+```sql
+SELECT *
+FROM R
+WHERE null <> null;
+
+SELECT *
+FROM R
+WHERE NOT null <> null;
+```
+
+**`NULL` transcends truth**.
+
+Two kinds of values in SQL:
+
+- **Data values**: 1, "hello", ..., `NULL`
+- **Truth values**: `TRUE`, `FALSE`, `UNKNOWN`
+
+*Making things worse, some DB uses `NULL` for `UNKNOWN`. To protect our sanity, we treat them as different.*
+
+There are 3 kinds of operators in SQL:
+
+**Data operators**:
+
+```
+      1             +             2
+<data value> <data operator> <data value>
+```
+
+The entire expression evaluates to itself another **data value**.
+
+**Predicates**:
+
+```
+      1               <             2
+<data value> <predicate operator> <data value>
+```
+
+The entire expression evaluates to a **logical value**.
+
+**Logical connectives**:
+
+```
+      true              AND               false
+<logical value> <logical operator> <logical value>
+```
+
+The entire expression evaluates to itself another **logical value**.
+
+Conveniently summarized:
+
+| Operator kind | Example    | Input -> Output |
+| ------------- | ---------- | --------------- |
+| Data          | + - \* /   | data -> data    |
+| Predicate     | > < =      | data -> logic   |
+| Logical       | AND OR NOT | logic -> logic  |
+
+Note that you can't go from logic -> data.
+
+### Operators with `NULL`
+
+These operators all behave as you would expect if `NULL` is *not* involved. When `NULL` *is* involved, there are special rules:
+
+| Operator Kind | Example    | Output when `NULL` is >= 1 of the operands |
+| ------------- | ---------- | ------------------------------------------ |
+| Data          | + - \* /   | `NULL`                                     |
+| Predicate     | > < =      | `UNKNOWN`                                  |
+| Logical       | AND OR NOT | [3 Valued Logic](#3-valued-logic)          |
+
+For **data**, it's intuitive: if either operand is `NULL` (it's "missing" or "unknown"), the result should also be "missing" or "unknown", so the expression evaluates to `NULL` as well.
+
+For **predicate**, it's also intuitive: the same reason as for data, but because we're dealing with logical types, we have the logical equivalent of `NULL`, `UNKNOWN`.
+
+> There is one exception for **predicates**: To explicitly check if `x` is `NULL`, you use: `x IS NULL`, which will return T/F on whether `x` is indeed `NULL`. It *won't* return `NULL` despite the RHS being `NULL`.
+
+
+For **logical**, we apply **3 valued logic**:
+
+### 3 Valued Logic
+
+| AND     | true        | false     | UNKNOWN     |
+| ------- | ----------- | --------- | ----------- |
+| true    | true        | false     | **UNKNOWN** |
+| false   | false       | false     | **false**   |
+| UNKNOWN | **UNKNOWN** | **false** | **UNKNOWN** |
+
+| OR      | true     | false       | UNKNOWN     |
+| ------- | -------- | ----------- | ----------- |
+| true    | true     | true        | **true**    |
+| false   | true     | false       | **UNKNOWN** |
+| UNKNOWN | **true** | **UNKNOWN** | **UNKNOWN** |
+
+| NOT | true  | false | UNKNOWN     |
+| --- | ----- | ----- | ----------- |
+|     | false | true  | **UNKNOWN** |
+
+Don't memorize these! Deduce by short-circuiting rules.
+
+### Revisiting Examples
+
+When in doubt, use [the `NULL` rules from earlier](#operators-with-null) and [3 valued logic](#3-valued-logic) to determine what the `WHERE` clause is actually saying and how it would affect the queries.
+
+```sql
+SELECT *
+FROM R
+WHERE R.x=R.x; -- NULL=NULL => UNKNOWN
+```
+
+Where `R.x` is [`NULL`, the `WHERE` clause evaluates to `UNKNOWN`](#operators-with-null), so that row is *excluded*. The return table is *not* necessarily the same as `R`.
+
+```sql
+SELECT *
+FROM R
+WHERE R.x = R.x
+OR R.x <> R.x; -- NULL <> NULL => UNKNOWN
+```
+
+Same as above.
+
+```sql
+SELECT *
+FROM R
+WHERE null = null; -- NULL=NULL => UNKNOWN
+```
+
+Same as above. It's just explicit this time.
+
+```sql
+SELECT *
+FROM R
+WHERE null <> null; -- NULL <> NULL => UNKNOWN
+```
+
+Same as above. It's just explicit this time.
+
+```sql
+SELECT *
+FROM R
+-- NULL <> NULL => UNKNOWN
+-- NOT UNKNOWN => still UNKNOWN
+WHERE NOT null <> null;
+```
+
+This time we have a nested operation. Just follow through with the rules and you'll find when `WHERE` evaluates to `UNKNOWN`.
