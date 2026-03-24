@@ -70,6 +70,8 @@ id="toc-revisiting-examples">Revisiting Examples</a></li>
 id="toc-make-nothing-out-of-something">Make <code>NOTHING</code> out of
 something</a></li>
 <li><a href="#aggregates-1" id="toc-aggregates-1">Aggregates</a></li>
+<li><a href="#predicates-on-subqueries"
+id="toc-predicates-on-subqueries">Predicates on subqueries</a></li>
 </ul></nav>
 <h2 id="why-cs-143">Why CS 143?</h2>
 <p>What’s the <a href="https://spectrum.ieee.org/the-rise-of-sql">most
@@ -962,6 +964,49 @@ class="sourceCode sql"><code class="sourceCode sql"><span id="cb62-1"><a href="#
 <span id="cb62-8"><a href="#cb62-8" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> p1.kind <span class="op">=</span> m.kind <span class="kw">AND</span> p1.age <span class="op">=</span> m.max_age;</span></code></pre></div>
 <p>Hard challenge: do this with one single “flat” query (i.e., without
 <code>WITH</code> or subqueries).</p>
+<h2 id="predicates-on-subqueries">Predicates on subqueries</h2>
+<p>Up until now we’ve mostly just been <code>SELECT</code>ing directly
+from the result of our subquery. We can use other predicates on them
+though:</p>
+<ul>
+<li><code>EXISTS (SELECT ...)</code> checks if it (the inner
+<code>SELECT</code> expression) is not empty. That is, at least one row
+is returned.</li>
+<li><code>NOT EXISTS (SELECT ...)</code> checks if it is empty. No rows
+are returned.</li>
+<li><code>X IN (SELECT Y FROM ...)</code> checks that the returned rows
+include <code>X</code>.</li>
+<li><code>X NOT IN (SELECT ...)</code> checks that the returned rows do
+<em>not</em> include <code>X</code>.</li>
+<li><code>X &gt; ALL(SELECT ...)</code> checks if X is &gt; than
+<em>all</em> values in output.</li>
+<li><code>X &gt; ANY(SELECT ...)</code> checks if X is &gt; than at
+least <em>one</em> value in output.</li>
+</ul>
+<p>Implement <code>INTERSECT</code> using <code>EXISTS</code> or
+<code>IN</code>:</p>
+<div class="sourceCode" id="cb63"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> x <span class="kw">FROM</span> R</span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> x <span class="kw">IN</span> (<span class="kw">SELECT</span> x <span class="kw">FROM</span> S);</span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> x <span class="kw">FROM</span> R</span>
+<span id="cb63-5"><a href="#cb63-5" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> <span class="kw">EXISTS</span> (<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> S <span class="kw">WHERE</span> S.x <span class="op">=</span> R.x);</span></code></pre></div>
+<p>Find oldest pet per kind using <code>NOT EXISTS</code> or
+<code>ALL</code>:</p>
+<div class="sourceCode" id="cb64"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> name, kind, age</span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> pets <span class="kw">AS</span> p1</span>
+<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> <span class="kw">NOT</span> <span class="kw">EXISTS</span> (</span>
+<span id="cb64-4"><a href="#cb64-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb64-5"><a href="#cb64-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> pets <span class="kw">AS</span> p2  <span class="kw">WHERE</span> p1.kind <span class="op">=</span> p2.kind <span class="kw">AND</span> p1.age <span class="op">&lt;</span> p2.age</span>
+<span id="cb64-6"><a href="#cb64-6" aria-hidden="true" tabindex="-1"></a>);</span>
+<span id="cb64-7"><a href="#cb64-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb64-8"><a href="#cb64-8" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> name, kind, age</span>
+<span id="cb64-9"><a href="#cb64-9" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> pets <span class="kw">AS</span> p1</span>
+<span id="cb64-10"><a href="#cb64-10" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> age <span class="op">&gt;=</span> <span class="kw">ALL</span> (</span>
+<span id="cb64-11"><a href="#cb64-11" aria-hidden="true" tabindex="-1"></a>  <span class="kw">SELECT</span> age</span>
+<span id="cb64-12"><a href="#cb64-12" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> pets <span class="kw">AS</span> p2  <span class="kw">WHERE</span> p1.kind <span class="op">=</span> p2.kind</span>
+<span id="cb64-13"><a href="#cb64-13" aria-hidden="true" tabindex="-1"></a>);</span></code></pre></div>
 <script src="https://unpkg.com/@antonz/codapi@0.20.0/dist/snippet.js"></script>
 </body>
 </html>

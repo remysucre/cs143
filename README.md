@@ -739,3 +739,42 @@ WHERE p1.kind = m.kind AND p1.age = m.max_age;
 ```
 
 Hard challenge: do this with one single "flat" query (i.e., without `WITH` or subqueries).
+
+## Predicates on subqueries
+
+Up until now we've mostly just been `SELECT`ing directly from the result of our subquery. We can use other predicates on them though:
+
+- `EXISTS (SELECT ...)` checks if it (the inner `SELECT` expression) is not empty. That is, at least one row is returned.
+- `NOT EXISTS (SELECT ...)` checks if it is empty. No rows are returned.
+- `X IN (SELECT Y FROM ...)` checks that the returned rows include `X`.
+- `X NOT IN (SELECT ...)` checks that the returned rows do *not* include `X`.
+- `X > ALL(SELECT ...)` checks if X is > than *all* values in output.
+- `X > ANY(SELECT ...)` checks if X is > than at least *one* value in output.
+
+Implement `INTERSECT` using `EXISTS` or `IN`:
+
+```sql
+SELECT x FROM R
+WHERE x IN (SELECT x FROM S);
+
+SELECT x FROM R
+WHERE EXISTS (SELECT * FROM S WHERE S.x = R.x);
+```
+
+Find oldest pet per kind using `NOT EXISTS` or `ALL`:
+
+```sql
+SELECT name, kind, age
+FROM pets AS p1
+WHERE NOT EXISTS (
+  SELECT *
+  FROM pets AS p2  WHERE p1.kind = p2.kind AND p1.age < p2.age
+);
+
+SELECT name, kind, age
+FROM pets AS p1
+WHERE age >= ALL (
+  SELECT age
+  FROM pets AS p2  WHERE p1.kind = p2.kind
+);
+```
