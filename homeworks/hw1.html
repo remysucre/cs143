@@ -4,11 +4,9 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>CS 143: Introduction to Databases</title>
+  <title>hw1</title>
   <style>
     html {
-      font-family: sans-serif;
-      line-height: 1.4;
       color: #1a1a1a;
       background-color: #fdfdfd;
     }
@@ -171,115 +169,62 @@
   </style>
 </head>
 <body>
-<header id="title-block-header">
-<h1 class="title">CS 143: Introduction to Databases</h1>
-</header>
-<table>
-<tbody style="border: none;">
-<tr>
-<td>
-<strong>Course Staff</strong>
-</td>
-<td>
-Instructor: <a href="https://remy.wang">Remy Wang</a>    TA: <a
-href="https://zhengluo.org">Zheng Luo</a>, <a
-href="https://saiachalla.com">Sai Achalla</a>
-</td>
-</tr>
-<tr>
-<td>
-<strong>Time &amp; Location</strong>
-</td>
-<td>
-M/W 4:00-5:30pm @ MS 4000A
-</td>
-</tr>
-<tr>
-<td>
-<strong>Office Hours</strong>
-</td>
-<td>
-After class &amp; by appointment
-</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Discussion board</strong>    We use Ed for discussion and
-online Q&amp;A, please sign up using your UCLA email <a
-href="https://edstem.org/us/join/ND35j4">here</a>.</p>
-<p><strong>Grading</strong>    100% of your grade will be based on 5-6
-quizzes throughout the quarter. This is perhaps unusual, so let me
-explain the rationale.</p>
-<p><strong>Philosophy</strong>    I believe the main goal of a class is
-to help you learn. There is ample evidence that cramming for exams does
-not contribute to learning, and only stresses you out – I myself never
-liked exams and never learned anything from them. There is also a lot of
-evidence that hands-on practice is the best way to learn, so there will
-be homework assignments, but they are <em>not graded</em>. Why? Before
-AI, I would teach a class and base the grades only on homeworks and
-projects. But as far as I know, there is no reliable way to enforce any
-AI use policy for assignments. So to motivate you to actually do the
-homework yourself, I will design the quizzes so that they become very
-easy if you have done your homework. There will be roughly one quiz per
-topic as listed below.</p>
-<table>
-<thead>
-<tr>
-<th>Date</th>
-<th>Topic (tentative)</th>
-<th>Homework</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>4/13</td>
-<td><a href="sql.pdf">SQL</a></td>
-<td><a href="homeworks/hw1.html">hw1</a> (WIP)</td>
-</tr>
-<tr>
-<td>4/22</td>
-<td>Dependencies</td>
-<td></td>
-</tr>
-<tr>
-<td>5/4</td>
-<td>Transactions</td>
-<td></td>
-</tr>
-<tr>
-<td>5/13</td>
-<td>Query exection</td>
-<td></td>
-</tr>
-<tr>
-<td>5/25</td>
-<td>Indexes</td>
-<td></td>
-</tr>
-<tr>
-<td>6/3</td>
-<td>Advanced Topics</td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<p><strong>AI Use</strong>    Of course you are not allowed to use AI
-during the quizzes. Should you use AI when doing homework? The short
-answer is no. The slightly longer answer is: you should only use AI to
-do something, if you <em>don’t</em> want to learn how to do that thing.
-Think of homework as resistance training – you only learn when you
-struggle, get confused, and make mistakes. Or, think of it as finding
-your way through a jungle, and if you always rely on the GPS, you will
-be hopelessly lost as soon as your phone dies. Still, sometimes you just
-want to look up a piece of syntax that’s not worth remembering, and
-using the AI for that does save you time. In that case it’s fine to use
-AI, <em>because you don’t actually care to memorize the syntax</em>. To
-help you out, I will clearly note in the assignments when AI use is OK
-(or even encouraged). When in doubt, post your question on Ed first
-before asking ChatGPT.</p>
-<p><strong>Textbook</strong>    None. You may use <a
-href="https://www.db-book.com">Database System Concepts</a> or <a
-href="http://infolab.stanford.edu/~ullman/dscb.html">Database Systems:
-The Complete Book</a> as references.</p>
+<p>You are encouraged to use AI for problems marked with 🤖.</p>
+<p>🤖 Find out if you have sqlite installed on your computer. If not,
+install it. If you don’t want to install it, you can use
+https://sqlime.org</p>
+<p>🤖 Find out how to create tables in sqlite. Also, find out how to
+insert data into a table, as well as how to delete data. How do you
+delete an entire table?</p>
+<p>🤖 Run a few queries over the tables you just created.</p>
+<p>Consider the query <code>SELECT * FROM R WHERE R.x &lt; 3</code>. Try
+creating a table <code>R</code> to satisfy the following conditions
+(some of them are impossible; why?):</p>
+<ul>
+<li>The query output has fewer rows than <code>R</code></li>
+<li>The query output has more rows than <code>R</code></li>
+<li>The query output has the same numbere of rows as <code>R</code></li>
+</ul>
+<p>Consider the query <code>SELECT x FROM R</code> where <code>x</code>
+is a column in <code>R</code>. Try creating a table <code>R</code> to
+satisfy the following conditions (some of them are impossible;
+why?):</p>
+<ul>
+<li>The query output has fewer rows than <code>R</code></li>
+<li>The query output has more rows than <code>R</code></li>
+<li>The query output has the same numbere of rows as <code>R</code></li>
+</ul>
+<p>There’s a secret SQL feature I didn’t tell you in class (thank
+goodness you are doing your homework!): guess what
+<code>SELECT DISTINCT x FROM R</code> does? Run the query on different
+input <code>R</code> tables to confirm your guess. Try creating a table
+<code>R</code> to satisfy the following conditions (some of them are
+impossible; why?):</p>
+<ul>
+<li>The query outputs fewer rows than
+<code>SELECT x, avg(y) FROM R GROUP BY x</code></li>
+<li>The query outputs more rows than
+<code>SELECT x, avg(y) FROM R GROUP BY x</code></li>
+<li>The query outputs the same number of rows as
+<code>SELECT x, avg(y) FROM R GROUP BY x</code></li>
+</ul>
+<p>Consider the query <code>SELECT * FROM R, S WHERE R.x = S.y</code>,
+and let <code>j</code> be its output size. Let s be the size of S and r
+be the size of S. Try creating tables <code>R</code> and <code>S</code>
+to satisfy the following conditions (is any of these impossible?)</p>
+<ul>
+<li><span
+class="math inline"><em>j</em> ≤ <em>r</em> + <em>s</em></span></li>
+<li><span
+class="math inline"><em>j</em> ≤ <em>r</em> * <em>s</em></span></li>
+<li><span
+class="math inline"><em>j</em> ≥ min (<em>r</em>, <em>s</em>)</span></li>
+<li><span
+class="math inline"><em>j</em> ≤ max (<em>r</em>, <em>s</em>)</span></li>
+</ul>
+<p>Consider the same query above. Try creating tables <code>R</code> and
+<code>S</code> that <em>violate</em> the conditions above. If not
+possible, why?</p>
+<p><strong>To be continued…</strong></p>
 </body>
 </html>

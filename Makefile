@@ -1,5 +1,5 @@
-index.html: README.md template.html codapi.lua
-	pandoc $< -o $@ --template=template.html --lua-filter=codapi.lua --mathjax --toc
+index.html: README.md
+	pandoc $< -s -V mainfont=sans-serif -V linestretch=1.4 -o $@
 
 clean:
 	rm -f index.html
