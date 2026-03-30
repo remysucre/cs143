@@ -1,1012 +1,278 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>CS 143: Introduction to Databases</title>
-  <link rel="stylesheet" href="https://unpkg.com/@antonz/codapi@0.20.0/dist/snippet.css">
-  <script
-  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"
-  type="text/javascript"></script>
   <style>
-    body { max-width: 48em; margin: 2em auto; padding: 0 1em; font-family: system-ui, sans-serif; line-height: 1.6; }
-    pre { background: #f5f5f5; padding: 1em; overflow-x: auto; border-radius: 4px; }
-    code { font-size: 0.95em; }
-    table { border-collapse: collapse; border-spacing: 0; margin: 1em 0; }
-    th, td { border: 1px solid #999; padding: 0.3em 0.8em; }
-    codapi-output { line-height: 1.3; }
-    codapi-snippet + .sourceCode { margin-top: 0.5em; }
-    .sourceCode { margin-top: 0; margin-bottom: 0; }
+    html {
+      font-family: sans-serif;
+      line-height: 1.4;
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
 </head>
 <body>
-<script id="setup-basic" type="text/plain">
-CREATE TABLE t (x int, y int);
-INSERT INTO t VALUES (1, 5), (2, 4), (3, 3), (4, 2), (5, 1);
-##CODE##
-</script>
-<script id="setup-agg" type="text/plain">
-CREATE TABLE t (x int, y int);
-INSERT INTO t VALUES (1, 5), (2, 4), (3, 3), (1, 2), (2, 1);
-##CODE##
-</script>
-<script id="setup-pets" type="text/plain">
-CREATE TABLE t (name text, toy text);
-INSERT INTO t VALUES ('kira', '🛍️'), ('kira', '🍼'), ('casa', '🍼'), ('casa', '🧻');
-CREATE TABLE f (name text, food text);
-INSERT INTO f VALUES ('kira', '🐟'), ('kira', '🍗'), ('casa', '🥬'), ('casa', '🍗');
-##CODE##
-</script>
-<script id="setup-multi-agg" type="text/plain">
-CREATE TABLE t (x int, y int, z int, w int);
-INSERT INTO t VALUES (1, 1, 1, 5), (1, 1, 2, 4), (1, 2, 3, 3), (2, 3, 1, 2), (2, 3, 2, 1);
-##CODE##
-</script>
-<h1>CS 143: Introduction to Databases</h1>
-<nav><ul>
-<li><a href="#why-cs-143" id="toc-why-cs-143">Why CS 143?</a></li>
-<li><a href="#trying-things-out" id="toc-trying-things-out">Trying
-things out</a></li>
-<li><a href="#basic-sql" id="toc-basic-sql">Basic SQL</a></li>
-<li><a href="#aggregates" id="toc-aggregates">Aggregates</a></li>
-<li><a href="#relational-algebra" id="toc-relational-algebra">Relational
-algebra</a></li>
-<li><a href="#more-tables" id="toc-more-tables">More tables</a></li>
-<li><a href="#more-queries" id="toc-more-queries">More queries</a></li>
-<li><a href="#variables-in-sql" id="toc-variables-in-sql">“Variables” in
-SQL</a></li>
-<li><a href="#nothing-is-more-confusing-than-sql"
-id="toc-nothing-is-more-confusing-than-sql"><code>NOTHING</code> is more
-confusing than SQL</a>
-<ul>
-<li><a href="#operators-with-null"
-id="toc-operators-with-null">Operators with <code>NULL</code></a></li>
-<li><a href="#valued-logic" id="toc-valued-logic">3 Valued
-Logic</a></li>
-<li><a href="#revisiting-examples"
-id="toc-revisiting-examples">Revisiting Examples</a></li>
-</ul></li>
-<li><a href="#make-nothing-out-of-something"
-id="toc-make-nothing-out-of-something">Make <code>NOTHING</code> out of
-something</a></li>
-<li><a href="#aggregates-1" id="toc-aggregates-1">Aggregates</a></li>
-<li><a href="#predicates-on-subqueries"
-id="toc-predicates-on-subqueries">Predicates on subqueries</a></li>
-</ul></nav>
-<h2 id="why-cs-143">Why CS 143?</h2>
-<p>What’s the <a href="https://spectrum.ieee.org/the-rise-of-sql">most
-popular programming language</a>?</p>
-<p>How many databases are out there? (<a
-href="https://sqlite.org/mostdeployed.html">1 trillion sqlite
-DB</a>)</p>
-<p>How old is the oldest DB? (<a
-href="https://en.wikipedia.org/wiki/Kish_tablet">~3500 BC</a>, 5k years
-old)</p>
-<p>DB’s fun:</p>
-<ul>
-<li>Rite of passage of a systems hacker: write a compiler, write an OS,
-write a DB</li>
-<li>Beautiful <a href="http://webdam.inria.fr/Alice/">algorithms &amp;
-theory</a></li>
-</ul>
-<h2 id="trying-things-out">Trying things out</h2>
-<p><a href="https://sqlime.org">SQL playground</a></p>
-<p>You might also have <code>sqlite</code> already installed on your
-computer.</p>
-<p>If running in terminal, remember to add semicolon <code>;</code> at
-the end of each query.</p>
-<p>First, <code>CREATE TABLE t (x int, y int)</code></p>
-<p>Add data by
-<code>INSERT INTO t VALUES (1, 5), (2, 4), (3, 3), (4, 2), (5, 1)</code></p>
-<p>Check with <code>SELECT * FROM t</code> (<code>*</code> = all the
-columns)</p>
-<p>To remove rows, <code>DELETE FROM t WHERE x = 1 AND y = 5</code> (how
-do you delete all rows?)</p>
-<p>To remove table, <code>DROP TABLE t</code></p>
-<h2 id="basic-sql">Basic SQL</h2>
-<p>What do the following queries return given input?</p>
+<header id="title-block-header">
+<h1 class="title">CS 143: Introduction to Databases</h1>
+</header>
 <table>
-<thead>
-<tr class="header">
-<th>x</th>
-<th>y</th>
+<tbody style="border: none;">
+<tr>
+<td>
+<strong>Course Staff</strong>
+</td>
+<td>
+Instructor: <a href="https://remy.wang">Remy Wang</a>    TA: <a
+href="https://zhengluo.org">Zheng Luo</a>, <a
+href="https://saiachalla.com">Sai Achalla</a>
+</td>
 </tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>1</td>
-<td>5</td>
+<tr>
+<td>
+<strong>Time &amp; Location</strong>
+</td>
+<td>
+M/W 4:00-5:30pm @ MS 4000A
+</td>
 </tr>
-<tr class="even">
-<td>2</td>
-<td>4</td>
-</tr>
-<tr class="odd">
-<td>3</td>
-<td>3</td>
-</tr>
-<tr class="even">
-<td>4</td>
-<td>2</td>
-</tr>
-<tr class="odd">
-<td>5</td>
-<td>1</td>
+<tr>
+<td>
+<strong>Office Hours</strong>
+</td>
+<td>
+After class &amp; by appointment
+</td>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> x</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> t</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a> <span class="kw">WHERE</span> x <span class="op">&lt;</span> <span class="dv">3</span></span></code></pre></div>
-<codapi-snippet sandbox="sqlite" editor="basic" template="#setup-basic"></codapi-snippet>
-<div class="sourceCode" id="cb2"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> x, y</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> t</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a> <span class="kw">WHERE</span> y <span class="op">&lt;</span> <span class="dv">3</span></span></code></pre></div>
-<codapi-snippet sandbox="sqlite" editor="basic" template="#setup-basic"></codapi-snippet>
-<div class="sourceCode" id="cb3"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> x</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> t</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a> <span class="kw">WHERE</span> y <span class="op">&lt;</span> <span class="dv">3</span></span></code></pre></div>
-<codapi-snippet sandbox="sqlite" editor="basic" template="#setup-basic"></codapi-snippet>
-<div class="sourceCode" id="cb4"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> x<span class="op">+</span><span class="dv">1</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> t</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a> <span class="kw">WHERE</span> y <span class="op">&lt;</span> <span class="dv">3</span></span></code></pre></div>
-<codapi-snippet sandbox="sqlite" editor="basic" template="#setup-basic"></codapi-snippet>
-<div class="sourceCode" id="cb5"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> x<span class="op">+</span>y</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> t</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a> <span class="kw">WHERE</span> y <span class="op">&lt;</span> <span class="dv">3</span></span></code></pre></div>
-<codapi-snippet sandbox="sqlite" editor="basic" template="#setup-basic"></codapi-snippet>
-<div class="sourceCode" id="cb6"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> x<span class="op">+</span>y</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> t</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a> <span class="kw">WHERE</span> <span class="kw">NOT</span> y <span class="op">&lt;</span> <span class="dv">3</span></span></code></pre></div>
-<codapi-snippet sandbox="sqlite" editor="basic" template="#setup-basic"></codapi-snippet>
-<div class="sourceCode" id="cb7"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> x<span class="op">+</span>y</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> t</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a> <span class="kw">WHERE</span> y <span class="op">&lt;</span> <span class="dv">3</span> <span class="kw">AND</span> x <span class="op">&gt;</span> <span class="dv">1</span></span></code></pre></div>
-<codapi-snippet sandbox="sqlite" editor="basic" template="#setup-basic"></codapi-snippet>
-<div class="sourceCode" id="cb8"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> x<span class="op">+</span>y</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> t</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a> <span class="kw">WHERE</span> y <span class="op">&lt;</span> <span class="dv">3</span> <span class="kw">OR</span> x <span class="op">&gt;</span> <span class="dv">1</span></span></code></pre></div>
-<codapi-snippet sandbox="sqlite" editor="basic" template="#setup-basic"></codapi-snippet>
-<p>General form:</p>
-<div class="sourceCode" id="cb9"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> e(x, y)</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> <span class="kw">table</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a> <span class="kw">WHERE</span> cond(x, y)</span></code></pre></div>
-<p>Meaning:</p>
-<div class="sourceCode" id="cb10"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (x, y) <span class="kw">in</span> table:</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> cond(x, y):</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(e(x, y))</span></code></pre></div>
-<h2 id="aggregates">Aggregates</h2>
-<div class="sourceCode" id="cb11"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="fu">SUM</span>(x) <span class="kw">FROM</span> t</span></code></pre></div>
-<codapi-snippet sandbox="sqlite" editor="basic" template="#setup-basic"></codapi-snippet>
-<div class="sourceCode" id="cb12"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="fu">MIN</span>(x) <span class="kw">FROM</span> t</span></code></pre></div>
-<codapi-snippet sandbox="sqlite" editor="basic" template="#setup-basic"></codapi-snippet>
-<div class="sourceCode" id="cb13"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="fu">MAX</span>(x) <span class="kw">FROM</span> t</span></code></pre></div>
-<codapi-snippet sandbox="sqlite" editor="basic" template="#setup-basic"></codapi-snippet>
-<div class="sourceCode" id="cb14"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="fu">AVG</span>(x) <span class="kw">FROM</span> t</span></code></pre></div>
-<codapi-snippet sandbox="sqlite" editor="basic" template="#setup-basic"></codapi-snippet>
-<div class="sourceCode" id="cb15"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="fu">COUNT</span>(x) <span class="kw">FROM</span> t</span></code></pre></div>
-<codapi-snippet sandbox="sqlite" editor="basic" template="#setup-basic"></codapi-snippet>
-<p>Aggregate by groups:</p>
+<p><strong>Discussion board</strong>    We use Ed for discussion and
+online Q&amp;A, please sign up using your UCLA email <a
+href="https://edstem.org/us/join/ND35j4">here</a>.</p>
+<p><strong>Grading</strong>    100% of your grade will be based on 5-6
+quizzes throughout the quarter. This is perhaps unusual, so let me
+explain the rationale.</p>
+<p><strong>Philosophy</strong>    I believe the main goal of a class is
+to help you learn. There is ample evidence that cramming for exams does
+not contribute to learning, and only stresses you out – I myself never
+liked exams and never learned anything from them. There is also a lot of
+evidence that hands-on practice is the best way to learn, so there will
+be homework assignments, but they are <em>not graded</em>. Why? Before
+AI, I would teach a class and base the grades only on homeworks and
+projects. But as far as I know, there is no reliable way to enforce any
+AI use policy for assignments. So to motivate you to actually do the
+homework yourself, I will design the quizzes so that they become very
+easy if you have done your homework. There will be roughly one quiz per
+topic as listed below.</p>
 <table>
 <thead>
-<tr class="header">
-<th>x</th>
-<th>y</th>
+<tr>
+<th>Date</th>
+<th>Topic (tentative)</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td>1</td>
-<td>5</td>
+<tr>
+<td>4/13</td>
+<td>SQL</td>
 </tr>
-<tr class="even">
-<td>2</td>
-<td>4</td>
+<tr>
+<td>4/22</td>
+<td>Dependencies</td>
 </tr>
-<tr class="odd">
-<td>3</td>
-<td>3</td>
+<tr>
+<td>5/4</td>
+<td>Transactions</td>
 </tr>
-<tr class="even">
-<td>1</td>
-<td>2</td>
+<tr>
+<td>5/13</td>
+<td>Query exection</td>
 </tr>
-<tr class="odd">
-<td>2</td>
-<td>1</td>
+<tr>
+<td>5/25</td>
+<td>Indexes</td>
 </tr>
-</tbody>
-</table>
-<div class="sourceCode" id="cb16"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>  <span class="kw">SELECT</span> <span class="op">..</span>.</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">FROM</span> t</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> x</span></code></pre></div>
-<table>
-<thead>
-<tr class="header">
-<th>x</th>
-<th>y</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>?</td>
-<td>?</td>
-</tr>
-<tr class="even">
-<td>?</td>
-<td>?</td>
+<tr>
+<td>6/3</td>
+<td>Advanced Topics</td>
 </tr>
 </tbody>
 </table>
-<table>
-<thead>
-<tr class="header">
-<th>x</th>
-<th>y</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>?</td>
-<td>?</td>
-</tr>
-<tr class="even">
-<td>?</td>
-<td>?</td>
-</tr>
-</tbody>
-</table>
-<table>
-<thead>
-<tr class="header">
-<th>x</th>
-<th>y</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>?</td>
-<td>?</td>
-</tr>
-</tbody>
-</table>
-<div class="sourceCode" id="cb17"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>  <span class="kw">SELECT</span> x, <span class="fu">SUM</span>(y)</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">FROM</span> t</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> x</span></code></pre></div>
-<codapi-snippet sandbox="sqlite" editor="basic" template="#setup-agg"></codapi-snippet>
-<p><code>GROUP BY</code> variable (<code>x</code>) <strong>must</strong>
-be <code>SELECT</code>ed, <code>AGG</code> function applied per
-group.</p>
-<p>Multiple group-by &amp; aggregate variables</p>
-<table>
-<thead>
-<tr class="header">
-<th>x</th>
-<th>y</th>
-<th>z</th>
-<th>w</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>1</td>
-<td>1</td>
-<td>1</td>
-<td>5</td>
-</tr>
-<tr class="even">
-<td>1</td>
-<td>1</td>
-<td>2</td>
-<td>4</td>
-</tr>
-<tr class="odd">
-<td>1</td>
-<td>2</td>
-<td>3</td>
-<td>3</td>
-</tr>
-<tr class="even">
-<td>2</td>
-<td>3</td>
-<td>1</td>
-<td>2</td>
-</tr>
-<tr class="odd">
-<td>2</td>
-<td>3</td>
-<td>2</td>
-<td>1</td>
-</tr>
-</tbody>
-</table>
-<div class="sourceCode" id="cb18"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>  <span class="kw">SELECT</span> x, y, <span class="fu">MIN</span>(z), <span class="fu">MAX</span>(w)</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">FROM</span> t</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> x, y</span></code></pre></div>
-<codapi-snippet sandbox="sqlite" editor="basic" template="#setup-multi-agg"></codapi-snippet>
-<p>Current general form:</p>
-<div class="sourceCode" id="cb19"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="dv">4</span>:   <span class="kw">SELECT</span> x, AGG(y)</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span>:     <span class="kw">FROM</span> t</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="dv">2</span>:    <span class="kw">WHERE</span> cond(x, y)</span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="dv">3</span>: <span class="kw">GROUP</span> <span class="kw">BY</span> x</span></code></pre></div>
-<ol type="1">
-<li>Where’s the data <code>FROM</code>?</li>
-<li>Check conditions</li>
-<li>Group rows</li>
-<li>Run aggregate &amp; return</li>
-</ol>
-<h2 id="relational-algebra">Relational algebra</h2>
-<table>
-<colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Notation</th>
-<th>Meaning</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>selection</td>
-<td><span class="math inline">\(\sigma_p(t)\)</span></td>
-<td>filter by condition <span class="math inline">\(p\)</span></td>
-</tr>
-<tr class="even">
-<td>projection</td>
-<td><span class="math inline">\(\pi_{e(x, y)}(t)\)</span></td>
-<td>map an expression <span class="math inline">\(e\)</span> over <span
-class="math inline">\(x, y\)</span></td>
-</tr>
-<tr class="odd">
-<td>aggregation</td>
-<td><span class="math inline">\(\gamma_{x, F(y)}(t)\)</span></td>
-<td>group by <span class="math inline">\(x\)</span>, aggregate over
-<span class="math inline">\(y\)</span> using <span
-class="math inline">\(F\)</span></td>
-</tr>
-</tbody>
-</table>
-<p>Can you write out SQL query for each operation?</p>
-<h2 id="more-tables">More tables</h2>
-<p>Meet my pets:</p>
-<table>
-<thead>
-<tr class="header">
-<th>name</th>
-<th>toy</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>kira</td>
-<td>🛍️</td>
-</tr>
-<tr class="even">
-<td>kira</td>
-<td>🍼</td>
-</tr>
-<tr class="odd">
-<td>casa</td>
-<td>🍼</td>
-</tr>
-<tr class="even">
-<td>casa</td>
-<td>🧻</td>
-</tr>
-</tbody>
-</table>
-<table>
-<thead>
-<tr class="header">
-<th>name</th>
-<th>food</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>kira</td>
-<td>🐟</td>
-</tr>
-<tr class="even">
-<td>kira</td>
-<td>🍗</td>
-</tr>
-<tr class="odd">
-<td>casa</td>
-<td>🥬</td>
-</tr>
-<tr class="even">
-<td>casa</td>
-<td>🍗</td>
-</tr>
-</tbody>
-</table>
-<p>What do these queries return?</p>
-<div class="sourceCode" id="cb20"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> t.name</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> t, f</span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a> <span class="kw">WHERE</span> t.name <span class="op">=</span> f.name</span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>   <span class="kw">AND</span> t.toy <span class="op">=</span> <span class="st">&#39;🛍️&#39;</span></span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>   <span class="kw">AND</span> f.food <span class="op">=</span> <span class="st">&#39;🐟&#39;</span></span></code></pre></div>
-<codapi-snippet sandbox="sqlite" editor="basic" template="#setup-pets"></codapi-snippet>
-<div class="sourceCode" id="cb21"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> t.name</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> t, f</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a> <span class="kw">WHERE</span> t.name <span class="op">=</span> f.name</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>   <span class="kw">AND</span> t.toy <span class="op">=</span> <span class="st">&#39;🛍️&#39;</span></span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>   <span class="kw">AND</span> f.food <span class="op">=</span> <span class="st">&#39;🍗&#39;</span></span></code></pre></div>
-<codapi-snippet sandbox="sqlite" editor="basic" template="#setup-pets"></codapi-snippet>
-<div class="sourceCode" id="cb22"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> t.name</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> t, f</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a> <span class="kw">WHERE</span> t.name <span class="op">=</span> f.name</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>   <span class="kw">AND</span> t.toy <span class="op">=</span> <span class="st">&#39;🍼&#39;</span></span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>   <span class="kw">AND</span> f.food <span class="op">=</span> <span class="st">&#39;🍗&#39;</span></span></code></pre></div>
-<codapi-snippet sandbox="sqlite" editor="basic" template="#setup-pets"></codapi-snippet>
-<div class="sourceCode" id="cb23"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> t.name</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> t, f</span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a> <span class="kw">WHERE</span> t.name <span class="op">=</span> f.name</span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>   <span class="kw">AND</span> t.toy <span class="op">=</span> <span class="st">&#39;🛍️&#39;</span></span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>   <span class="kw">AND</span> f.food <span class="op">=</span> <span class="st">&#39;🥬&#39;</span></span></code></pre></div>
-<codapi-snippet sandbox="sqlite" editor="basic" template="#setup-pets"></codapi-snippet>
-<p>General form for <strong>join</strong>ing tables:</p>
-<div class="sourceCode" id="cb24"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">..</span>.</span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> r, s</span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a> <span class="kw">WHERE</span> cond</span></code></pre></div>
-<p>Meaning:</p>
-<div class="sourceCode" id="cb25"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> x1, x2, ... <span class="kw">in</span> r:</span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> y1, y2, ... <span class="kw">in</span> s:</span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> cond(x1, x2, ..., y1, y2, ...):</span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>      <span class="cf">return</span> ...</span></code></pre></div>
-<p>Try all possible pairings of a row from <code>r</code> and a row from
-<code>s</code>. I.e., first compute the <em>Cartesian product</em> of
-<code>r</code> and <code>s</code> (how many rows does the following
-query return?):</p>
-<div class="sourceCode" id="cb26"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> t, f</span></code></pre></div>
-<codapi-snippet sandbox="sqlite" editor="basic" template="#setup-pets"></codapi-snippet>
-<div class="sourceCode" id="cb27"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> t_row <span class="kw">in</span> t:</span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> f_row <span class="kw">in</span> f:</span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> t_row <span class="op">++</span> f_row</span></code></pre></div>
-<p>Then evaluate rest of query using result.</p>
-<p>In relational algebra: <span class="math inline">\(\sigma_p(t \times
-f)\)</span>, or <span class="math inline">\(t \bowtie_p f\)</span> (the
-<strong>join</strong>).</p>
-<p>Current general form:</p>
-<div class="sourceCode" id="cb28"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fl">4.</span>   <span class="kw">SELECT</span> R.x, <span class="fu">AVG</span>(T.z)</span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fl">1.</span>     <span class="kw">FROM</span> R, S, T</span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="fl">2.</span>    <span class="kw">WHERE</span> R.x <span class="op">=</span> S.x <span class="kw">AND</span> S.y <span class="op">=</span> T.y</span>
-<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="fl">3.</span> <span class="kw">GROUP</span> <span class="kw">BY</span> R.x</span></code></pre></div>
-<p><img src="assets/ra.svg" alt="Relational Algebra for query general form" width="30%"></p>
-<h2 id="more-queries">More queries</h2>
-<pre><code>sqlite&gt; SELECT * FROM pets;
-┌──────┬───────────────┬─────┬─────────┬──────┬────────┐
-│ name │     breed     │ age │ origin  │ kind │ person │
-├──────┼───────────────┼─────┼─────────┼──────┼────────┤
-│ casa │ tabby         │ 8   │ seattle │ cat  │ remy   │
-│ kira │ tuxedo        │ 6   │ hawaii  │ cat  │ remy   │
-│ toby │ border collie │ 17  │ seattle │ dog  │ remy   │
-│ maya │ husky         │ 10  │ LA      │ dog  │ sam    │
-└──────┴───────────────┴─────┴─────────┴──────┴────────┘</code></pre>
-<p>How to find people with both a cat and a dog?</p>
-<p>Attempt 1:</p>
-<div class="sourceCode" id="cb30"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> pets.person <span class="kw">FROM</span> pets</span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> pets.kind<span class="op">=</span><span class="ot">&quot;cat&quot;</span> <span class="kw">AND</span> pets.kind<span class="op">=</span><span class="ot">&quot;dog&quot;</span>;</span></code></pre></div>
-<p>Attempt 2:</p>
-<div class="sourceCode" id="cb31"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> pets.person <span class="kw">FROM</span> pets</span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> pets.kind<span class="op">=</span><span class="ot">&quot;cat&quot;</span> <span class="kw">OR</span> pets.kind<span class="op">=</span><span class="ot">&quot;dog&quot;</span>;</span></code></pre></div>
-<p>Take a step back: how do we find cat people?</p>
-<div class="sourceCode" id="cb32"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> pets.person <span class="kw">FROM</span> pets</span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> pets.kind<span class="op">=</span><span class="ot">&quot;cat&quot;</span>;</span></code></pre></div>
-<p>How do we find dog people?</p>
-<div class="sourceCode" id="cb33"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> pets.person <span class="kw">FROM</span> pets</span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> pets.kind<span class="op">=</span><span class="ot">&quot;dog&quot;</span>;</span></code></pre></div>
-<p>Guess what this does?</p>
-<div class="sourceCode" id="cb34"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> pets.person <span class="kw">FROM</span> pets</span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> pets.kind<span class="op">=</span><span class="ot">&quot;cat&quot;</span></span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="kw">INTERSECT</span></span>
-<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> pets.person <span class="kw">FROM</span> pets</span>
-<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> pets.kind<span class="op">=</span><span class="ot">&quot;dog&quot;</span>;</span></code></pre></div>
-<p>How about this:</p>
-<div class="sourceCode" id="cb35"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> pets.person <span class="kw">FROM</span> pets</span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> pets.kind<span class="op">=</span><span class="ot">&quot;cat&quot;</span></span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="kw">UNION</span></span>
-<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> pets.person <span class="kw">FROM</span> pets</span>
-<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> pets.kind<span class="op">=</span><span class="ot">&quot;dog&quot;</span>;</span></code></pre></div>
-<h2 id="variables-in-sql">“Variables” in SQL</h2>
-<table>
-<thead>
-<tr class="header">
-<th>SQL</th>
-<th>Python</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><code>WITH</code></td>
-<td>Local variable</td>
-</tr>
-<tr class="even">
-<td><code>CREATE TABLE</code></td>
-<td>Global variable</td>
-</tr>
-<tr class="odd">
-<td><code>CREATE VIEW</code></td>
-<td>Helper function</td>
-</tr>
-<tr class="even">
-<td><code>CREATE MATERIALIZED VIEW</code></td>
-<td>Cached helper function</td>
-</tr>
-</tbody>
-</table>
-<div class="sourceCode" id="cb36"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span><span class="op">/</span>(<span class="kw">MATERIALIZED</span>) <span class="kw">VIEW</span> cat_people <span class="kw">AS</span></span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> pets.person <span class="kw">FROM</span> pets</span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> pets.kind<span class="op">=</span><span class="ot">&quot;cat&quot;</span>;</span>
-<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span><span class="op">/</span>(<span class="kw">MATERIALIZED</span>) <span class="kw">VIEW</span> dog_people <span class="kw">AS</span></span>
-<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> pets.person <span class="kw">FROM</span> pets</span>
-<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> pets.kind<span class="op">=</span><span class="ot">&quot;dog&quot;</span>;</span>
-<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a><span class="co">-- What happens if we run the following query twice?</span></span>
-<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a><span class="co">-- What happens if we insert into `pets` then run the following query?</span></span>
-<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a><span class="co">-- INSERT INTO pets VALUES (&quot;casa&quot;, &quot;tabby&quot;, 8, &quot;seattle&quot;, &quot;cat&quot;, &quot;remy&quot;);</span></span>
-<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> cat_people.person <span class="kw">FROM</span> cat_people</span>
-<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a><span class="kw">INTERSECT</span></span>
-<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> dog_people.person <span class="kw">FROM</span> dog_people;</span></code></pre></div>
-<p><code>WITH</code> has a slightly different syntax as it’s local to
-the query:</p>
-<div class="sourceCode" id="cb37"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="kw">WITH</span> cat_people <span class="kw">AS</span> (</span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">SELECT</span> pets.person <span class="kw">FROM</span> pets</span>
-<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">WHERE</span> pets.kind<span class="op">=</span><span class="ot">&quot;cat&quot;</span></span>
-<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>),   dog_people <span class="kw">AS</span> (</span>
-<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">SELECT</span> pets.person <span class="kw">FROM</span> pets</span>
-<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">WHERE</span> pets.kind<span class="op">=</span><span class="ot">&quot;dog&quot;</span></span>
-<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> cat_people.person <span class="kw">FROM</span> cat_people</span>
-<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a><span class="kw">INTERSECT</span></span>
-<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> dog_people.person <span class="kw">FROM</span> dog_people;</span></code></pre></div>
-<p>How do we find pet kind with average age &gt; 10? (Hint: find the
-average age for each kind first, then filter)</p>
-<p>Does this work?</p>
-<div class="sourceCode" id="cb38"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> kind, <span class="fu">AVG</span>(age) <span class="kw">FROM</span> pets</span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> <span class="fu">AVG</span>(age) <span class="op">&gt;</span> <span class="dv">10</span></span>
-<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> kind;</span></code></pre></div>
-<p>Average age per kind:</p>
-<div class="sourceCode" id="cb39"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> kind, <span class="fu">AVG</span>(age)</span>
-<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> pets</span>
-<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> kind;</span></code></pre></div>
-<p>Two queries:</p>
-<div class="sourceCode" id="cb40"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> averages <span class="kw">AS</span></span>
-<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> kind, <span class="fu">AVG</span>(age) <span class="kw">AS</span> a</span>
-<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> pets</span>
-<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> kind;</span>
-<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a><span class="co">-- Now we just filter for over 10:</span></span>
-<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> averages</span>
-<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> averages.a <span class="op">&gt;</span> <span class="fl">10.0</span>;</span></code></pre></div>
-<p>“One” query:</p>
-<div class="sourceCode" id="cb41"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="kw">WITH</span> averages <span class="kw">AS</span> (<span class="kw">SELECT</span> kind, <span class="fu">AVG</span>(age) <span class="kw">AS</span> a <span class="kw">FROM</span> pets <span class="kw">GROUP</span> <span class="kw">BY</span> kind)</span>
-<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> averages <span class="kw">WHERE</span> averages.a <span class="op">&gt;</span> <span class="fl">10.0</span>;</span></code></pre></div>
-<p>ONE query:</p>
-<div class="sourceCode" id="cb42"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> kind, <span class="fu">AVG</span>(age) <span class="kw">FROM</span> pets</span>
-<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> kind</span>
-<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a><span class="kw">HAVING</span> <span class="fu">AVG</span>(age) <span class="op">&gt;</span> <span class="dv">10</span> <span class="co">-- condition on each group</span></span></code></pre></div>
-<h2 id="nothing-is-more-confusing-than-sql"><code>NOTHING</code> is more
-confusing than SQL</h2>
-<p>What does the following query return?</p>
-<div class="sourceCode" id="cb43"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
-<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> R</span>
-<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> R.x <span class="op">=</span> R.x;</span></code></pre></div>
-<p>How about this?</p>
-<div class="sourceCode" id="cb44"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
-<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> R</span>
-<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> R.x <span class="op">=</span> R.x</span>
-<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a><span class="kw">OR</span> R.x <span class="op">&lt;&gt;</span> R.x;</span></code></pre></div>
-<p>And this?</p>
-<div class="sourceCode" id="cb45"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
-<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> R</span>
-<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> <span class="kw">null</span> <span class="op">=</span> <span class="kw">null</span>;</span></code></pre></div>
-<p>In fact, none of these return anything:</p>
-<div class="sourceCode" id="cb46"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
-<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> R</span>
-<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> <span class="kw">null</span> <span class="op">&lt;&gt;</span> <span class="kw">null</span>;</span>
-<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
-<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> R</span>
-<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> <span class="kw">NOT</span> <span class="kw">null</span> <span class="op">&lt;&gt;</span> <span class="kw">null</span>;</span></code></pre></div>
-<p><strong><code>NULL</code> transcends truth</strong>.</p>
-<p>Two kinds of values in SQL:</p>
-<ul>
-<li><strong>Data values</strong>: 1, “hello”, …, <code>NULL</code></li>
-<li><strong>Truth values</strong>: <code>TRUE</code>,
-<code>FALSE</code>, <code>UNKNOWN</code></li>
-</ul>
-<p><em>Making things worse, some DB uses <code>NULL</code> for
-<code>UNKNOWN</code>. To protect our sanity, we treat them as
-different.</em></p>
-<p>There are 3 kinds of operators in SQL:</p>
-<p><strong>Data operators</strong>:</p>
-<pre><code>      1             +             2
-&lt;data value&gt; &lt;data operator&gt; &lt;data value&gt;</code></pre>
-<p>The entire expression evaluates to itself another <strong>data
-value</strong>.</p>
-<p><strong>Predicates</strong>:</p>
-<pre><code>      1               &lt;             2
-&lt;data value&gt; &lt;predicate operator&gt; &lt;data value&gt;</code></pre>
-<p>The entire expression evaluates to a <strong>logical
-value</strong>.</p>
-<p><strong>Logical connectives</strong>:</p>
-<pre><code>      true              AND               false
-&lt;logical value&gt; &lt;logical operator&gt; &lt;logical value&gt;</code></pre>
-<p>The entire expression evaluates to itself another <strong>logical
-value</strong>.</p>
-<p>Conveniently summarized:</p>
-<table>
-<thead>
-<tr class="header">
-<th>Operator kind</th>
-<th>Example</th>
-<th>Input -&gt; Output</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Data</td>
-<td>+ - * /</td>
-<td>data -&gt; data</td>
-</tr>
-<tr class="even">
-<td>Predicate</td>
-<td>&gt; &lt; =</td>
-<td>data -&gt; logic</td>
-</tr>
-<tr class="odd">
-<td>Logical</td>
-<td>AND OR NOT</td>
-<td>logic -&gt; logic</td>
-</tr>
-</tbody>
-</table>
-<p>Note that you can’t go from logic -&gt; data.</p>
-<h3 id="operators-with-null">Operators with <code>NULL</code></h3>
-<p>These operators all behave as you would expect if <code>NULL</code>
-is <em>not</em> involved. When <code>NULL</code> <em>is</em> involved,
-there are special rules:</p>
-<table>
-<colgroup>
-<col style="width: 20%" />
-<col style="width: 15%" />
-<col style="width: 64%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th>Operator Kind</th>
-<th>Example</th>
-<th>Output when <code>NULL</code> is &gt;= 1 of the operands</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Data</td>
-<td>+ - * /</td>
-<td><code>NULL</code></td>
-</tr>
-<tr class="even">
-<td>Predicate</td>
-<td>&gt; &lt; =</td>
-<td><code>UNKNOWN</code></td>
-</tr>
-<tr class="odd">
-<td>Logical</td>
-<td>AND OR NOT</td>
-<td><a href="#3-valued-logic">3 Valued Logic</a></td>
-</tr>
-</tbody>
-</table>
-<p>For <strong>data</strong>, it’s intuitive: if either operand is
-<code>NULL</code> (it’s “missing” or “unknown”), the result should also
-be “missing” or “unknown”, so the expression evaluates to
-<code>NULL</code> as well.</p>
-<p>For <strong>predicate</strong>, it’s also intuitive: the same reason
-as for data, but because we’re dealing with logical types, we have the
-logical equivalent of <code>NULL</code>, <code>UNKNOWN</code>.</p>
-<blockquote>
-<p>There is one exception for <strong>predicates</strong>: To explicitly
-check if <code>x</code> is <code>NULL</code>, you use:
-<code>x IS NULL</code>, which will return T/F on whether <code>x</code>
-is indeed <code>NULL</code>. It <em>won’t</em> return <code>NULL</code>
-despite the RHS being <code>NULL</code>.</p>
-</blockquote>
-<p>For <strong>logical</strong>, we apply <strong>3 valued
-logic</strong>:</p>
-<h3 id="valued-logic">3 Valued Logic</h3>
-<table>
-<thead>
-<tr class="header">
-<th>AND</th>
-<th>true</th>
-<th>false</th>
-<th>UNKNOWN</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>true</td>
-<td>true</td>
-<td>false</td>
-<td><strong>UNKNOWN</strong></td>
-</tr>
-<tr class="even">
-<td>false</td>
-<td>false</td>
-<td>false</td>
-<td><strong>false</strong></td>
-</tr>
-<tr class="odd">
-<td>UNKNOWN</td>
-<td><strong>UNKNOWN</strong></td>
-<td><strong>false</strong></td>
-<td><strong>UNKNOWN</strong></td>
-</tr>
-</tbody>
-</table>
-<table>
-<thead>
-<tr class="header">
-<th>OR</th>
-<th>true</th>
-<th>false</th>
-<th>UNKNOWN</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>true</td>
-<td>true</td>
-<td>true</td>
-<td><strong>true</strong></td>
-</tr>
-<tr class="even">
-<td>false</td>
-<td>true</td>
-<td>false</td>
-<td><strong>UNKNOWN</strong></td>
-</tr>
-<tr class="odd">
-<td>UNKNOWN</td>
-<td><strong>true</strong></td>
-<td><strong>UNKNOWN</strong></td>
-<td><strong>UNKNOWN</strong></td>
-</tr>
-</tbody>
-</table>
-<table>
-<thead>
-<tr class="header">
-<th>NOT</th>
-<th>true</th>
-<th>false</th>
-<th>UNKNOWN</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td></td>
-<td>false</td>
-<td>true</td>
-<td><strong>UNKNOWN</strong></td>
-</tr>
-</tbody>
-</table>
-<p>Don’t memorize these! Deduce by short-circuiting rules.</p>
-<h3 id="revisiting-examples">Revisiting Examples</h3>
-<p>When in doubt, use <a href="#operators-with-null">the
-<code>NULL</code> rules from earlier</a> and <a href="#3-valued-logic">3
-valued logic</a> to determine what the <code>WHERE</code> clause is
-actually saying and how it would affect the queries.</p>
-<div class="sourceCode" id="cb50"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
-<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> R</span>
-<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> R.x<span class="op">=</span>R.x; <span class="co">-- NULL=NULL =&gt; UNKNOWN</span></span></code></pre></div>
-<p>Where <code>R.x</code> is <a
-href="#operators-with-null"><code>NULL</code>, the <code>WHERE</code>
-clause evaluates to <code>UNKNOWN</code></a>, so that row is
-<em>excluded</em>. The return table is <em>not</em> necessarily the same
-as <code>R</code>.</p>
-<div class="sourceCode" id="cb51"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
-<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> R</span>
-<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> R.x <span class="op">=</span> R.x</span>
-<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a><span class="kw">OR</span> R.x <span class="op">&lt;&gt;</span> R.x; <span class="co">-- NULL &lt;&gt; NULL =&gt; UNKNOWN</span></span></code></pre></div>
-<p>Same as above.</p>
-<div class="sourceCode" id="cb52"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
-<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> R</span>
-<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> <span class="kw">null</span> <span class="op">=</span> <span class="kw">null</span>; <span class="co">-- NULL=NULL =&gt; UNKNOWN</span></span></code></pre></div>
-<p>Same as above. It’s just explicit this time.</p>
-<div class="sourceCode" id="cb53"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
-<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> R</span>
-<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> <span class="kw">null</span> <span class="op">&lt;&gt;</span> <span class="kw">null</span>; <span class="co">-- NULL &lt;&gt; NULL =&gt; UNKNOWN</span></span></code></pre></div>
-<p>Same as above. It’s just explicit this time.</p>
-<div class="sourceCode" id="cb54"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
-<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> R</span>
-<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a><span class="co">-- NULL &lt;&gt; NULL =&gt; UNKNOWN</span></span>
-<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a><span class="co">-- NOT UNKNOWN =&gt; still UNKNOWN</span></span>
-<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> <span class="kw">NOT</span> <span class="kw">null</span> <span class="op">&lt;&gt;</span> <span class="kw">null</span>;</span></code></pre></div>
-<p>This time we have a nested operation. Just follow through with the
-rules and you’ll find when <code>WHERE</code> evaluates to
-<code>UNKNOWN</code>.</p>
-<h2 id="make-nothing-out-of-something">Make <code>NOTHING</code> out of
-something</h2>
-<p>Outer join: pad non-matching rows with <code>NULL</code> -
-<code>LEFT OUTER JOIN</code>: keep all rows in left table -
-<code>RIGHT OUTER JOIN</code>: keep all rows in right table -
-<code>FULL OUTER JOIN</code>: keep all rows in both tables</p>
-<h2 id="aggregates-1">Aggregates</h2>
-<p><strong>Aggregates ignore <code>NULL</code> values</strong></p>
-<p>What do these return on <code>R = {NULL, 1}</code>?</p>
-<div class="sourceCode" id="cb55"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="fu">COUNT</span>(x) <span class="kw">FROM</span> R;</span>
-<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="fu">SUM</span>(x) <span class="kw">FROM</span> R;</span>
-<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="fu">AVG</span>(x) <span class="kw">FROM</span> R;</span>
-<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="fu">MIN</span>(x) <span class="kw">FROM</span> R;</span></code></pre></div>
-<p><em>But</em>, what if <code>R = {NULL}</code>?</p>
-<p>Challenge: how many offices per person?</p>
-<p>Attempt 1:</p>
-<div class="sourceCode" id="cb56"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> p.name, <span class="fu">COUNT</span>(e.addr)</span>
-<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> p <span class="kw">JOIN</span> e</span>
-<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a><span class="kw">ON</span> p.job <span class="op">=</span> e.name</span>
-<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> p.name;</span></code></pre></div>
-<p>People with no offices are left out!</p>
-<p>Use outer join to include them:</p>
-<div class="sourceCode" id="cb57"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> p.name, <span class="fu">COUNT</span>(e.addr)</span>
-<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> p <span class="kw">LEFT</span> <span class="kw">OUTER</span> <span class="kw">JOIN</span> e</span>
-<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a><span class="kw">ON</span> p.job <span class="op">=</span> e.name</span>
-<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> p.name;</span></code></pre></div>
-<p>Challenge: find the oldest cat, using <code>ORDER BY</code>,
-<code>DESC</code>, and <code>LIMIT</code>.</p>
-<div class="sourceCode" id="cb58"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
-<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> pets</span>
-<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> kind<span class="op">=</span><span class="ot">&quot;cat&quot;</span></span>
-<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> age <span class="kw">DESC</span></span>
-<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a><span class="kw">LIMIT</span> <span class="dv">1</span>;</span></code></pre></div>
-<p>Use a subquery:</p>
-<div class="sourceCode" id="cb59"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> pets.name, pets.age</span>
-<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> pets</span>
-<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> pets.kind<span class="op">=</span><span class="ot">&quot;cat&quot;</span></span>
-<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a><span class="kw">AND</span> pets.age<span class="op">=</span>(</span>
-<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">SELECT</span> <span class="fu">MAX</span>(age)</span>
-<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> pets</span>
-<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a>  <span class="kw">WHERE</span> kind<span class="op">=</span><span class="ot">&quot;cat&quot;</span></span>
-<span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a>);</span></code></pre></div>
-<p>Refactor with <code>WITH</code>:</p>
-<div class="sourceCode" id="cb60"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="kw">WITH</span> oldest <span class="kw">AS</span> (</span>
-<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">SELECT</span> <span class="fu">MAX</span>(age) <span class="kw">AS</span> a</span>
-<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> pets</span>
-<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">WHERE</span> kind<span class="op">=</span><span class="ot">&quot;cat&quot;</span></span>
-<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb60-6"><a href="#cb60-6" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> name, age</span>
-<span id="cb60-7"><a href="#cb60-7" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> pets, oldest</span>
-<span id="cb60-8"><a href="#cb60-8" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> kind<span class="op">=</span><span class="ot">&quot;cat&quot;</span> <span class="kw">AND</span> age<span class="op">=</span>oldest.a;</span></code></pre></div>
-<p>Oldest pet per kind:</p>
-<div class="sourceCode" id="cb61"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> pets.name, pets.age</span>
-<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> pets <span class="kw">AS</span> p1</span>
-<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> pets.age<span class="op">=</span>(</span>
-<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">SELECT</span> <span class="fu">MAX</span>(age)</span>
-<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> pets <span class="kw">AS</span> p2</span>
-<span id="cb61-6"><a href="#cb61-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">WHERE</span> p1.kind<span class="op">=</span>p2.kind</span>
-<span id="cb61-7"><a href="#cb61-7" aria-hidden="true" tabindex="-1"></a>);</span></code></pre></div>
-<p>Oldest per kind without nesting:</p>
-<div class="sourceCode" id="cb62"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="kw">WITH</span> max_per_kind <span class="kw">AS</span> (</span>
-<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> p2.kind, <span class="fu">MAX</span>(p2.age) <span class="kw">AS</span> max_age</span>
-<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> pets <span class="kw">AS</span> p2</span>
-<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> p2.kind</span>
-<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb62-6"><a href="#cb62-6" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> p1.name, p1.kind, p1.age</span>
-<span id="cb62-7"><a href="#cb62-7" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> pets <span class="kw">AS</span> p1, max_per_kind <span class="kw">AS</span> m</span>
-<span id="cb62-8"><a href="#cb62-8" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> p1.kind <span class="op">=</span> m.kind <span class="kw">AND</span> p1.age <span class="op">=</span> m.max_age;</span></code></pre></div>
-<p>Hard challenge: do this with one single “flat” query (i.e., without
-<code>WITH</code> or subqueries).</p>
-<h2 id="predicates-on-subqueries">Predicates on subqueries</h2>
-<p>Up until now we’ve mostly just been <code>SELECT</code>ing directly
-from the result of our subquery. We can use other predicates on them
-though:</p>
-<ul>
-<li><code>EXISTS (SELECT ...)</code> checks if it (the inner
-<code>SELECT</code> expression) is not empty. That is, at least one row
-is returned.</li>
-<li><code>NOT EXISTS (SELECT ...)</code> checks if it is empty. No rows
-are returned.</li>
-<li><code>X IN (SELECT Y FROM ...)</code> checks that the returned rows
-include <code>X</code>.</li>
-<li><code>X NOT IN (SELECT ...)</code> checks that the returned rows do
-<em>not</em> include <code>X</code>.</li>
-<li><code>X &gt; ALL(SELECT ...)</code> checks if X is &gt; than
-<em>all</em> values in output.</li>
-<li><code>X &gt; ANY(SELECT ...)</code> checks if X is &gt; than at
-least <em>one</em> value in output.</li>
-</ul>
-<p>Implement <code>INTERSECT</code> using <code>EXISTS</code> or
-<code>IN</code>:</p>
-<div class="sourceCode" id="cb63"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> x <span class="kw">FROM</span> R</span>
-<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> x <span class="kw">IN</span> (<span class="kw">SELECT</span> x <span class="kw">FROM</span> S);</span>
-<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> x <span class="kw">FROM</span> R</span>
-<span id="cb63-5"><a href="#cb63-5" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> <span class="kw">EXISTS</span> (<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> S <span class="kw">WHERE</span> S.x <span class="op">=</span> R.x);</span></code></pre></div>
-<p>Find oldest pet per kind using <code>NOT EXISTS</code> or
-<code>ALL</code>:</p>
-<div class="sourceCode" id="cb64"><pre
-class="sourceCode sql"><code class="sourceCode sql"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> name, kind, age</span>
-<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> pets <span class="kw">AS</span> p1</span>
-<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> <span class="kw">NOT</span> <span class="kw">EXISTS</span> (</span>
-<span id="cb64-4"><a href="#cb64-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">SELECT</span> <span class="op">*</span></span>
-<span id="cb64-5"><a href="#cb64-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> pets <span class="kw">AS</span> p2  <span class="kw">WHERE</span> p1.kind <span class="op">=</span> p2.kind <span class="kw">AND</span> p1.age <span class="op">&lt;</span> p2.age</span>
-<span id="cb64-6"><a href="#cb64-6" aria-hidden="true" tabindex="-1"></a>);</span>
-<span id="cb64-7"><a href="#cb64-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb64-8"><a href="#cb64-8" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> name, kind, age</span>
-<span id="cb64-9"><a href="#cb64-9" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> pets <span class="kw">AS</span> p1</span>
-<span id="cb64-10"><a href="#cb64-10" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> age <span class="op">&gt;=</span> <span class="kw">ALL</span> (</span>
-<span id="cb64-11"><a href="#cb64-11" aria-hidden="true" tabindex="-1"></a>  <span class="kw">SELECT</span> age</span>
-<span id="cb64-12"><a href="#cb64-12" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> pets <span class="kw">AS</span> p2  <span class="kw">WHERE</span> p1.kind <span class="op">=</span> p2.kind</span>
-<span id="cb64-13"><a href="#cb64-13" aria-hidden="true" tabindex="-1"></a>);</span></code></pre></div>
-<script src="https://unpkg.com/@antonz/codapi@0.20.0/dist/snippet.js"></script>
+<p><strong>AI Use</strong>    Of course you are not allowed to use AI
+during the quizzes. Should you use AI when doing homework? The short
+answer is no. The slightly longer answer is: you should only use AI to
+do something, if you <em>don’t</em> want to learn how to do that thing.
+Think of homework as resistance training – you only learn when you
+struggle, get confused, and make mistakes. Or, think of it as finding
+your way through a jungle, and if you always rely on the GPS, you will
+be hopelessly lost as soon as your phone dies. Still, sometimes you just
+want to look up a piece of syntax that’s not worth remembering, and
+using the AI for that does save you time. In that case it’s fine to use
+AI, <em>because you don’t actually care to memorize the syntax</em>. To
+help you out, I will clearly note in the assignments when AI use is OK
+(or even encouraged). When in doubt, post your question on Ed first
+before asking ChatGPT.</p>
+<p><strong>Textbook</strong>    None. You may use <a
+href="https://www.db-book.com">Database System Concepts</a> or <a
+href="http://infolab.stanford.edu/~ullman/dscb.html">Database Systems:
+The Complete Book</a> as references.</p>
 </body>
 </html>
