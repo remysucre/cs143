@@ -1,7 +1,11 @@
+---
+title: "HW 1: SQL (*WIP*)"
+---
+
 You are encouraged to use AI for problems marked with 🤖.
 
 🤖 Find out if you have sqlite installed on your computer.
-If not, install it. If you don't want to install it, you can use [sqlime](https://sqlime.org)
+If not, install it. If you don't want to install it, you can use [sqlime](https://sqlime.org).
 
 🤖 Find out how to create tables in sqlite. 
 Also, find out how to insert data into a table, as well as how to delete data.
@@ -9,23 +13,23 @@ How do you delete an entire table?
 
 🤖 Run a few queries over the tables you just created.
 
-Consider the query `SELECT * FROM R WHERE R.x < 3`.
+Consider the query `SELECT * FROM R WHERE R.x < 3` (what does "`SELECT * `" mean?).
 Try creating a table `R` to satisfy the following conditions (some of them are impossible; why?):
 
-- The query output has fewer rows than `R`
-- The query output has more rows than `R`
-- The query output has the same numbere of rows as `R`
+- The query outputs fewer rows than `R`
+- The query outputs more rows than `R`
+- The query outputs the same numbere of rows as `R`
 
-Consider the query `SELECT x FROM R` where `x` is a column in `R`.
+Consider the query `SELECT x + x FROM R` where `x` is a column in `R`.
 Try creating a table `R` to satisfy the following conditions (some of them are impossible; why?):
 
-- The query output has fewer rows than `R`
-- The query output has more rows than `R`
-- The query output has the same numbere of rows as `R`
+- The query outputs fewer rows than `R`
+- The query outputs more rows than `R`
+- The query outputs the same numbere of rows as `R`
 
 There's a secret SQL feature I didn't tell you in class (thank goodness you are doing your homework!):
  guess what `SELECT DISTINCT x FROM R` does?
-Run the query on different input `R` tables to confirm your guess.
+Run the query on different input `R` tables to confirm your guess (you can also ask 🤖 to be sure).
 Try creating a table `R` to satisfy the following conditions (some of them are impossible; why?):
 
 - The query outputs fewer rows than `SELECT x, avg(y) FROM R GROUP BY x`
@@ -41,7 +45,7 @@ Try creating tables `R` and `S` to satisfy the following conditions (is any of t
 - $j \geq \min(r, s)$
 - $j \leq \max(r, s)$
 
-Consider the same query above. Try creating tables `R` and `S` that *violate* the conditions above.
-If not possible, why?
+Consider the same query above. Try creating tables `R` and `S` that *violate* each of the conditions above.
+If some are not possible, why?
 
 **To be continued...**

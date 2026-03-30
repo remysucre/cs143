@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>hw1</title>
+  <title>HW 1: SQL (WIP)</title>
   <style>
     html {
       color: #1a1a1a;
@@ -169,37 +169,41 @@
   </style>
 </head>
 <body>
+<header id="title-block-header">
+<h1 class="title">HW 1: SQL (<em>WIP</em>)</h1>
+</header>
 <p>You are encouraged to use AI for problems marked with 🤖.</p>
 <p>🤖 Find out if you have sqlite installed on your computer. If not,
-install it. If you don’t want to install it, you can use
-https://sqlime.org</p>
+install it. If you don’t want to install it, you can use <a
+href="https://sqlime.org">sqlime</a>.</p>
 <p>🤖 Find out how to create tables in sqlite. Also, find out how to
 insert data into a table, as well as how to delete data. How do you
 delete an entire table?</p>
 <p>🤖 Run a few queries over the tables you just created.</p>
-<p>Consider the query <code>SELECT * FROM R WHERE R.x &lt; 3</code>. Try
-creating a table <code>R</code> to satisfy the following conditions
-(some of them are impossible; why?):</p>
+<p>Consider the query <code>SELECT * FROM R WHERE R.x &lt; 3</code>
+(what does “<code>SELECT *</code>” mean?). Try creating a table
+<code>R</code> to satisfy the following conditions (some of them are
+impossible; why?):</p>
 <ul>
-<li>The query output has fewer rows than <code>R</code></li>
-<li>The query output has more rows than <code>R</code></li>
-<li>The query output has the same numbere of rows as <code>R</code></li>
+<li>The query outputs fewer rows than <code>R</code></li>
+<li>The query outputs more rows than <code>R</code></li>
+<li>The query outputs the same numbere of rows as <code>R</code></li>
 </ul>
-<p>Consider the query <code>SELECT x FROM R</code> where <code>x</code>
-is a column in <code>R</code>. Try creating a table <code>R</code> to
-satisfy the following conditions (some of them are impossible;
-why?):</p>
+<p>Consider the query <code>SELECT x + x FROM R</code> where
+<code>x</code> is a column in <code>R</code>. Try creating a table
+<code>R</code> to satisfy the following conditions (some of them are
+impossible; why?):</p>
 <ul>
-<li>The query output has fewer rows than <code>R</code></li>
-<li>The query output has more rows than <code>R</code></li>
-<li>The query output has the same numbere of rows as <code>R</code></li>
+<li>The query outputs fewer rows than <code>R</code></li>
+<li>The query outputs more rows than <code>R</code></li>
+<li>The query outputs the same numbere of rows as <code>R</code></li>
 </ul>
 <p>There’s a secret SQL feature I didn’t tell you in class (thank
 goodness you are doing your homework!): guess what
 <code>SELECT DISTINCT x FROM R</code> does? Run the query on different
-input <code>R</code> tables to confirm your guess. Try creating a table
-<code>R</code> to satisfy the following conditions (some of them are
-impossible; why?):</p>
+input <code>R</code> tables to confirm your guess (you can also ask 🤖
+to be sure). Try creating a table <code>R</code> to satisfy the
+following conditions (some of them are impossible; why?):</p>
 <ul>
 <li>The query outputs fewer rows than
 <code>SELECT x, avg(y) FROM R GROUP BY x</code></li>
@@ -223,8 +227,8 @@ class="math inline"><em>j</em> ≥ min (<em>r</em>, <em>s</em>)</span></
 class="math inline"><em>j</em> ≤ max (<em>r</em>, <em>s</em>)</span></li>
 </ul>
 <p>Consider the same query above. Try creating tables <code>R</code> and
-<code>S</code> that <em>violate</em> the conditions above. If not
-possible, why?</p>
+<code>S</code> that <em>violate</em> each of the conditions above. If
+some are not possible, why?</p>
 <p><strong>To be continued…</strong></p>
 </body>
 </html>
