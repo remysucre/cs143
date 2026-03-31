@@ -49,8 +49,8 @@ Date Topic (tentative) Homework
 4/22 Dependencies
 5/4  Transactions
 5/13 Query exection
-5/25 Indexes
-6/3  Advanced Topics
+5/27 Indexes
+6/8  Advanced Topics
 
 **AI Use** &nbsp;&nbsp; 
 Of course you are not allowed to use AI during the quizzes.
