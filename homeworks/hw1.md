@@ -37,7 +37,7 @@ Try creating a table `R` to satisfy the following conditions (some of them are i
 - The query outputs the same number of rows as `SELECT x, avg(y) FROM R GROUP BY x`
 
 Consider the query `SELECT * FROM R, S WHERE R.x = S.y`, and let `j` be its output size.
-Let s be the size of S and r be the size of S.
+Let s be the size of S and r be the size of R.
 Try creating tables `R` and `S` to satisfy the following conditions (is any of these impossible?)
 
 - $j \leq r + s$
