@@ -43,14 +43,14 @@ So to motivate you to actually do the homework yourself,
  I will design the quizzes so that they become very easy if you have done your homework.
 There will be roughly one quiz per topic as listed below.
 
-Date Topic (tentative) Homework
----- ----------------- --------
-4/13 [SQL](sql.pdf)    [hw1](homeworks/hw1.html) (WIP)
-4/22 Dependencies
-5/4  Transactions
-5/13 Query exection
-5/27 Indexes
-6/8  Advanced Topics
+| Date | Topic (tentative) | Homework |
+|:----:|:-----------------:|:--------:|
+| 4/13 | SQL ([notes](https://remy.wang/dbnotes/sql.html), [slides](https://remy.wang/dbnotes/sql.pdf)) | [hw1](homeworks/hw1.html) (WIP) |
+| 4/22 | Dependencies |
+| 5/4  | Transactions |
+| 5/13 | Query exection |
+| 5/27 | Indexes |
+| 6/8  | Advanced Topics |
 
 **AI Use** &nbsp;&nbsp; 
 Of course you are not allowed to use AI during the quizzes.
