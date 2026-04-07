@@ -62,6 +62,10 @@
     img {
       max-width: 100%;
     }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
     h1, h2, h3, h4, h5, h6 {
       margin-top: 1.4em;
     }
@@ -105,8 +109,8 @@
      overflow: visible;
     }
     hr {
-      background-color: #1a1a1a;
       border: none;
+      border-top: 1px solid #1a1a1a;
       height: 1px;
       margin: 1em 0;
     }
@@ -165,9 +169,6 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
-  <!--[if lt IE 9]>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
-  <![endif]-->
 </head>
 <body>
 <header id="title-block-header">
@@ -221,44 +222,52 @@ AI use policy for assignments. So to motivate you to actually do the
 homework yourself, I will design the quizzes so that they become very
 easy if you have done your homework. There will be roughly one quiz per
 topic as listed below.</p>
-<table>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 54%" />
+<col style="width: 28%" />
+</colgroup>
 <thead>
-<tr class="header">
-<th>Date</th>
-<th>Topic (tentative)</th>
-<th>Homework</th>
+<tr>
+<th style="text-align: center;">Date</th>
+<th style="text-align: center;">Topic (tentative)</th>
+<th style="text-align: center;">Homework</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td>4/13</td>
-<td><a href="sql.pdf">SQL</a></td>
-<td><a href="homeworks/hw1.html">hw1</a> (WIP)</td>
+<tr>
+<td style="text-align: center;">4/13</td>
+<td style="text-align: center;">SQL (<a
+href="https://remy.wang/dbnotes/sql.html">notes</a>, <a
+href="https://remy.wang/dbnotes/sql.pdf">slides</a>)</td>
+<td style="text-align: center;"><a href="homeworks/hw1.html">hw1</a>
+(WIP)</td>
 </tr>
-<tr class="even">
-<td>4/22</td>
-<td>Dependencies</td>
-<td></td>
+<tr>
+<td style="text-align: center;">4/22</td>
+<td style="text-align: center;">Dependencies</td>
+<td style="text-align: center;"></td>
 </tr>
-<tr class="odd">
-<td>5/4</td>
-<td>Transactions</td>
-<td></td>
+<tr>
+<td style="text-align: center;">5/4</td>
+<td style="text-align: center;">Transactions</td>
+<td style="text-align: center;"></td>
 </tr>
-<tr class="even">
-<td>5/13</td>
-<td>Query exection</td>
-<td></td>
+<tr>
+<td style="text-align: center;">5/13</td>
+<td style="text-align: center;">Query exection</td>
+<td style="text-align: center;"></td>
 </tr>
-<tr class="odd">
-<td>5/27</td>
-<td>Indexes</td>
-<td></td>
+<tr>
+<td style="text-align: center;">5/27</td>
+<td style="text-align: center;">Indexes</td>
+<td style="text-align: center;"></td>
 </tr>
-<tr class="even">
-<td>6/8</td>
-<td>Advanced Topics</td>
-<td></td>
+<tr>
+<td style="text-align: center;">6/8</td>
+<td style="text-align: center;">Advanced Topics</td>
+<td style="text-align: center;"></td>
 </tr>
 </tbody>
 </table>
