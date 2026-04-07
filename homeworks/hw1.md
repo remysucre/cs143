@@ -102,4 +102,8 @@ Note the missing entry for $i = 2$.
 One can also represent matrices this way, by dropping 0-entries.
 Look at the SQL queries you wrote -- do you need to make any changes for them to work with sparse tables?
 
+SQL will not output a row, if the `WHERE` clause evaluates to `UNKNOWN` on that clause.
+But what if the `SELECT` clause evaluates to `NULL`?
+Try out a few queries to find out what happens.
+
 **To be continued ...**

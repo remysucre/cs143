@@ -60,10 +60,6 @@
     img {
       max-width: 100%;
     }
-    svg {
-      height: auto;
-      max-width: 100%;
-    }
     h1, h2, h3, h4, h5, h6 {
       margin-top: 1.4em;
     }
@@ -107,8 +103,8 @@
      overflow: visible;
     }
     hr {
+      background-color: #1a1a1a;
       border: none;
-      border-top: 1px solid #1a1a1a;
       height: 1px;
       margin: 1em 0;
     }
@@ -165,9 +161,7 @@
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
     /* CSS for syntax highlighting */
-    html { -webkit-text-size-adjust: 100%; }
     pre > code.sourceCode { white-space: pre; position: relative; }
     pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
     pre > code.sourceCode > span:empty { height: 1.2em; }
@@ -232,78 +226,128 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
+  <script defer=""
+  src="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <link rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
 </head>
 <body>
-<p>For any relation <code>R</code> the notation <code>|R|</code> means
-the size of <code>R</code>, i.e., the number of rows in <code>R</code>.
-Suppose <code>p</code> is some unknown predicate, and let
-<code>r = |R|</code>, <code>s = |SELECT * FROM R WHERE p|</code>. What
-are the possible relationships between <code>r</code> and
-<code>s</code>? Choose all that apply.</p>
+<p>For any relation <span class="math inline">R</span> the notation
+<span class="math inline">|R|</span> means the size of <span
+class="math inline">R</span>, i.e., the number of rows in <span
+class="math inline">R</span>. Suppose <span class="math inline">p</span>
+is some unknown predicate, and let <span class="math inline">r =
+|R|</span>, <span class="math inline">s = |\texttt{SELECT * FROM R WHERE
+p}|</span>. What are the possible relationships between <span
+class="math inline">r</span> and <span class="math inline">s</span>?
+Choose all that apply.</p>
 <ol type="a">
-<li>r &lt; s</li>
-<li>r = s</li>
-<li>r &gt; s</li>
+<li><span class="math inline">r &lt; s</span></li>
+<li><span class="math inline">r = s</span></li>
+<li><span class="math inline">r &gt; s</span></li>
 </ol>
-<p>Let <code>x</code> be a column in <code>R</code>. What are the
-possible relationships between <code>r = |R|</code> and
-<code>s = |SELECT x from R|</code>? Choose all that apply.</p>
+<p>Let <span class="math inline">x</span> be a column in <span
+class="math inline">R</span>. What are the possible relationships
+between <span class="math inline">r = |R|</span> and <span
+class="math inline">s = |\texttt{SELECT x from R}|</span>? Choose all
+that apply.</p>
 <ol type="a">
-<li>r &lt; s</li>
-<li>r = s</li>
-<li>r &gt; s</li>
+<li><span class="math inline">r &lt; s</span></li>
+<li><span class="math inline">r = s</span></li>
+<li><span class="math inline">r &gt; s</span></li>
 </ol>
-<p>Let <code>x, y</code> be columns in <code>R</code>. What are the
-possible relationships between
-<code>d = |SELECT DISTINCT x FROM R|</code> and
-<code>c = |SELECT x, avg(y) FROM R GROUP BY x|</code>?</p>
+<p>Let <span class="math inline">x, y</span> be columns in <span
+class="math inline">R</span>. What are the possible relationships
+between <span class="math inline">d = |\texttt{SELECT DISTINCT x FROM
+R}|</span> and <span class="math inline">c = |\texttt{SELECT x, avg(y)
+FROM R GROUP BY x}|</span>?</p>
 <ol type="a">
 <li>d &lt; c</li>
 <li>d = c</li>
 <li>d &gt; c</li>
 </ol>
-<p>Let <code>x</code> be a column in <code>R</code> and <code>y</code>
-be a column in <code>S</code>. Which statement below is <strong>always
-true</strong> for <code>r = |R|</code>, <code>s = |S|</code>,
-<code>j = |SELECT * FROM R, S WHERE R.x = S.y|</code>?</p>
+<p>Let <span class="math inline">x</span> be a column in <span
+class="math inline">R</span> and <span class="math inline">y</span> be a
+column in <span class="math inline">S</span>. Which statement below is
+<strong>always true</strong> for <span class="math inline">r =
+|R|</span>, <span class="math inline">s = |S|</span>, <span
+class="math inline">j = |\texttt{SELECT * FROM R, S WHERE R.x =
+S.y}|</span>?</p>
 <ol type="a">
-<li>j <span class="math inline">≤</span> r + s</li>
-<li>j <span class="math inline">≤</span> r * s</li>
-<li>j <span class="math inline">≥</span> <span
-class="math inline">min (<em>r</em>, <em>s</em>)</span></li>
-<li>j <span
-class="math inline"> ≤ max (<em>r</em>, <em>s</em>)</span></li>
+<li><span class="math inline">j \leq r + s</span></li>
+<li><span class="math inline">j \leq r * s</span></li>
+<li><span class="math inline">j \geq \min(r, s)</span></li>
+<li><span class="math inline">j \leq \max(r, s)</span></li>
 </ol>
-<p>What’s the largest possible output size of the query
-<code>SELECT * FROM R, S WHERE R.x &lt; S.x</code>? a. |R| b. |S|
-c. |R|*|S| d. <span
-class="math inline">max (|<em>R</em>|,|<em>S</em>|)</span></p>
+<p>For the same query as above, which statement below <strong>can be
+true</strong>?</p>
+<ol type="a">
+<li><span class="math inline">j \leq r + s</span></li>
+<li><span class="math inline">j \leq r * s</span></li>
+<li><span class="math inline">j \geq \min(r, s)</span></li>
+<li><span class="math inline">j \leq \max(r, s)</span></li>
+</ol>
 <p>Consider the following queries:</p>
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode sql"><code class="sourceCode sql"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>J <span class="op">=</span> <span class="kw">SELECT</span> x <span class="kw">FROM</span> R, S <span class="kw">WHERE</span> R.y <span class="op">=</span> S.y</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>E <span class="op">=</span> <span class="kw">SELECT</span> x <span class="kw">FROM</span> R <span class="kw">WHERE</span> <span class="kw">EXISTS</span> (<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> S <span class="kw">WHERE</span> R.y <span class="op">=</span> Sy)</span></code></pre></div>
-<p>What are the possible relationships between |J| and |E|?</p>
+<p>What are the possible relationships between <span
+class="math inline">|J|</span> and <span
+class="math inline">|E|</span>?</p>
 <ol type="a">
-<li>|J| &lt; |E|</li>
-<li>|J| = |E|</li>
-<li>|J| &gt; |E|</li>
+<li><span class="math inline">|J| &lt; |E|</span></li>
+<li><span class="math inline">|J| = |E|</span></li>
+<li><span class="math inline">|J| &gt; |E|</span></li>
 </ol>
-<p>R is a relation that contains no NULLs. Let I = SELECT * FROM R as
-r1, R as r2 WHERE r1.x = r2.x and let O = SELECT * FROM R as r1 LEFT
-OUTER JOIN R as r2 ON r1.x = r2.x. What are the possible relationships
-between |I| and |O|? Choose all that apply.</p>
-<p>What is the value of (NULL + 3) &lt; 4 OR NULL &gt;= 1?</p>
-<p>What is the value of NOT ((NULL * NULL) / NULL) &gt; NULL AND (NULL +
-NULL) &lt;&gt; NULL OR NOT (NULL &lt; NULL)?</p>
-<p>Suppose k is a primary key in R. Let G = SELECT * FROM R GROUP BY k
-HAVING count(*) = 1. What is the relationship between |G| and |R|?
-Recall |R| denotes the size of the relation R.</p>
-<p>Suppose f is a foreign key in S referencing a primary key k in R. Let
-s = SELECT count(distinct f) FROM S and let r = SELECT count(distinct k)
-FROM R. What are the possible relationships between s and r? Choose all
-that apply.</p>
-<p>Suppose k is a primary key in R. Let p = SELECT count(distinct k)
-FROM R, and r = SELECT count(distinct *) FROM R. What are the possible
-relationships between p and r? Choose all that apply.</p>
+<p><span class="math inline">R</span> is a relation that contains no
+<code>NULL</code>s. Let <span class="math inline">I</span> =
+<code>SELECT * FROM R as r1, R as r2 WHERE r1.x = r2.x</code> and let
+<span class="math inline">O</span> =
+<code>SELECT * FROM R as r1 LEFT OUTER JOIN R as r2 ON r1.x = r2.x</code>.
+What are the possible relationships between <span
+class="math inline">|I|</span> and <span class="math inline">|O|</span>?
+Choose all that apply.</p>
+<p>What is the value of
+<code>(NULL + 3) &lt; 4 OR NULL &gt;= 1</code>?</p>
+<p>What is the value of
+<code>NOT ((NULL * NULL) / NULL) &gt; NULL AND (NULL + NULL) &lt;&gt; NULL OR NOT (NULL &lt; NULL)</code>?</p>
+<p>Suppose <span class="math inline">k</span> is a primary key in <span
+class="math inline">R</span>. Let <span class="math inline">G</span> =
+<code>SELECT * FROM R GROUP BY k HAVING count(*) = 1</code>. What is the
+relationship between <span class="math inline">|G|</span> and <span
+class="math inline">|R|</span>?</p>
+<p>Suppose <span class="math inline">f</span> is a foreign key in <span
+class="math inline">S</span> referencing a primary key <span
+class="math inline">k</span> in <span class="math inline">R</span>. Let
+<span class="math inline">s</span> =
+<code>SELECT count(distinct f) FROM S</code> and let <span
+class="math inline">r</span> =
+<code>SELECT count(distinct k) FROM R</code>. What are the possible
+relationships between <span class="math inline">s</span> and <span
+class="math inline">r</span>? Choose all that apply.</p>
+<p>Suppose <span class="math inline">k</span> is a primary key in <span
+class="math inline">R</span>. Let <span class="math inline">p</span> =
+<code>SELECT count(distinct k) FROM R</code>, and <span
+class="math inline">r</span> =
+<code>SELECT count(distinct *) FROM R</code>. What are the possible
+relationships between <span class="math inline">p</span> and <span
+class="math inline">r</span>? Choose all that apply.</p>
 </body>
 </html>
