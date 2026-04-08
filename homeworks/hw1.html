@@ -161,6 +161,70 @@
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
   <script defer=""
   src="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.js"></script>
@@ -207,6 +271,31 @@ impossible; why?):</p>
 <li>The query outputs more rows than <code>R</code></li>
 <li>The query outputs the same number of rows as <code>R</code></li>
 </ul>
+<details>
+<summary>
+Solution
+</summary>
+<p><code>SELECT *</code> means “select all columns” — the output has the
+same columns as the input table.</p>
+<ul>
+<li><p><strong>Fewer rows than R</strong>: Easy. Include at least one
+row where <code>x &gt;= 3</code>. That row is filtered out by the
+<code>WHERE</code> clause.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> R (x <span class="dt">INTEGER</span>);</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> R <span class="kw">VALUES</span> (<span class="dv">1</span>), (<span class="dv">5</span>);</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> R <span class="kw">WHERE</span> R.x <span class="op">&lt;</span> <span class="dv">3</span>; <span class="co">-- outputs 1 row, R has 2</span></span></code></pre></div></li>
+<li><p><strong>More rows than R</strong>: <strong>Impossible.</strong> A
+<code>WHERE</code> clause can only filter rows — it never duplicates
+them. The output is always a <em>subset</em> of the input.</p></li>
+<li><p><strong>Same number of rows as R</strong>: Make all rows satisfy
+<code>x &lt; 3</code>.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> R (x <span class="dt">INTEGER</span>);</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> R <span class="kw">VALUES</span> (<span class="dv">1</span>), (<span class="dv">2</span>);</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> R <span class="kw">WHERE</span> R.x <span class="op">&lt;</span> <span class="dv">3</span>; <span class="co">-- outputs all 2 rows</span></span></code></pre></div></li>
+</ul>
+</details>
 <p>Consider the query <code>SELECT x + x FROM R</code> where
 <code>x</code> is a column in <code>R</code>. Try creating a table
 <code>R</code> to satisfy the following conditions (some of them are
@@ -216,6 +305,25 @@ impossible; why?):</p>
 <li>The query outputs more rows than <code>R</code></li>
 <li>The query outputs the same numbere of rows as <code>R</code></li>
 </ul>
+<details>
+<summary>
+Solution
+</summary>
+<ul>
+<li><strong>Fewer rows than R</strong>: <strong>Impossible.</strong>
+There is no <code>WHERE</code> clause, so every row in <code>R</code>
+produces exactly one output row. The <code>SELECT</code> clause
+transforms values but never filters or duplicates rows.</li>
+<li><strong>More rows than R</strong>: <strong>Impossible.</strong> Same
+reason — one input row always yields exactly one output row.</li>
+<li><strong>Same number of rows as R</strong>: <strong>Always
+true</strong>, for any table <code>R</code>. The query is a pure
+projection.</li>
+</ul>
+<p>The key insight: <code>SELECT</code> (without <code>DISTINCT</code>)
+is row-preserving — it maps each input row to exactly one output
+row.</p>
+</details>
 <p>There’s a secret SQL feature I didn’t tell you in class (thank
 goodness you are doing your homework!): guess what
 <code>SELECT DISTINCT x FROM R</code> does? Run the query on different
@@ -230,6 +338,29 @@ following conditions (some of them are impossible; why?):</p>
 <li>The query outputs the same number of rows as
 <code>SELECT x, avg(y) FROM R GROUP BY x</code></li>
 </ul>
+<details>
+<summary>
+Solution
+</summary>
+<p><code>SELECT DISTINCT x FROM R</code> returns the unique values of
+<code>x</code> — it removes duplicate rows from the output.</p>
+<p>Both <code>SELECT DISTINCT x FROM R</code> and
+<code>SELECT x, avg(y) FROM R GROUP BY x</code> produce exactly one
+output row per distinct value of <code>x</code>. So:</p>
+<ul>
+<li><strong>Fewer rows</strong>: <strong>Impossible.</strong> Both
+queries group by distinct values of <code>x</code>, so they always
+produce the same count.</li>
+<li><strong>More rows</strong>: <strong>Impossible.</strong> Same
+reason.</li>
+<li><strong>Same number of rows</strong>: <strong>Always true.</strong>
+<code>GROUP BY x</code> partitions rows by distinct <code>x</code>
+values and outputs one row per group — identical to what
+<code>DISTINCT x</code> does.</li>
+</ul>
+<p>This reveals a deep connection: <code>DISTINCT</code> is essentially
+<code>GROUP BY</code> without aggregation.</p>
+</details>
 <hr />
 <p>Consider the query <code>SELECT * FROM R, S WHERE R.x = S.y</code>,
 and let <code>j</code> be its output size. Let s be the size of S and r
@@ -244,6 +375,52 @@ to satisfy the following conditions (is any of these impossible?)</p>
 <p>Consider the same query above. Try creating tables <code>R</code> and
 <code>S</code> that <em>violate</em> each of the conditions above. If
 some are not possible, why?</p>
+<details>
+<summary>
+Solution
+</summary>
+<p>The query <code>SELECT * FROM R, S WHERE R.x = S.y</code> is an
+equi-join. The output size <span class="math inline">j</span> depends on
+how many pairs <span class="math inline">(r, s)</span> satisfy
+<code>R.x = S.y</code>.</p>
+<ul>
+<li><p><strong><span class="math inline">j \leq r + s</span></strong>:
+Can be satisfied or violated.</p>
+<ul>
+<li>Satisfied: If no rows match, <span class="math inline">j = 0 \leq r
++ s</span>.</li>
+<li><strong>Violated</strong>: Let <span class="math inline">R</span>
+have 3 rows all with <code>x = 1</code>, and <span
+class="math inline">S</span> have 3 rows all with <code>y = 1</code>.
+Then <span class="math inline">j = 9 &gt; r + s = 6</span>.</li>
+</ul></li>
+<li><p><strong><span class="math inline">j \leq r * s</span></strong>:
+<strong>Always true, cannot be violated.</strong> The join is a subset
+of the full cross product <span class="math inline">R \times S</span>,
+which has exactly <span class="math inline">r \times s</span> rows. You
+can never get more join results than the cross product.</p></li>
+<li><p><strong><span class="math inline">j \geq \min(r,
+s)</span></strong>: Can be satisfied or violated.</p>
+<ul>
+<li>Satisfied: If every row of the smaller table matches at least one
+row of the other.</li>
+<li><strong>Violated</strong>: If <code>R.x</code> and <code>S.y</code>
+share no common values, <span class="math inline">j = 0 &lt; \min(r,
+s)</span>.</li>
+</ul></li>
+<li><p><strong><span class="math inline">j \leq \max(r,
+s)</span></strong>: Can be satisfied or violated.</p>
+<ul>
+<li>Satisfied: If all rows have distinct join-key values, <span
+class="math inline">j \leq \min(r, s) \leq \max(r, s)</span>.</li>
+<li><strong>Violated</strong>: Same example as above — 3 rows in R all
+<code>x=1</code>, 3 rows in S all <code>y=1</code> gives <span
+class="math inline">j = 9 &gt; \max(3, 3) = 3</span>.</li>
+</ul></li>
+</ul>
+<p><strong>Summary:</strong> Only <span class="math inline">j \leq r *
+s</span> is a guaranteed invariant. The others depend on the data.</p>
+</details>
 <hr />
 <p>Let’s learn linear algebra! We can represent a vector <span
 class="math inline">\mathbf{v} = [v_1, v_2, \ldots, v_k]</span> with a
@@ -360,18 +537,80 @@ a_2, \ldots, a_k] \odot [b_1, b_2, \ldots, b_k]</span> is the vector
 <span class="math inline">[a_1 \times b_1, a_2 \times b_2, \ldots, a_k
 \times b_k]</span>. Write a SQL query that computes the point-wise
 product, where the input vectors are represented as tables.</p>
+<details>
+<summary>
+Solution
+</summary>
+<p>Join the two vector tables on their index column, then multiply the
+values:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> a.i, a.v <span class="op">*</span> b.v <span class="kw">AS</span> v</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> a, b</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> a.i <span class="op">=</span> b.i;</span></code></pre></div>
+<p>The <code>WHERE a.i = b.i</code> ensures we multiply entries at the
+same position. The join pairs up <span class="math inline">a_i</span>
+with <span class="math inline">b_i</span> for each index <span
+class="math inline">i</span>.</p>
+</details>
 <p>The dot product <span class="math inline">a \cdot b</span> is the sum
 over all entries of their point-wise product <span class="math inline">a
 \odot b</span>: <span class="math inline">a \cdot b = \sum_i a_i \times
 b_i</span>. Implement the dot product in SQL.</p>
+<details>
+<summary>
+Solution
+</summary>
+<p>Wrap the pointwise product in a <code>SUM</code> aggregation:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="fu">sum</span>(a.v <span class="op">*</span> b.v) <span class="kw">AS</span> dot_product</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> a, b</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> a.i <span class="op">=</span> b.i;</span></code></pre></div>
+<p>The join handles the element-wise pairing, and <code>SUM</code>
+collapses all products into a single scalar — exactly <span
+class="math inline">\sum_i a_i \times b_i</span>.</p>
+</details>
 <p>The outer product <span class="math inline">a \otimes b</span> is the
 matrix <span class="math inline">A</span> such that <span
 class="math inline">A_{ij} = a_i \times b_j</span>. Implement the outer
 product in SQL.</p>
+<details>
+<summary>
+Solution
+</summary>
+<p>The outer product pairs <em>every</em> entry of <code>a</code> with
+<em>every</em> entry of <code>b</code> — this is a cross product (no
+<code>WHERE</code> clause needed):</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> a.i, b.i <span class="kw">AS</span> j, a.v <span class="op">*</span> b.v <span class="kw">AS</span> v</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> a, b;</span></code></pre></div>
+<p>The result is a matrix table with columns <code>(i, j, v)</code>
+where <code>v = a[i] * b[j]</code>. The cross product naturally
+generates all index pairs <span class="math inline">(i, j)</span>.</p>
+</details>
 <p><strong>Challenge:</strong> the matrix product <span
 class="math inline">AB</span> is defined as <span
 class="math inline">C_{ik} = \sum_j A_{ij} \times B_{jk}</span>.
 Implement this in SQL.</p>
+<details>
+<summary>
+Solution
+</summary>
+<p>Join on the shared index <span class="math inline">j</span>,
+multiply, then group by the output indices <span class="math inline">(i,
+k)</span> and sum:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> A.i, B.j <span class="kw">AS</span> k, <span class="fu">sum</span>(A.v <span class="op">*</span> B.v) <span class="kw">AS</span> v</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> A, B</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> A.j <span class="op">=</span> B.i</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> A.i, B.j;</span></code></pre></div>
+<p>Here, table <code>A</code> has columns <code>(i, j, v)</code> and
+table <code>B</code> has columns <code>(i, j, v)</code>. The condition
+<code>A.j = B.i</code> matches the column index of <code>A</code> with
+the row index of <code>B</code> (the shared summation index). The
+<code>GROUP BY</code> collapses the sum over <span
+class="math inline">j</span> for each output cell <span
+class="math inline">(i, k)</span>.</p>
+</details>
 <p>The <strong>sparse table</strong> representation of a vector drops
 all zero entries of the vector. For example, the vector <span
 class="math inline">[2, 0, 2, 6]</span> is represented with the
@@ -402,10 +641,31 @@ table:</p>
 One can also represent matrices this way, by dropping 0-entries. Look at
 the SQL queries you wrote – do you need to make any changes for them to
 work with sparse tables?</p>
-<p>SQL will not output a row, if the <code>WHERE</code> clause evaluates
-to <code>UNKNOWN</code> on that clause. But what if the
-<code>SELECT</code> clause evaluates to <code>NULL</code>? Try out a few
-queries to find out what happens.</p>
+<details>
+<summary>
+Solution
+</summary>
+<p><strong>No changes needed!</strong> All the queries work correctly
+with sparse tables without modification.</p>
+<p>Here’s why: missing entries represent 0. In the pointwise product and
+dot product, a zero entry <span class="math inline">a_i = 0</span>
+contributes <span class="math inline">0 \times b_i = 0</span> to the
+result — which is the same as simply omitting that index pair. Since the
+join on <code>a.i = b.i</code> only produces rows for indices that
+appear in <em>both</em> tables, indices missing from either table are
+automatically excluded. This is equivalent to multiplying by zero and
+then dropping the zero result.</p>
+<p>The outer product query produces every pair <span
+class="math inline">(i, j)</span> regardless — sparse inputs just mean
+fewer rows in the output (since zero-valued rows are absent from the
+input), which is correct sparse behavior.</p>
+<p>The matrix product similarly benefits: indices where <span
+class="math inline">A_{ij} = 0</span> or <span
+class="math inline">B_{jk} = 0</span> simply don’t appear in the join,
+so they contribute 0 to the sum without needing to be represented.</p>
+<p>This is one of the elegant properties of SQL joins for sparse linear
+algebra: sparsity is handled for free.</p>
+</details>
 <hr />
 <p>You learned about the join <span class="math inline">R \Join_p
 S</span> in class. We say a row <span class="math inline">r \in R</span>
@@ -421,6 +681,43 @@ class="math inline">S</span>. Write a SQL query computing the semijoin
 <code>R.y = S.y</code> (hint: use <code>EXISTS</code>). What are the
 possible relationships between <span class="math inline">|R \Join
 S|</span> and <span class="math inline">|R \ltimes S|</span>?</p>
+<details>
+<summary>
+Solution
+</summary>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> R</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> <span class="kw">EXISTS</span> (</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">SELECT</span> <span class="dv">1</span> <span class="kw">FROM</span> S <span class="kw">WHERE</span> R.y <span class="op">=</span> S.y</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>);</span></code></pre></div>
+<p><code>EXISTS</code> returns true if the subquery produces at least
+one row — exactly the definition of “joins with S”. Each row of
+<code>R</code> is tested independently.</p>
+<p><strong>Relationship between <span class="math inline">|R \Join
+S|</span> and <span class="math inline">|R \ltimes
+S|</span>:</strong></p>
+<ul>
+<li><span class="math inline">|R \ltimes S| \leq |R|</span> always
+(semijoin is a subset of R).</li>
+<li><span class="math inline">|R \Join S| \geq |R \ltimes S|</span>
+always — every row counted by the semijoin appears at least once in the
+join. If a row <span class="math inline">r</span> joins with <span
+class="math inline">k \geq 1</span> rows in <span
+class="math inline">S</span>, it contributes <span
+class="math inline">k</span> rows to the join but only 1 row to the
+semijoin.</li>
+<li><span class="math inline">|R \Join S| = |R \ltimes S|</span> when
+every matching row in <span class="math inline">R</span> joins with
+<em>exactly one</em> row in <span class="math inline">S</span> — i.e.,
+when <code>S.y</code> is a primary key of <code>S</code>.</li>
+<li><span class="math inline">|R \Join S|</span> can be much larger: if
+all rows of <span class="math inline">R</span> share the same
+<code>y</code> value and all rows of <span class="math inline">S</span>
+share the same <code>y</code> value, the join has <span
+class="math inline">r \times s</span> rows while the semijoin has at
+most <span class="math inline">r</span> rows.</li>
+</ul>
+</details>
 <p>🤖 The join <span class="math inline">R \Join S</span> can be
 understood as looping over <span class="math inline">R</span>, and for
 each <span class="math inline">r \in R</span>, find all <span
@@ -432,11 +729,70 @@ class="math inline">r</span> with <code>NULL</code>s. Figure out the
 syntax for left outer join in SQLite, and run a few queries to
 understand how it works. If we replace a join with an outer join, do we
 get fewer outputs, the same number of outputs, or more outputs?</p>
+<details>
+<summary>
+Solution
+</summary>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> R <span class="kw">LEFT</span> <span class="kw">OUTER</span> <span class="kw">JOIN</span> S <span class="kw">ON</span> R.y <span class="op">=</span> S.y;</span></code></pre></div>
+<p>(<code>OUTER</code> is optional in SQLite — <code>LEFT JOIN</code>
+works too.)</p>
+<p><strong>Replacing join with outer join gives the same or more
+outputs.</strong> Specifically:</p>
+<ul>
+<li>For every row <span class="math inline">r \in R</span> that joins
+with at least one row in <span class="math inline">S</span>: the output
+is the same as a regular join.</li>
+<li>For every row <span class="math inline">r \in R</span> that joins
+with <em>no</em> row in <span class="math inline">S</span>: the regular
+join produces no output for that <span class="math inline">r</span>, but
+the outer join produces one output row with <code>NULL</code>s for all
+columns of <span class="math inline">S</span>.</li>
+</ul>
+<p>So the outer join result always contains the inner join result, plus
+additional rows with <code>NULL</code>s for unmatched left-side rows.
+The output size is <span class="math inline">\geq</span> that of the
+regular join.</p>
+</details>
+<hr />
+<p>SQL will not output a row, if the <code>WHERE</code> clause evaluates
+to <code>UNKNOWN</code> on that clause. But what if the
+<code>SELECT</code> clause evaluates to <code>NULL</code>? Try out a few
+queries to find out what happens.</p>
+<details>
+<summary>
+Solution
+</summary>
+<p>When a <code>SELECT</code> expression evaluates to <code>NULL</code>,
+SQL <strong>still outputs the row</strong> — the row appears in the
+result with a <code>NULL</code> value in that column.</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> R (x <span class="dt">INTEGER</span>);</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> R <span class="kw">VALUES</span> (<span class="dv">1</span>), (<span class="kw">NULL</span>);</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> x <span class="op">+</span> <span class="dv">1</span> <span class="kw">FROM</span> R;</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co">-- Output:</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co">-- 2</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co">-- NULL   ← the row is included, but the value is NULL</span></span></code></pre></div>
+<p>This is the key asymmetry: <code>WHERE</code> suppresses rows when
+the condition is <code>UNKNOWN</code> (which <code>NULL</code>
+comparisons produce), but <code>SELECT</code> never suppresses rows — it
+just produces <code>NULL</code> output. The row always makes it through;
+only the computed value is null.</p>
+</details>
 <p>Practice how <code>NULL</code>s work in SQL by writing out a few
 examples involving data operators, predicates, and logical connectives
 and figure out what they should evaluate to. Is it possible to
 <em>not</em> end up with <code>UNKNOWN</code> even if an input data
 value is <code>NULL</code>?</p>
+<details>
+<summary>
+Solution
+</summary>
+<p><strong>Yes, you can avoid <code>UNKNOWN</code> even with
+<code>NULL</code> inputs</strong>:</p>
+<p><code>SELECT * FROM r WHERE 1 &lt; NULL OR 2 = 2</code></p>
+</details>
 <hr />
 <p>We say a column <span class="math inline">k</span> is a <em>primary
 key</em> of a table, if the value in that column uniquely identifies the
@@ -446,6 +802,28 @@ column is a primary key (hint: one way to do this is with
 <code>GROUP BY</code> and <code>HAVING</code>; another way is to use
 <code>COUNT(DISTINCT ...)</code>. Make sure you know how to do it both
 ways.)</p>
+<details>
+<summary>
+Solution
+</summary>
+<p><strong>Method 1: <code>GROUP BY</code> and
+<code>HAVING</code></strong></p>
+<p>Find any value of <span class="math inline">k</span> that appears
+more than once. If no such value exists, <span
+class="math inline">k</span> is a primary key:</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> k <span class="kw">FROM</span> R <span class="kw">GROUP</span> <span class="kw">BY</span> k <span class="kw">HAVING</span> <span class="fu">COUNT</span>(<span class="op">*</span>) <span class="op">&gt;</span> <span class="dv">1</span>;</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co">-- If this returns no rows, k is a primary key.</span></span></code></pre></div>
+<p><strong>Method 2: <code>COUNT(DISTINCT ...)</code></strong></p>
+<p>Compare the total number of rows to the number of distinct values of
+<span class="math inline">k</span>. They must be equal:</p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="st">&#39;yes&#39;</span> <span class="kw">FROM</span> R <span class="kw">HAVING</span> <span class="fu">COUNT</span>(<span class="op">*</span>) <span class="op">=</span> <span class="fu">COUNT</span>(<span class="kw">DISTINCT</span> k);</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co">-- If this returns empty, k is NOT a primary key.</span></span></code></pre></div>
+<p>Both approaches detect duplicates: the first finds them explicitly,
+the second checks whether the distinct count matches the total
+count.</p>
+</details>
 <p>Given a primary key <span class="math inline">k</span> in <span
 class="math inline">R</span>, a column <span
 class="math inline">f</span> in <span class="math inline">S</span> is a
@@ -454,5 +832,21 @@ every value of <span class="math inline">R.f</span> also appears in
 <span class="math inline">R.k</span>. Write a SQL query to check if a
 given column <span class="math inline">S.f</span> can be a foreign key
 referencing <span class="math inline">R.k</span>.</p>
+<details>
+<summary>
+Solution
+</summary>
+<p>Return all rows in <code>S</code> whose <code>f</code> value has no
+match in <code>R.k</code>. If the result is empty, <code>S.f</code> is a
+valid foreign key:</p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> S <span class="kw">WHERE</span> <span class="kw">NOT</span> <span class="kw">EXISTS</span> (<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> R <span class="kw">WHERE</span> R.k <span class="op">=</span> S.f);</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co">-- If this returns empty, S.f IS a valid foreign key.</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co">-- Any rows returned are &quot;orphans&quot; that violate the constraint.</span></span></code></pre></div>
+<p><code>NOT EXISTS</code> checks, for each row in <code>S</code>,
+whether there is any row in <code>R</code> with a matching
+<code>k</code>. If no such row exists, the <code>S</code> row is
+included in the output.</p>
+</details>
 </body>
 </html>
