@@ -390,7 +390,7 @@ Both approaches detect duplicates: the first finds them explicitly, the second c
 
 Given a primary key $k$ in $R$, a column $f$ in $S$
  is a *foreign key* referencing $R.k$
- if every value of $R.f$ also appears in $R.k$.
+ if every value of $S.f$ also appears in $R.k$.
 Write a SQL query to check if a given column $S.f$
  can be a foreign key referencing $R.k$.
 

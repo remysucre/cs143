@@ -60,6 +60,10 @@
     img {
       max-width: 100%;
     }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
     h1, h2, h3, h4, h5, h6 {
       margin-top: 1.4em;
     }
@@ -103,8 +107,8 @@
      overflow: visible;
     }
     hr {
-      background-color: #1a1a1a;
       border: none;
+      border-top: 1px solid #1a1a1a;
       height: 1px;
       margin: 1em 0;
     }
@@ -162,6 +166,7 @@
       vertical-align: middle;
     }
     /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
     pre > code.sourceCode { white-space: pre; position: relative; }
     pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
     pre > code.sourceCode > span:empty { height: 1.2em; }
@@ -227,7 +232,7 @@
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
   <script defer=""
-  src="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.js"></script>
+  src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
   <script>document.addEventListener("DOMContentLoaded", function () {
  var mathElements = document.getElementsByClassName("math");
  var macros = [];
@@ -243,10 +248,7 @@
 }}});
   </script>
   <link rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css" />
-  <!--[if lt IE 9]>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
-  <![endif]-->
+  href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css" />
 </head>
 <body>
 <header id="title-block-header">
@@ -427,32 +429,32 @@ class="math inline">\mathbf{v} = [v_1, v_2, \ldots, v_k]</span> with a
 2-column table:</p>
 <table>
 <thead>
-<tr class="header">
+<tr>
 <th style="text-align: center;">i</th>
 <th style="text-align: center;">v</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td style="text-align: center;">1</td>
 <td style="text-align: center;"><span
 class="math inline">v_1</span></td>
 </tr>
-<tr class="even">
+<tr>
 <td style="text-align: center;">2</td>
 <td style="text-align: center;"><span
 class="math inline">v_2</span></td>
 </tr>
-<tr class="odd">
+<tr>
 <td style="text-align: center;">3</td>
 <td style="text-align: center;"><span
 class="math inline">v_3</span></td>
 </tr>
-<tr class="even">
+<tr>
 <td style="text-align: center;">…</td>
 <td style="text-align: center;">…</td>
 </tr>
-<tr class="odd">
+<tr>
 <td style="text-align: center;">k</td>
 <td style="text-align: center;"><span
 class="math inline">v_k</span></td>
@@ -466,60 +468,60 @@ represent a matrix <span class="math inline">A</span> with a 3-column
 table</p>
 <table>
 <thead>
-<tr class="header">
+<tr>
 <th style="text-align: center;">i</th>
 <th style="text-align: center;">j</th>
 <th style="text-align: center;">A</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td style="text-align: center;">1</td>
 <td style="text-align: center;">1</td>
 <td style="text-align: center;"><span
 class="math inline">A_{11}</span></td>
 </tr>
-<tr class="even">
+<tr>
 <td style="text-align: center;">1</td>
 <td style="text-align: center;">2</td>
 <td style="text-align: center;"><span
 class="math inline">A_{12}</span></td>
 </tr>
-<tr class="odd">
+<tr>
 <td style="text-align: center;">1</td>
 <td style="text-align: center;">3</td>
 <td style="text-align: center;"><span
 class="math inline">A_{13}</span></td>
 </tr>
-<tr class="even">
+<tr>
 <td style="text-align: center;">…</td>
 <td style="text-align: center;">…</td>
 <td style="text-align: center;">…</td>
 </tr>
-<tr class="odd">
+<tr>
 <td style="text-align: center;">2</td>
 <td style="text-align: center;">1</td>
 <td style="text-align: center;"><span
 class="math inline">A_{21}</span></td>
 </tr>
-<tr class="even">
+<tr>
 <td style="text-align: center;">2</td>
 <td style="text-align: center;">2</td>
 <td style="text-align: center;"><span
 class="math inline">A_{22}</span></td>
 </tr>
-<tr class="odd">
+<tr>
 <td style="text-align: center;">2</td>
 <td style="text-align: center;">3</td>
 <td style="text-align: center;"><span
 class="math inline">A_{23}</span></td>
 </tr>
-<tr class="even">
+<tr>
 <td style="text-align: center;">…</td>
 <td style="text-align: center;">…</td>
 <td style="text-align: center;">…</td>
 </tr>
-<tr class="odd">
+<tr>
 <td style="text-align: center;">k</td>
 <td style="text-align: center;">k</td>
 <td style="text-align: center;"><span
@@ -617,21 +619,21 @@ class="math inline">[2, 0, 2, 6]</span> is represented with the
 table:</p>
 <table>
 <thead>
-<tr class="header">
+<tr>
 <th style="text-align: center;">i</th>
 <th style="text-align: center;">v</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td style="text-align: center;">1</td>
 <td style="text-align: center;">2</td>
 </tr>
-<tr class="even">
+<tr>
 <td style="text-align: center;">3</td>
 <td style="text-align: center;">2</td>
 </tr>
-<tr class="odd">
+<tr>
 <td style="text-align: center;">4</td>
 <td style="text-align: center;">6</td>
 </tr>
@@ -828,7 +830,7 @@ count.</p>
 class="math inline">R</span>, a column <span
 class="math inline">f</span> in <span class="math inline">S</span> is a
 <em>foreign key</em> referencing <span class="math inline">R.k</span> if
-every value of <span class="math inline">R.f</span> also appears in
+every value of <span class="math inline">S.f</span> also appears in
 <span class="math inline">R.k</span>. Write a SQL query to check if a
 given column <span class="math inline">S.f</span> can be a foreign key
 referencing <span class="math inline">R.k</span>.</p>
