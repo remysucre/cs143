@@ -45,7 +45,7 @@ There will be roughly one quiz per topic as listed below.
 
 | Date | Topic (tentative) | Homework |
 |:----:|:-----------------:|:--------:|
-| 4/13 | SQL ([notes](https://remy.wang/dbnotes/sql.html), [slides](https://remy.wang/dbnotes/sql.pdf)) | [hw1](homeworks/hw1.html) (WIP) |
+| 4/13 | SQL ([notes](https://remy.wang/dbnotes/sql.html), [slides](https://remy.wang/dbnotes/sql.pdf)) | [hw1](homeworks/hw1.html) |
 | 4/22 | Dependencies |
 | 5/4  | Transactions |
 | 5/13 | Query exection |

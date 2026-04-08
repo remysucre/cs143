@@ -1,8 +1,10 @@
 ---
-title: "HW 1: SQL (*WIP*)"
+title: "HW 1: SQL"
 ---
 
 You are encouraged to use AI for problems marked with 🤖.
+
+---
 
 🤖 Find out if you have sqlite installed on your computer.
 If not, install it. If you don't want to install it, you can use [sqlime](https://sqlime.org).
@@ -13,12 +15,14 @@ How do you delete an entire table?
 
 🤖 Run a few queries over the tables you just created.
 
+---
+
 Consider the query `SELECT * FROM R WHERE R.x < 3` (what does "`SELECT * `" mean?).
 Try creating a table `R` to satisfy the following conditions (some of them are impossible; why?):
 
 - The query outputs fewer rows than `R`
 - The query outputs more rows than `R`
-- The query outputs the same numbere of rows as `R`
+- The query outputs the same number of rows as `R`
 
 Consider the query `SELECT x + x FROM R` where `x` is a column in `R`.
 Try creating a table `R` to satisfy the following conditions (some of them are impossible; why?):
@@ -36,6 +40,8 @@ Try creating a table `R` to satisfy the following conditions (some of them are i
 - The query outputs more rows than `SELECT x, avg(y) FROM R GROUP BY x`
 - The query outputs the same number of rows as `SELECT x, avg(y) FROM R GROUP BY x`
 
+---
+
 Consider the query `SELECT * FROM R, S WHERE R.x = S.y`, and let `j` be its output size.
 Let s be the size of S and r be the size of R.
 Try creating tables `R` and `S` to satisfy the following conditions (is any of these impossible?)
@@ -47,6 +53,8 @@ Try creating tables `R` and `S` to satisfy the following conditions (is any of t
 
 Consider the same query above. Try creating tables `R` and `S` that *violate* each of the conditions above.
 If some are not possible, why?
+
+---
 
 Let's learn linear algebra! We can represent a vector $\mathbf{v} = [v_1, v_2, \ldots, v_k]$ with a 2-column table:
 
@@ -106,4 +114,43 @@ SQL will not output a row, if the `WHERE` clause evaluates to `UNKNOWN` on that 
 But what if the `SELECT` clause evaluates to `NULL`?
 Try out a few queries to find out what happens.
 
-**To be continued ...**
+---
+
+You learned about the join $R \Join_p S$ in class. 
+We say a row $r \in R$ *joins with* $S$, if there is at least one row
+ $s \in S$ such that pairing $r$ and $s$ together satisfies the 
+ join condition (`WHERE` clause) $p$.
+A *semijoin* $R \ltimes S$ returns all rows in $R$ that join with $S$.
+Write a SQL query computing the semijoin $R \ltimes S$, 
+ with the join condition `R.y = S.y` (hint: use `EXISTS`).
+What are the possible relationships between $|R \Join S|$ and $|R \ltimes S|$?
+
+🤖 The join $R \Join S$ can be understood as looping over $R$,
+ and for each $r \in R$, find all $s \in S$ that join with $r$.
+A (left) outer join is like a join, but when a row $r \in R$ does not join
+ with any $s \in S$, it pairs $r$ with `NULL`s.
+Figure out the syntax for left outer join in SQLite, 
+ and run a few queries to understand how it works.
+If we replace a join with an outer join, do we get fewer outputs,
+the same number of outputs, or more outputs?
+
+Practice how `NULL`s work in SQL by writing out a few examples involving
+ data operators, predicates, and logical connectives and figure out
+ what they should evaluate to.
+Is it possible to *not* end up with `UNKNOWN` even if an input data value is `NULL`?
+
+---
+
+We say a column $k$ is a *primary key* of a table, 
+ if the value in that column uniquely identifies the row.
+In other words, no two different rows share the same value in $k$.
+Write a SQL query to check if a given column is a primary key
+ (hint: one way to do this is with `GROUP BY` and `HAVING`;
+ another way is to use `COUNT(DISTINCT ...)`.
+ Make sure you know how to do it both ways.)
+
+Given a primary key $k$ in $R$, a column $f$ in $S$
+ is a *foreign key* referencing $R.k$
+ if every value of $R.f$ also appears in $R.k$.
+Write a SQL query to check if a given column $S.f$
+ can be a foreign key referencing $R.k$.

@@ -62,10 +62,6 @@
     img {
       max-width: 100%;
     }
-    svg {
-      height: auto;
-      max-width: 100%;
-    }
     h1, h2, h3, h4, h5, h6 {
       margin-top: 1.4em;
     }
@@ -109,8 +105,8 @@
      overflow: visible;
     }
     hr {
+      background-color: #1a1a1a;
       border: none;
-      border-top: 1px solid #1a1a1a;
       height: 1px;
       margin: 1em 0;
     }
@@ -169,6 +165,9 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
 </head>
 <body>
 <header id="title-block-header">
@@ -229,42 +228,42 @@ topic as listed below.</p>
 <col style="width: 28%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th style="text-align: center;">Date</th>
 <th style="text-align: center;">Topic (tentative)</th>
 <th style="text-align: center;">Homework</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td style="text-align: center;">4/13</td>
 <td style="text-align: center;">SQL (<a
 href="https://remy.wang/dbnotes/sql.html">notes</a>, <a
 href="https://remy.wang/dbnotes/sql.pdf">slides</a>)</td>
-<td style="text-align: center;"><a href="homeworks/hw1.html">hw1</a>
-(WIP)</td>
+<td style="text-align: center;"><a
+href="homeworks/hw1.html">hw1</a></td>
 </tr>
-<tr>
+<tr class="even">
 <td style="text-align: center;">4/22</td>
 <td style="text-align: center;">Dependencies</td>
 <td style="text-align: center;"></td>
 </tr>
-<tr>
+<tr class="odd">
 <td style="text-align: center;">5/4</td>
 <td style="text-align: center;">Transactions</td>
 <td style="text-align: center;"></td>
 </tr>
-<tr>
+<tr class="even">
 <td style="text-align: center;">5/13</td>
 <td style="text-align: center;">Query exection</td>
 <td style="text-align: center;"></td>
 </tr>
-<tr>
+<tr class="odd">
 <td style="text-align: center;">5/27</td>
 <td style="text-align: center;">Indexes</td>
 <td style="text-align: center;"></td>
 </tr>
-<tr>
+<tr class="even">
 <td style="text-align: center;">6/8</td>
 <td style="text-align: center;">Advanced Topics</td>
 <td style="text-align: center;"></td>

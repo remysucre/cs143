@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>HW 1: SQL (WIP)</title>
+  <title>HW 1: SQL</title>
   <style>
     html {
       color: #1a1a1a;
@@ -186,9 +186,10 @@
 </head>
 <body>
 <header id="title-block-header">
-<h1 class="title">HW 1: SQL (<em>WIP</em>)</h1>
+<h1 class="title">HW 1: SQL</h1>
 </header>
 <p>You are encouraged to use AI for problems marked with 🤖.</p>
+<hr />
 <p>🤖 Find out if you have sqlite installed on your computer. If not,
 install it. If you don’t want to install it, you can use <a
 href="https://sqlime.org">sqlime</a>.</p>
@@ -196,6 +197,7 @@ href="https://sqlime.org">sqlime</a>.</p>
 insert data into a table, as well as how to delete data. How do you
 delete an entire table?</p>
 <p>🤖 Run a few queries over the tables you just created.</p>
+<hr />
 <p>Consider the query <code>SELECT * FROM R WHERE R.x &lt; 3</code>
 (what does “<code>SELECT *</code>” mean?). Try creating a table
 <code>R</code> to satisfy the following conditions (some of them are
@@ -203,7 +205,7 @@ impossible; why?):</p>
 <ul>
 <li>The query outputs fewer rows than <code>R</code></li>
 <li>The query outputs more rows than <code>R</code></li>
-<li>The query outputs the same numbere of rows as <code>R</code></li>
+<li>The query outputs the same number of rows as <code>R</code></li>
 </ul>
 <p>Consider the query <code>SELECT x + x FROM R</code> where
 <code>x</code> is a column in <code>R</code>. Try creating a table
@@ -228,6 +230,7 @@ following conditions (some of them are impossible; why?):</p>
 <li>The query outputs the same number of rows as
 <code>SELECT x, avg(y) FROM R GROUP BY x</code></li>
 </ul>
+<hr />
 <p>Consider the query <code>SELECT * FROM R, S WHERE R.x = S.y</code>,
 and let <code>j</code> be its output size. Let s be the size of S and r
 be the size of R. Try creating tables <code>R</code> and <code>S</code>
@@ -241,6 +244,7 @@ to satisfy the following conditions (is any of these impossible?)</p>
 <p>Consider the same query above. Try creating tables <code>R</code> and
 <code>S</code> that <em>violate</em> each of the conditions above. If
 some are not possible, why?</p>
+<hr />
 <p>Let’s learn linear algebra! We can represent a vector <span
 class="math inline">\mathbf{v} = [v_1, v_2, \ldots, v_k]</span> with a
 2-column table:</p>
@@ -398,6 +402,57 @@ table:</p>
 One can also represent matrices this way, by dropping 0-entries. Look at
 the SQL queries you wrote – do you need to make any changes for them to
 work with sparse tables?</p>
-<p><strong>To be continued …</strong></p>
+<p>SQL will not output a row, if the <code>WHERE</code> clause evaluates
+to <code>UNKNOWN</code> on that clause. But what if the
+<code>SELECT</code> clause evaluates to <code>NULL</code>? Try out a few
+queries to find out what happens.</p>
+<hr />
+<p>You learned about the join <span class="math inline">R \Join_p
+S</span> in class. We say a row <span class="math inline">r \in R</span>
+<em>joins with</em> <span class="math inline">S</span>, if there is at
+least one row <span class="math inline">s \in S</span> such that pairing
+<span class="math inline">r</span> and <span
+class="math inline">s</span> together satisfies the join condition
+(<code>WHERE</code> clause) <span class="math inline">p</span>. A
+<em>semijoin</em> <span class="math inline">R \ltimes S</span> returns
+all rows in <span class="math inline">R</span> that join with <span
+class="math inline">S</span>. Write a SQL query computing the semijoin
+<span class="math inline">R \ltimes S</span>, with the join condition
+<code>R.y = S.y</code> (hint: use <code>EXISTS</code>). What are the
+possible relationships between <span class="math inline">|R \Join
+S|</span> and <span class="math inline">|R \ltimes S|</span>?</p>
+<p>🤖 The join <span class="math inline">R \Join S</span> can be
+understood as looping over <span class="math inline">R</span>, and for
+each <span class="math inline">r \in R</span>, find all <span
+class="math inline">s \in S</span> that join with <span
+class="math inline">r</span>. A (left) outer join is like a join, but
+when a row <span class="math inline">r \in R</span> does not join with
+any <span class="math inline">s \in S</span>, it pairs <span
+class="math inline">r</span> with <code>NULL</code>s. Figure out the
+syntax for left outer join in SQLite, and run a few queries to
+understand how it works. If we replace a join with an outer join, do we
+get fewer outputs, the same number of outputs, or more outputs?</p>
+<p>Practice how <code>NULL</code>s work in SQL by writing out a few
+examples involving data operators, predicates, and logical connectives
+and figure out what they should evaluate to. Is it possible to
+<em>not</em> end up with <code>UNKNOWN</code> even if an input data
+value is <code>NULL</code>?</p>
+<hr />
+<p>We say a column <span class="math inline">k</span> is a <em>primary
+key</em> of a table, if the value in that column uniquely identifies the
+row. In other words, no two different rows share the same value in <span
+class="math inline">k</span>. Write a SQL query to check if a given
+column is a primary key (hint: one way to do this is with
+<code>GROUP BY</code> and <code>HAVING</code>; another way is to use
+<code>COUNT(DISTINCT ...)</code>. Make sure you know how to do it both
+ways.)</p>
+<p>Given a primary key <span class="math inline">k</span> in <span
+class="math inline">R</span>, a column <span
+class="math inline">f</span> in <span class="math inline">S</span> is a
+<em>foreign key</em> referencing <span class="math inline">R.k</span> if
+every value of <span class="math inline">R.f</span> also appears in
+<span class="math inline">R.k</span>. Write a SQL query to check if a
+given column <span class="math inline">S.f</span> can be a foreign key
+referencing <span class="math inline">R.k</span>.</p>
 </body>
 </html>
