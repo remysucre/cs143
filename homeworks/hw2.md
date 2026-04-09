@@ -2,9 +2,9 @@
 title: "HW 2: Dependencies"
 ---
 
-🤖 Find how to create a [set](https://docs.python.org/3/tutorial/datastructures.html#sets) in Python.
+🤖 Find out how to create a [set](https://docs.python.org/3/tutorial/datastructures.html#sets) in Python.
 
-🤖 Find how to check if a set is contained in another set,
+🤖 Find out how to check if a set is contained in another set,
  and how to take the union of two sets in Python.
 
 ---
