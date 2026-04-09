@@ -31,6 +31,10 @@ An optimization is to discard an FD as soon as it successfully applies.
 Why is this optimization correct?
 In other words, why do we never have to apply the same FD twice?
 
+**Challenge**: what is the asymptotic complexity of closure computation?
+Can you find an input that will result in the worst case complexity?
+What about the best case complexity?
+
 ---
 
 Implement the algorithm to check if an FD $\varphi$ follows from a set of FDs $\Phi$:
