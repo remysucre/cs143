@@ -45,8 +45,8 @@ There will be roughly one quiz per topic as listed below.
 
 | Date | Topic (tentative) | Homework |
 |:----:|:-----------------:|:--------:|
-| 4/13 | SQL ([notes](notes/sql/sql.html), [slides](notes/sql/sql.pdf)) | [hw1](homeworks/hw1.html) |
-| 4/22 | Dependencies ([notes](notes/dependencies/dependencies.html), [slides](notes/dependencies/dependencies.pdf)) | [hw2](homeworks/hw2.html) |
+| 4/13 | SQL ([notes](notes/sql/sql.html), [slides](notes/sql/sql.pdf)) | [hw1](homework/hw1.html) |
+| 4/22 | Dependencies ([notes](notes/dependencies/dependencies.html), [slides](notes/dependencies/dependencies.pdf)) | [hw2](homework/hw2.html) |
 | 5/4  | Transactions |
 | 5/13 | Query exection |
 | 5/27 | Indexes |

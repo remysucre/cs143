@@ -5,7 +5,7 @@ NOTES_MD   := $(wildcard notes/*/*.md)
 NOTES_HTML := $(NOTES_MD:.md=.html)
 NOTES_PDF  := $(NOTES_MD:.md=.pdf)
 
-HW_MD   := $(wildcard homeworks/*.md)
+HW_MD   := $(wildcard homework/*.md)
 HW_HTML := $(HW_MD:.md=.html)
 
 .PHONY: all clean
@@ -24,7 +24,7 @@ notes/%.html: notes/%.md $(TEMPLATE) $(LUA)
 notes/%.pdf: notes/%.md $(LUA)
 	pandoc $< -o $@ --lua-filter=$(LUA) -t beamer
 
-homeworks/%.html: homeworks/%.md
+homework/%.html: homework/%.md
 	pandoc $< -s --katex -o $@
 
 clean:
