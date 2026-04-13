@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SQL</title>
+  <script defer=""
+  src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <link rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css" />
+  <link rel="stylesheet" href="https://unpkg.com/@antonz/codapi@0.20.0/dist/snippet.css">
+  <style>
+    body { max-width: 48em; margin: 2em auto; padding: 0 1em; font-family: system-ui, sans-serif; line-height: 1.6; }
+    pre { background: #f5f5f5; padding: 1em; overflow-x: auto; border-radius: 4px; }
+    code { font-size: 0.95em; }
+    table { border-collapse: collapse; border-spacing: 0; margin: 1em 0; }
+    th, td { border: 1px solid #999; padding: 0.3em 0.8em; }
+    codapi-output { line-height: 1.3; }
+    codapi-snippet + .sourceCode { margin-top: 0.5em; }
+    .sourceCode { margin-top: 0; margin-bottom: 0; }
+  </style>
+</head>
+<body>
+<script id="setup-pets-basic" type="text/plain">
+CREATE TABLE pets (name text, age int, weight int);
+INSERT INTO pets VALUES ('Casa', 9, 12);
+INSERT INTO pets VALUES ('Kira', 7, 10);
+INSERT INTO pets VALUES ('Toby', 17, 40);
+INSERT INTO pets VALUES ('Maya', 10, 34);
+##CODE##
+</script>
+<script id="setup-pets-kind" type="text/plain">
+CREATE TABLE pets (name text, age int, weight int, kind text);
+INSERT INTO pets VALUES ('Casa', 9, 12, 'cat');
+INSERT INTO pets VALUES ('Kira', 7, 10, 'cat');
+INSERT INTO pets VALUES ('Toby', 17, 40, 'dog');
+INSERT INTO pets VALUES ('Maya', 10, 34, 'dog');
+##CODE##
+</script>
+<script id="setup-pets-owner" type="text/plain">
+CREATE TABLE pets (name text, age int, weight int, kind text, owner text);
+INSERT INTO pets VALUES ('Casa', 9, 12, 'cat', 'Alice');
+INSERT INTO pets VALUES ('Kira', 7, 10, 'cat', 'Alice');
+INSERT INTO pets VALUES ('Toby', 17, 40, 'dog', 'Bob');
+INSERT INTO pets VALUES ('Maya', 10, 34, 'dog', 'Alice');
+##CODE##
+</script>
+<script id="setup-pets-views" type="text/plain">
+CREATE TABLE pets (name text, age int, weight int, kind text, owner text);
+INSERT INTO pets VALUES ('Casa', 9, 12, 'cat', 'Alice');
+INSERT INTO pets VALUES ('Kira', 7, 10, 'cat', 'Alice');
+INSERT INTO pets VALUES ('Toby', 17, 40, 'dog', 'Bob');
+INSERT INTO pets VALUES ('Maya', 10, 34, 'dog', 'Alice');
+CREATE VIEW catpeople AS SELECT owner FROM pets WHERE kind = 'cat';
+CREATE VIEW dogpeople AS SELECT owner FROM pets WHERE kind = 'dog';
+##CODE##
+</script>
+<script id="setup-averages" type="text/plain">
+CREATE TABLE pets (name text, age int, weight int, kind text);
+INSERT INTO pets VALUES ('Casa', 9, 12, 'cat');
+INSERT INTO pets VALUES ('Kira', 7, 10, 'cat');
+INSERT INTO pets VALUES ('Toby', 17, 40, 'dog');
+INSERT INTO pets VALUES ('Maya', 10, 34, 'dog');
+CREATE TABLE averages AS SELECT kind, AVG(age) AS a FROM pets GROUP BY kind;
+##CODE##
+</script>
+<script id="setup-r-null" type="text/plain">
+CREATE TABLE r (x int);
+INSERT INTO r VALUES (1);
+INSERT INTO r VALUES (2);
+INSERT INTO r VALUES (NULL);
+##CODE##
+</script>
+<script id="setup-join" type="text/plain">
+CREATE TABLE Pname (ID int, name text);
+INSERT INTO Pname VALUES (1, 'Casa');
+INSERT INTO Pname VALUES (2, 'Kira');
+CREATE TABLE Page (ID int, age int);
+INSERT INTO Page VALUES (1, 9);
+INSERT INTO Page VALUES (2, 7);
+##CODE##
+</script>
+<h1>SQL</h1>
+<p><strong>SQL</strong> is the language for databases. A SQL program is
+also called a <em>query</em>. Each query takes one or more tables as
+input, and produces one table as output. A table is a collection of
+rows, where each row has the same number of columns. Each column has a
+name and a type, and stores the same type of data.</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>age</th>
+<th>weight</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Casa</td>
+<td>9</td>
+<td>12</td>
+</tr>
+<tr>
+<td>Kira</td>
+<td>7</td>
+<td>10</td>
+</tr>
+<tr>
+<td>Toby</td>
+<td>17</td>
+<td>40</td>
+</tr>
+<tr>
+<td>Maya</td>
+<td>10</td>
+<td>34</td>
+</tr>
+</tbody>
+</table>
+<p>Here’s the simplest SQL query:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> name</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> pets</span></code></pre></div>
+<codapi-snippet sandbox="sqlite" engine="wasi" editor="basic" template="#setup-pets-basic"></codapi-snippet>
+<p>It returns a table containing a single column, namely
+<code>name</code>.</p>
+<p>We can also return multiple columns, or evaluate expressions over
+them:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> name, weight <span class="op">/</span> (age <span class="op">+</span> <span class="dv">5</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> pets</span></code></pre></div>
+<codapi-snippet sandbox="sqlite" engine="wasi" editor="basic" template="#setup-pets-basic"></codapi-snippet>
+<p>Conditions in the <code>WHERE</code> clause can be used to filter out
+rows:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> name</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> pets</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a> <span class="kw">WHERE</span> age <span class="op">&lt;</span> <span class="dv">10</span></span></code></pre></div>
+<codapi-snippet sandbox="sqlite" engine="wasi" editor="basic" template="#setup-pets-basic"></codapi-snippet>
+<p>The query can be understood as a <code>for</code>-loop:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (name, age, weight) <span class="kw">in</span> pets:</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> age <span class="op">&lt;</span> <span class="dv">10</span>:</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(name)</span></code></pre></div>
+<p>An aggregate function takes in a whole column and returns a single
+value:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- also try MAX, SUM, or COUNT</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="fu">MIN</span>(age)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> pets</span></code></pre></div>
+<codapi-snippet sandbox="sqlite" engine="wasi" editor="basic" template="#setup-pets-basic"></codapi-snippet>
+<p>Aggregate functions can also be applied by group:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>age</th>
+<th>weight</th>
+<th>kind</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Casa</td>
+<td>9</td>
+<td>12</td>
+<td>cat</td>
+</tr>
+<tr>
+<td>Kira</td>
+<td>7</td>
+<td>10</td>
+<td>cat</td>
+</tr>
+<tr>
+<td>Toby</td>
+<td>17</td>
+<td>40</td>
+<td>dog</td>
+</tr>
+<tr>
+<td>Maya</td>
+<td>10</td>
+<td>34</td>
+<td>dog</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>  <span class="kw">SELECT</span> kind, <span class="fu">max</span>(age)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">FROM</span> pets</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> kind</span></code></pre></div>
+<codapi-snippet sandbox="sqlite" engine="wasi" editor="basic" template="#setup-pets-kind"></codapi-snippet>
+<p>The rows will get collected into different groups, one per different
+value of <code>kind</code>. Here we will get two groups:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>age</th>
+<th>weight</th>
+<th>kind</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Casa</td>
+<td>9</td>
+<td>12</td>
+<td>cat</td>
+</tr>
+<tr>
+<td>Kira</td>
+<td>7</td>
+<td>10</td>
+<td>cat</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>age</th>
+<th>weight</th>
+<th>kind</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Toby</td>
+<td>17</td>
+<td>40</td>
+<td>dog</td>
+</tr>
+<tr>
+<td>Maya</td>
+<td>10</td>
+<td>34</td>
+<td>dog</td>
+</tr>
+</tbody>
+</table>
+<p>Then, the aggregate function is applied to each group, reducing it to
+one row each:</p>
+<table>
+<thead>
+<tr>
+<th>kind</th>
+<th>max(age)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cat</td>
+<td>12</td>
+</tr>
+<tr>
+<td>dog</td>
+<td>17</td>
+</tr>
+</tbody>
+</table>
+<p>Note that every column in the <code>GROUP BY</code> clause
+<em>must</em> also appear in the <code>SELECT</code> clause, and any
+other column in the <code>SELECT</code> clause <em>must</em> be
+aggregated. The following query is invalid because <code>weight</code>
+neither appears in <code>GROUP BY</code> nor is aggregated.</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>  <span class="kw">SELECT</span> kind, weight, <span class="fu">max</span>(age)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">FROM</span> pets</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> kind</span></code></pre></div>
+<codapi-snippet sandbox="sqlite" engine="wasi" editor="basic" template="#setup-pets-kind"></codapi-snippet>
+<p>A more formal way to represent database queries is <em>relational
+algebra</em>. Relational algebra consists of a set of <em>relation</em>
+(a.k.a. table) operators. Each operator takes one or more tables as
+input, and produces an output table.</p>
+<p>The <em>selection</em> operator <span
+class="math inline">\sigma_p(t)</span> filters table <span
+class="math inline">t</span> by condition <span
+class="math inline">p</span>, e.g. <span class="math inline">\sigma_{age
+&lt; 10}(\text{pets})</span> corresponds to:</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> pets</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a> <span class="kw">WHERE</span> age <span class="op">&lt;</span> <span class="dv">10</span></span></code></pre></div>
+<codapi-snippet sandbox="sqlite" engine="wasi" editor="basic" template="#setup-pets-basic"></codapi-snippet>
+<p>Here <code>SELECT *</code> means “output all columns”.</p>
+<p>The <em>projection</em> operator <span
+class="math inline">\pi_e(t)</span> evaluates (“maps”) an expression
+<span class="math inline">e</span> over each row of <span
+class="math inline">t</span>. For example, <span
+class="math inline">\pi_{\text{age} + 5, \text{weight} * 2}(t)</span>
+corresponds to:</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> age <span class="op">+</span> <span class="dv">5</span>, weight <span class="op">*</span> <span class="dv">2</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> pets</span></code></pre></div>
+<codapi-snippet sandbox="sqlite" engine="wasi" editor="basic" template="#setup-pets-basic"></codapi-snippet>
+<p>The <em>aggregation</em> operator <span
+class="math inline">\gamma_{x, y, F(z)}</span> groups a table by columns
+<span class="math inline">x, y</span> and aggregates each group by
+function <span class="math inline">F</span>. <span
+class="math inline">\gamma_{\text{age},
+\max(\text{weight})}(\text{pets})</span> corresponds to:</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>  <span class="kw">SELECT</span> age, <span class="fu">MAX</span>(weight)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">FROM</span> pets</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> age</span></code></pre></div>
+<codapi-snippet sandbox="sqlite" engine="wasi" editor="basic" template="#setup-pets-basic"></codapi-snippet>
+<p>Note that grouping and aggregation is done in one operator, because
+grouping alone does not produce a valid table (it produces a “mini
+table” per group).</p>
+<p>Here are the relevant operators so far, and which part of a SQL query
+they correspond to. Confusingly, although <span
+class="math inline">\sigma</span> is called the <em>selection</em>
+operator, it actually corresponds to the <code>WHERE</code> clause,
+whereas the <em>projection</em> <span class="math inline">\pi</span>
+corresponds to the <code>SELECT</code> clause.<a href="#fn1"
+class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>Name</th>
+<th>Notation</th>
+<th>Meaning</th>
+<th>SQL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>selection</td>
+<td><span class="math inline">\sigma_p(t)</span></td>
+<td>filter by condition <span class="math inline">p</span></td>
+<td><code>WHERE</code></td>
+</tr>
+<tr>
+<td>projection</td>
+<td><span class="math inline">\pi_{e(x, y)}(t)</span></td>
+<td>map an expression <span class="math inline">e</span> over <span
+class="math inline">x, y</span></td>
+<td><code>SELECT</code></td>
+</tr>
+<tr>
+<td>aggregation</td>
+<td><span class="math inline">\gamma_{x, F(y)}(t)</span></td>
+<td>group by <span class="math inline">x</span>, aggregate over <span
+class="math inline">y</span> using <span
+class="math inline">F</span></td>
+<td><code>GROUP BY</code> &amp; <code>SELECT</code></td>
+</tr>
+</tbody>
+</table>
+<p>So far we’ve only been using one table in the <code>FROM</code>
+clause. We can also supply multiple tables. Suppose we break down our
+<em>pets</em> table into separate ones linked by ID:</p>
+<div class="columns">
+<div class="column">
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Casa</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Kira</td>
+</tr>
+</tbody>
+</table>
+</div><div class="column">
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>age</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>9</td>
+</tr>
+<tr>
+<td>2</td>
+<td>7</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>To query across tables, we need to <em>join</em> them:</p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> name, age</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> Pname, Page</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a> <span class="kw">WHERE</span> Pname.<span class="kw">ID</span> <span class="op">=</span> Page.<span class="kw">ID</span></span></code></pre></div>
+<codapi-snippet sandbox="sqlite" engine="wasi" editor="basic" template="#setup-join"></codapi-snippet>
+<p>Note that we can just use <code>name</code> and <code>age</code> in
+the output because it is unambiguous which table each column comes from,
+but in the <code>WHERE</code> clause we have to use
+<code>Pname.ID</code> and <code>Page.ID</code> to specify which
+<code>ID</code> columns we are comparing.</p>
+<p>Let’s break down the query to understand what’s going on. First, if
+we drop the <code>WHERE</code> clause and <code>SELECT</code> all
+columns:</p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> Pname, Page</span></code></pre></div>
+<codapi-snippet sandbox="sqlite" engine="wasi" editor="basic" template="#setup-join"></codapi-snippet>
+<p>This takes the <em>Cartesian product</em> of the tables. Namely it
+produces a table containing all possible pairings of the rows:</p>
+<table>
+<thead>
+<tr>
+<th>Pname.ID</th>
+<th>name</th>
+<th>Page.ID</th>
+<th>age</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Casa</td>
+<td>1</td>
+<td>9</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Casa</td>
+<td>2</td>
+<td>7</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Kira</td>
+<td>1</td>
+<td>9</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Kira</td>
+<td>2</td>
+<td>7</td>
+</tr>
+</tbody>
+</table>
+<p>Cartesian product has its own relational algebra operator <span
+class="math inline">\times</span>; the current query computes exactly
+<span class="math inline">\text{Pname} \times \text{Page}</span>.</p>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> Pname, Page</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a> <span class="kw">WHERE</span> Pname.<span class="kw">ID</span> <span class="op">=</span> Page.<span class="kw">ID</span></span></code></pre></div>
+<codapi-snippet sandbox="sqlite" engine="wasi" editor="basic" template="#setup-join"></codapi-snippet>
+<p>Adding back the <code>WHERE</code> clause, we filter down the
+Cartesian product to keep only the rows where the IDs match:</p>
+<table>
+<thead>
+<tr>
+<th>Pname.ID</th>
+<th>name</th>
+<th>Page.ID</th>
+<th>age</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Casa</td>
+<td>1</td>
+<td>9</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Kira</td>
+<td>2</td>
+<td>7</td>
+</tr>
+</tbody>
+</table>
+<p>In relational algebra: <span
+class="math inline">\sigma_{\text{Pname}.\text{ID} =
+\text{Page}.\text{ID}}(\text{Pname} \times \text{Page})</span></p>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> name, age</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> Pname, Page</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a> <span class="kw">WHERE</span> Pname.<span class="kw">ID</span> <span class="op">=</span> Page.<span class="kw">ID</span></span></code></pre></div>
+<codapi-snippet sandbox="sqlite" engine="wasi" editor="basic" template="#setup-join"></codapi-snippet>
+<p>Finally, we keep only the <code>name</code> and <code>age</code>
+columns in the output:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>age</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Casa</td>
+<td>9</td>
+</tr>
+<tr>
+<td>Kira</td>
+<td>7</td>
+</tr>
+</tbody>
+</table>
+<p>In relational algebra: <span class="math inline">\pi_{\text{name},
+\text{age}}(\sigma_{\text{Pname}.\text{ID} =
+\text{Page}.\text{ID}}(\text{Pname} \times \text{Page}))</span></p>
+<p>Joins can be understood as running nested loops over the tables:</p>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> Pname.ID, name <span class="kw">in</span> Pname:</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> Page.ID, age <span class="kw">in</span> Page:</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> Pname.ID <span class="op">==</span> Page.ID:</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>      <span class="bu">print</span>(name, age)</span></code></pre></div>
+<p>If the column being <em>joined on</em> is a unique identifier, you
+can also think of the join as looping over one table while looking up
+from the other:</p>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ID, name <span class="kw">in</span> Pname:</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  age <span class="op">=</span> Page[ID]</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="bu">print</span>(name, age)</span></code></pre></div>
+<p>So far we’ve been implementing our computation with single queries.
+Sometimes it’s useful, or necessary, to compose multiple
+<em>subqueries</em> into a large one.</p>
+<p>Suppose we add an <code>owner</code> column to our <em>pets</em>
+table. The following query finds people with either cats or dogs:</p>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> owner</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> pets</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a> <span class="kw">WHERE</span> pets.kind <span class="op">=</span> <span class="st">&#39;cat&#39;</span> <span class="kw">OR</span> pets.kind <span class="op">=</span> <span class="st">&#39;dog&#39;</span></span></code></pre></div>
+<codapi-snippet sandbox="sqlite" engine="wasi" editor="basic" template="#setup-pets-owner"></codapi-snippet>
+<p>But the following query does <em>not</em> find people with both cats
+and dogs (why?):</p>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> owner</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> pets</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a> <span class="kw">WHERE</span> pets.kind <span class="op">=</span> <span class="st">&#39;cat&#39;</span> <span class="kw">AND</span> pets.kind <span class="op">=</span> <span class="st">&#39;dog&#39;</span></span></code></pre></div>
+<codapi-snippet sandbox="sqlite" engine="wasi" editor="basic" template="#setup-pets-owner"></codapi-snippet>
+<p>Instead, we can <code>INTERSECT</code> two subqueries:</p>
+<div class="sourceCode" id="cb19"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> owner <span class="kw">FROM</span> pets <span class="kw">WHERE</span> kind <span class="op">=</span> <span class="st">&#39;cat&#39;</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="kw">INTERSECT</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> owner <span class="kw">FROM</span> pets <span class="kw">WHERE</span> kind <span class="op">=</span> <span class="st">&#39;dog&#39;</span></span></code></pre></div>
+<codapi-snippet sandbox="sqlite" engine="wasi" editor="basic" template="#setup-pets-owner"></codapi-snippet>
+<p>Similarly, we can also take the union/difference of two tables:</p>
+<div class="sourceCode" id="cb20"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- also try EXCEPT</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> owner <span class="kw">FROM</span> pets <span class="kw">WHERE</span> kind <span class="op">=</span> <span class="st">&#39;cat&#39;</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="kw">UNION</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> owner <span class="kw">FROM</span> pets <span class="kw">WHERE</span> kind <span class="op">=</span> <span class="st">&#39;dog&#39;</span></span></code></pre></div>
+<codapi-snippet sandbox="sqlite" engine="wasi" editor="basic" template="#setup-pets-owner"></codapi-snippet>
+<p>When working with subqueries, it can be helpful to store the query
+result in variables. There are several different ways to do that in
+SQL.</p>
+<p>First, we can just create a new table storing the query result:</p>
+<div class="sourceCode" id="cb21"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> catpeople <span class="kw">AS</span> </span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>      <span class="kw">SELECT</span> owner <span class="kw">FROM</span> pets <span class="kw">WHERE</span> kind <span class="op">=</span> <span class="st">&#39;cat&#39;</span>;</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> dogpeople <span class="kw">AS</span> </span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>      <span class="kw">SELECT</span> owner <span class="kw">FROM</span> pets <span class="kw">WHERE</span> kind <span class="op">=</span> <span class="st">&#39;dog&#39;</span>;</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> catpeople </span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="kw">INTERSECT</span> </span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> dogpeople</span></code></pre></div>
+<codapi-snippet sandbox="sqlite" engine="wasi" editor="basic" template="#setup-pets-owner"></codapi-snippet>
+<p>This stores the query result in “global variables” that are also
+accessible to other queries.</p>
+<p>To store the result in a local variable accessible to a single query
+only, use <code>WITH</code>:</p>
+<div class="sourceCode" id="cb22"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="kw">WITH</span> catpeople <span class="kw">AS</span> (</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>      <span class="kw">SELECT</span> owner <span class="kw">FROM</span> pets <span class="kw">WHERE</span> kind <span class="op">=</span> <span class="st">&#39;cat&#39;</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  ), dogpeople <span class="kw">AS</span> (</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>      <span class="kw">SELECT</span> owner <span class="kw">FROM</span> pets <span class="kw">WHERE</span> kind <span class="op">=</span> <span class="st">&#39;dog&#39;</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> catpeople </span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="kw">INTERSECT</span> </span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> dogpeople</span></code></pre></div>
+<codapi-snippet sandbox="sqlite" engine="wasi" editor="basic" template="#setup-pets-owner"></codapi-snippet>
+<p>Note there are no semicolons after the <code>WITH</code> clauses
+because the above is considered one single query.</p>
+<p>Sometimes we want to keep data stored in variables automatically
+updated as the underlying table changes. For this we can create
+<em>views</em>:</p>
+<div class="sourceCode" id="cb23"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">VIEW</span> catpeople <span class="kw">AS</span> </span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>     <span class="kw">SELECT</span> owner <span class="kw">FROM</span> pets <span class="kw">WHERE</span> kind <span class="op">=</span> <span class="st">&#39;cat&#39;</span>;</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">VIEW</span> dogpeople <span class="kw">AS</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>     <span class="kw">SELECT</span> owner <span class="kw">FROM</span> pets <span class="kw">WHERE</span> kind <span class="op">=</span> <span class="st">&#39;dog&#39;</span>;</span></code></pre></div>
+<p>Below, Lisa will appear in the result when the query runs the second
+time after the insertions, even though we didn’t explicitly update
+<code>catpeople</code> and <code>dogpeople</code>.</p>
+<div class="sourceCode" id="cb24"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> catpeople </span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="kw">INTERSECT</span> </span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> dogpeople;</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> pets <span class="kw">values</span> (<span class="st">&#39;Carlo&#39;</span>, <span class="dv">5</span>, <span class="dv">20</span>, <span class="st">&#39;dog&#39;</span>, <span class="st">&#39;Lisa&#39;</span>);</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> pets <span class="kw">values</span> (<span class="st">&#39;Zoe&#39;</span>, <span class="dv">3</span>, <span class="dv">8</span>, <span class="st">&#39;cat&#39;</span>, <span class="st">&#39;Lisa&#39;</span>);</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> catpeople </span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a><span class="kw">INTERSECT</span> </span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> dogpeople;</span></code></pre></div>
+<codapi-snippet sandbox="sqlite" engine="wasi" editor="basic" template="#setup-pets-views"></codapi-snippet>
+<p>Subqueries are very helpful for complex queries. Suppose we want to
+find pet kinds with average age &gt; 10. The following query is wrong
+because aggregate cannot appear in the <code>WHERE</code> clause:<a
+href="#fn2" class="footnote-ref" id="fnref2"
+role="doc-noteref"><sup>2</sup></a></p>
+<div class="sourceCode" id="cb25"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>  <span class="kw">SELECT</span> kind, <span class="fu">AVG</span>(age) <span class="kw">FROM</span> pets</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>   <span class="kw">WHERE</span> <span class="fu">AVG</span>(age) <span class="op">&gt;</span> <span class="dv">10</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> kind</span></code></pre></div>
+<codapi-snippet sandbox="sqlite" engine="wasi" editor="basic" template="#setup-pets-kind"></codapi-snippet>
+<p>Instead, we can first calculate the average age per kind:</p>
+<div class="sourceCode" id="cb26"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> averages <span class="kw">AS</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>      <span class="kw">SELECT</span> kind, <span class="fu">AVG</span>(age) <span class="kw">AS</span> a</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>        <span class="kw">FROM</span> pets</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">GROUP</span> <span class="kw">BY</span> kind;</span></code></pre></div>
+<p>Then we filter that table by the average age:</p>
+<div class="sourceCode" id="cb27"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> </span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> averages</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a> <span class="kw">WHERE</span> averages.a <span class="op">&gt;</span> <span class="fl">10.0</span>;</span></code></pre></div>
+<codapi-snippet sandbox="sqlite" engine="wasi" editor="basic" template="#setup-averages"></codapi-snippet>
+<p>Or we can use the <code>WITH</code> syntax:</p>
+<div class="sourceCode" id="cb28"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="kw">WITH</span> averages <span class="kw">AS</span> (</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>      <span class="kw">SELECT</span> kind, <span class="fu">AVG</span>(age) <span class="kw">AS</span> a</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>        <span class="kw">FROM</span> pets <span class="kw">GROUP</span> <span class="kw">BY</span> kind</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> averages <span class="kw">WHERE</span> averages.a <span class="op">&gt;</span> <span class="fl">10.0</span>;</span></code></pre></div>
+<codapi-snippet sandbox="sqlite" engine="wasi" editor="basic" template="#setup-pets-kind"></codapi-snippet>
+<p>For this particular query, SQL also has a convenient
+<code>HAVING</code> clause:</p>
+<div class="sourceCode" id="cb29"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>  <span class="kw">SELECT</span> kind, <span class="fu">AVG</span>(age) </span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">FROM</span> pets</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> kind</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">HAVING</span> <span class="fu">AVG</span>(age) <span class="op">&gt;</span> <span class="dv">10</span></span></code></pre></div>
+<codapi-snippet sandbox="sqlite" engine="wasi" editor="basic" template="#setup-pets-kind"></codapi-snippet>
+<p>It’s like <code>WHERE</code>, but the condition is evaluated on each
+group <em>after</em> grouping so we can use aggregate functions.</p>
+<p>Subqueries are even more powerful when <em>nested</em> inside another
+query. To appreciate this, let’s try to find the oldest cat (“argmax”).
+We’ll first do this the “hacky way” to pick up some SQL features:</p>
+<div class="sourceCode" id="cb30"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>  <span class="kw">SELECT</span> name, age</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">FROM</span> pets</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>   <span class="kw">WHERE</span> kind <span class="op">=</span> <span class="st">&#39;cat&#39;</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> age <span class="kw">DESC</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>   <span class="kw">LIMIT</span> <span class="dv">1</span></span></code></pre></div>
+<codapi-snippet sandbox="sqlite" engine="wasi" editor="basic" template="#setup-pets-kind"></codapi-snippet>
+<p>The new bits here are <code>ORDER BY age DESC</code> – which sorts
+the output by <code>age</code> from large to small – and
+<code>LIMIT 1</code> – which limits the output to the first row. This is
+hacky because SQL is agnostic to ordering in general, but here we rely
+on the order.</p>
+<p>To do this properly, we can use a subquery. First, we find the age of
+the oldest cat:</p>
+<div class="sourceCode" id="cb31"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="fu">max</span>(age)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> pets</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a> <span class="kw">WHERE</span> kind <span class="op">=</span> <span class="st">&#39;cat&#39;</span></span></code></pre></div>
+<codapi-snippet sandbox="sqlite" engine="wasi" editor="basic" template="#setup-pets-kind"></codapi-snippet>
+<p>Then, we store this in a variable for use in another query:</p>
+<div class="sourceCode" id="cb32"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="kw">WITH</span> oldage <span class="kw">AS</span> (</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">SELECT</span> <span class="fu">max</span>(age) <span class="kw">AS</span> a</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">FROM</span> pets</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>   <span class="kw">WHERE</span> kind <span class="op">=</span> <span class="st">&#39;cat&#39;</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> name, age</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> pets, oldage</span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a> <span class="kw">WHERE</span> kind <span class="op">=</span> <span class="st">&#39;cat&#39;</span></span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>   <span class="kw">AND</span> age <span class="op">=</span> oldage.a</span></code></pre></div>
+<codapi-snippet sandbox="sqlite" engine="wasi" editor="basic" template="#setup-pets-kind"></codapi-snippet>
+<p>In this case, because the <code>oldage</code> subquery stores a
+single value (a.k.a. a <em>scalar</em>), we can use it directly as a
+<em>nested subquery</em>:</p>
+<div class="sourceCode" id="cb33"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> name, age</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> pets</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a> <span class="kw">WHERE</span> kind <span class="op">=</span> <span class="st">&#39;cat&#39;</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>   <span class="kw">AND</span> age <span class="op">=</span> (<span class="kw">SELECT</span> <span class="fu">max</span>(age)</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>                <span class="kw">FROM</span> pets </span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>               <span class="kw">WHERE</span> kind <span class="op">=</span> <span class="st">&#39;cat&#39;</span>)</span></code></pre></div>
+<codapi-snippet sandbox="sqlite" engine="wasi" editor="basic" template="#setup-pets-kind"></codapi-snippet>
+<p>Remember, this only works because the inner query is a scalar! Also
+note that, unlike the hacky query, this query returns <em>all</em> pets
+that are oldest.</p>
+<p>Now, let’s move on to the more general problem: how can we find the
+oldest pet(s) <em>per kind</em>? First we can remove the
+<code>kind = 'cat'</code> filter:</p>
+<div class="sourceCode" id="cb34"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> name, age</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> pets</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a> <span class="kw">WHERE</span> age <span class="op">=</span> (<span class="kw">SELECT</span> <span class="fu">max</span>(age) <span class="kw">FROM</span> pets)</span></code></pre></div>
+<codapi-snippet sandbox="sqlite" engine="wasi" editor="basic" template="#setup-pets-kind"></codapi-snippet>
+<p>But that won’t work, because the inner query now returns the
+<em>overall</em> oldest age.</p>
+<p>To fix it, we need to filter the inner query by <em>the current pet
+kind</em> considered by the outer query:</p>
+<div class="sourceCode" id="cb35"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> name, age</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> pets <span class="kw">as</span> p1</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a> <span class="kw">WHERE</span> age <span class="op">=</span> (<span class="kw">SELECT</span> <span class="fu">max</span>(age)</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>                <span class="kw">FROM</span> pets <span class="kw">as</span> p2</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>               <span class="kw">WHERE</span> p2.kind <span class="op">=</span> p1.kind)</span></code></pre></div>
+<codapi-snippet sandbox="sqlite" engine="wasi" editor="basic" template="#setup-pets-kind"></codapi-snippet>
+<p>The idea is that, the inner query is evaluated once <em>per row</em>
+of the outer query, because the WHERE clause of the outer query runs
+once per row. Just like a nested loop.</p>
+<p>We can also use nested queries in the <code>SELECT</code> clause:</p>
+<div class="sourceCode" id="cb36"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> kind, (<span class="kw">SELECT</span> <span class="fu">max</span>(age)</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>                <span class="kw">FROM</span> pets <span class="kw">as</span> p2</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>               <span class="kw">WHERE</span> p2.kind <span class="op">=</span> p1.kind)</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> pets <span class="kw">as</span> p1</span></code></pre></div>
+<codapi-snippet sandbox="sqlite" engine="wasi" editor="basic" template="#setup-pets-kind"></codapi-snippet>
+<p>Which is a convoluted way to implement “max age per kind”.<a
+href="#fn3" class="footnote-ref" id="fnref3"
+role="doc-noteref"><sup>3</sup></a></p>
+<p>Let’s see two other ways to find old pets, while introducing a bit
+more SQL features along the way.</p>
+<div class="sourceCode" id="cb37"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> name, age</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> pets <span class="kw">as</span> p1</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a> <span class="kw">WHERE</span> <span class="kw">NOT</span> <span class="kw">EXISTS</span> (<span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>                     <span class="kw">FROM</span> pets <span class="kw">as</span> p2</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">WHERE</span> p2.age <span class="op">&gt;</span> p1.age</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>                      <span class="kw">AND</span> p2.kind <span class="op">=</span> p2.kind)</span></code></pre></div>
+<codapi-snippet sandbox="sqlite" engine="wasi" editor="basic" template="#setup-pets-kind"></codapi-snippet>
+<p>This query is rather self-explanatory: an oldest cat is one where
+there is no cat older than it.</p>
+<p>We can also use the <code>ALL</code> keyword:</p>
+<div class="sourceCode" id="cb38"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> name, age</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> pets <span class="kw">as</span> p1</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a> <span class="kw">WHERE</span> age <span class="op">&gt;=</span> <span class="kw">ALL</span> (<span class="kw">SELECT</span> age</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>                     <span class="kw">FROM</span> pets <span class="kw">as</span> p2</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">WHERE</span> p2.kind <span class="op">=</span> p1.kind)</span></code></pre></div>
+<p>Here, <code>age &gt;= ALL (SELECT ...)</code> is true if and only if
+<code>age &gt;= x</code> for <em>all</em> values of <code>x</code>
+returned by the subquery.</p>
+<p>Similarly, we can also use <code>ANY</code>:</p>
+<div class="sourceCode" id="cb39"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> name, age</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> pets <span class="kw">as</span> p1</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a> <span class="kw">WHERE</span> <span class="kw">not</span> age <span class="op">&lt;</span> <span class="kw">ANY</span> (<span class="kw">SELECT</span> age</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>                        <span class="kw">FROM</span> pets <span class="kw">as</span> p2</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>                       <span class="kw">WHERE</span> p2.kind <span class="op">=</span> p1.kind)</span></code></pre></div>
+<p>Naturally, the oldest cat shouldn’t be younger than any other
+cat.</p>
+<p>There’s <em>nothing</em> left to learn in SQL, and we’ll cover
+exactly that now. Wait, what?</p>
+<p>Consider the following queries. What do you expect them to
+return?</p>
+<div class="sourceCode" id="cb40"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="fu">COUNT</span>(<span class="op">*</span>) <span class="kw">FROM</span> r;</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="fu">COUNT</span>(<span class="op">*</span>) <span class="kw">FROM</span> r <span class="kw">WHERE</span> r.x <span class="op">=</span> r.x;</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="fu">COUNT</span>(<span class="op">*</span>) <span class="kw">FROM</span> r <span class="kw">WHERE</span> <span class="kw">NOT</span> (r.x <span class="op">&lt;&gt;</span> r.x);</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="fu">COUNT</span>(<span class="op">*</span>) <span class="kw">FROM</span> r <span class="kw">WHERE</span> r.x <span class="op">=</span> r.x <span class="kw">OR</span> r.x <span class="op">=</span> r.x;</span></code></pre></div>
+<codapi-snippet sandbox="sqlite" engine="wasi" editor="basic" template="#setup-r-null"></codapi-snippet>
+<p>Normally, all queries should return the size of the input table
+<code>r</code>, but not if <code>r</code> contains <em>nothing</em>; and
+by <em>nothing</em>, I mean <code>NULL</code>.</p>
+<p>In SQL, the <code>NULL</code> value stands for the absence of a
+value. There are many occasions when you might want to use
+<code>NULL</code>:</p>
+<ul>
+<li>You don’t know the true value of an entry (age of a shelter
+cat)</li>
+<li>The column is not applicable to this row (“owner” of a stray)</li>
+<li>The entry should be treated as a default value</li>
+</ul>
+<p>In general, <code>NULL</code> means “missing information”.</p>
+<p>SQL treats <code>NULL</code> specially during query evaluation. To
+understand that, we need to look at SQL operations more formally.</p>
+<p>First, there are two kinds of values in SQL:</p>
+<ul>
+<li><strong>Data values</strong></li>
+<li><strong>Logical values</strong></li>
+</ul>
+<p><strong>Data values</strong> are like numbers, dates, strings,
+etc.—the stuff you’re actually interested in storing in your tables. A
+special data value is the <code>NULL</code> value, representing
+“nothingness” or “unknown”.</p>
+<p><strong>Logical values</strong> are your familiar booleans true and
+false, used by the engine in intermediate calculations. A special
+logical value is the <code>UNKNOWN</code> value, representing “unknown”.
+You can think of it as just the logical counterpart to
+<code>NULL</code>.</p>
+<p>There are 3 kinds of operators in SQL:</p>
+<ol type="1">
+<li>Data operators</li>
+<li>Predicates</li>
+<li>Logical connectives</li>
+</ol>
+<p><strong>Data operators</strong>:</p>
+<pre><code>      1             +             2
+&lt;data value&gt; &lt;data operator&gt; &lt;data value&gt;</code></pre>
+<p>The entire expression evaluates to itself another <strong>data
+value</strong>.</p>
+<p><strong>Predicates</strong>:</p>
+<pre><code>      1               &lt;             2
+&lt;data value&gt; &lt;predicate operator&gt; &lt;data value&gt;</code></pre>
+<p>The entire expression evaluates to a <strong>logical
+value</strong>.</p>
+<p><strong>Logical connectives</strong>:</p>
+<pre><code>      true              AND               false
+&lt;logical value&gt; &lt;logical operator&gt; &lt;logical value&gt;</code></pre>
+<p>The entire expression evaluates to itself another <strong>logical
+value</strong>.</p>
+<p>Conveniently summarized:</p>
+<table>
+<thead>
+<tr>
+<th>Operator kind</th>
+<th>Example</th>
+<th>Input -&gt; Output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Data</td>
+<td>+ - * /</td>
+<td>data <span class="math inline">\to</span> data</td>
+</tr>
+<tr>
+<td>Predicate</td>
+<td>&gt; &lt; =</td>
+<td>data <span class="math inline">\to</span> logic</td>
+</tr>
+<tr>
+<td>Logical</td>
+<td>AND OR NOT</td>
+<td>logic <span class="math inline">\to</span> logic</td>
+</tr>
+</tbody>
+</table>
+<p>Some systems support “if/case statements” that goes from logic to
+data, but you won’t need those very often.</p>
+<p>These operators all behave as you would expect if <code>NULL</code>
+is <em>not</em> involved. When <code>NULL</code> <em>is</em> involved,
+there are special rules:</p>
+<table>
+<thead>
+<tr>
+<th>Kind</th>
+<th>Example</th>
+<th>Output on missing input</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Data</td>
+<td>+ - * /</td>
+<td><code>NULL</code></td>
+</tr>
+<tr>
+<td>Predicate</td>
+<td>&gt; &lt; =</td>
+<td><code>UNKNOWN</code></td>
+</tr>
+<tr>
+<td>Logical</td>
+<td>AND OR NOT</td>
+<td><em>3 Valued Logic</em></td>
+</tr>
+</tbody>
+</table>
+<p>For <strong>data</strong>: if either operand is <code>NULL</code>,
+the result will also be <code>NULL</code></p>
+<p>For <strong>predicate</strong>: if any argument is <code>NULL</code>,
+the output is <code>UNKNOWN</code><a href="#fn4" class="footnote-ref"
+id="fnref4" role="doc-noteref"><sup>4</sup></a></p>
+<p>For <strong>logical</strong>, we apply <strong>3 valued
+logic</strong></p>
+<p><strong>3 Valued Logic</strong></p>
+<div class="columns onlytextwidth">
+<div class="column" style="width:33%;">
+<table>
+<thead>
+<tr>
+<th>AND</th>
+<th>T</th>
+<th>F</th>
+<th>U</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T</td>
+<td>T</td>
+<td>F</td>
+<td><strong>U</strong></td>
+</tr>
+<tr>
+<td>F</td>
+<td>F</td>
+<td>F</td>
+<td><strong>F</strong></td>
+</tr>
+<tr>
+<td>U</td>
+<td><strong>U</strong></td>
+<td><strong>F</strong></td>
+<td><strong>U</strong></td>
+</tr>
+</tbody>
+</table>
+</div><div class="column" style="width:33%;">
+<table>
+<thead>
+<tr>
+<th>OR</th>
+<th>T</th>
+<th>F</th>
+<th>U</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T</td>
+<td>T</td>
+<td>T</td>
+<td><strong>T</strong></td>
+</tr>
+<tr>
+<td>F</td>
+<td>T</td>
+<td>F</td>
+<td><strong>U</strong></td>
+</tr>
+<tr>
+<td>U</td>
+<td><strong>T</strong></td>
+<td><strong>U</strong></td>
+<td><strong>U</strong></td>
+</tr>
+</tbody>
+</table>
+</div><div class="column" style="width:33%;">
+<table>
+<thead>
+<tr>
+<th>NOT</th>
+<th>T</th>
+<th>F</th>
+<th>U</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>F</td>
+<td>T</td>
+<td><strong>U</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Don’t memorize these – they fall naturally out of “short-circuiting”:
+if we can already deduce the result from the non-missing operand, we use
+that, otherwise it’s UNKOWN.</p>
+<p>Finally, SQL will return a row only if the condition in
+<code>WHERE</code> is <code>true</code> on that row. In other words, it
+discards rows when the condition is <code>false</code> or
+<code>UNKNOWN</code>.</p>
+<p>Let’s now revisit the examples using these rules.</p>
+<div class="sourceCode" id="cb44"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> R</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> R.x<span class="op">=</span>R.x; <span class="co">-- NULL=NULL =&gt; UNKNOWN</span></span></code></pre></div>
+<codapi-snippet sandbox="sqlite" engine="wasi" editor="basic" template="#setup-r-null"></codapi-snippet>
+<p>Where <code>R.x</code> is <code>NULL</code>, the <code>WHERE</code>
+clause evaluates to <code>UNKNOWN</code>, so that row is
+<em>excluded</em>. The return table is <em>not</em> necessarily the same
+as <code>R</code>.</p>
+<div class="sourceCode" id="cb45"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> R</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> R.x <span class="op">=</span> R.x</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a><span class="kw">OR</span> R.x <span class="op">&lt;&gt;</span> R.x; <span class="co">-- NULL &lt;&gt; NULL =&gt; UNKNOWN</span></span></code></pre></div>
+<codapi-snippet sandbox="sqlite" engine="wasi" editor="basic" template="#setup-r-null"></codapi-snippet>
+<p>Same as above.</p>
+<div class="sourceCode" id="cb46"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> R</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> <span class="kw">null</span> <span class="op">=</span> <span class="kw">null</span>; <span class="co">-- NULL=NULL =&gt; UNKNOWN</span></span></code></pre></div>
+<codapi-snippet sandbox="sqlite" engine="wasi" editor="basic" template="#setup-r-null"></codapi-snippet>
+<p>Same as above. It’s just explicit this time.</p>
+<div class="sourceCode" id="cb47"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> R</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> <span class="kw">null</span> <span class="op">&lt;&gt;</span> <span class="kw">null</span>; <span class="co">-- NULL &lt;&gt; NULL =&gt; UNKNOWN</span></span></code></pre></div>
+<codapi-snippet sandbox="sqlite" engine="wasi" editor="basic" template="#setup-r-null"></codapi-snippet>
+<p>Same as above. It’s just explicit this time.</p>
+<div class="sourceCode" id="cb48"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> R</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a><span class="co">-- NULL &lt;&gt; NULL =&gt; UNKNOWN</span></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a><span class="co">-- NOT UNKNOWN =&gt; still UNKNOWN</span></span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> <span class="kw">NOT</span> <span class="kw">null</span> <span class="op">&lt;&gt;</span> <span class="kw">null</span>;</span></code></pre></div>
+<codapi-snippet sandbox="sqlite" engine="wasi" editor="basic" template="#setup-r-null"></codapi-snippet>
+<p>This time we have a nested operation. Just follow through with the
+rules and you’ll find when <code>WHERE</code> evaluates to
+<code>UNKNOWN</code>.</p>
+<section id="footnotes" class="footnotes footnotes-end-of-document"
+role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1"><p>I would much rather call <span
+class="math inline">\sigma</span> “filter” and <span
+class="math inline">\pi</span> “map”<a href="#fnref1"
+class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>The condition is evaluated per row and we can’t
+aggregate a single row.<a href="#fnref2" class="footnote-back"
+role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>But this query is different from the normal
+<code>GROUP BY</code> – how?<a href="#fnref3" class="footnote-back"
+role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>a special case is <code>IS NULL</code>, which of course
+returns <code>true</code> if the argument is <code>NULL</code>.<a
+href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+<script src="https://unpkg.com/@antonz/runno@0.6.1/dist/runno.js"></script>
+<script src="https://unpkg.com/@antonz/codapi@0.20.0/dist/engine/wasi.js"></script>
+<script src="https://unpkg.com/@antonz/codapi@0.20.0/dist/snippet.js"></script>
+</body>
+</html>

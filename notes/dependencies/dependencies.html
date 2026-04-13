@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dependencies</title>
+  <script defer=""
+  src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <link rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css" />
+  <link rel="stylesheet" href="https://unpkg.com/@antonz/codapi@0.20.0/dist/snippet.css">
+  <style>
+    body { max-width: 48em; margin: 2em auto; padding: 0 1em; font-family: system-ui, sans-serif; line-height: 1.6; }
+    pre { background: #f5f5f5; padding: 1em; overflow-x: auto; border-radius: 4px; }
+    code { font-size: 0.95em; }
+    table { border-collapse: collapse; border-spacing: 0; margin: 1em 0; }
+    th, td { border: 1px solid #999; padding: 0.3em 0.8em; }
+    codapi-output { line-height: 1.3; }
+    codapi-snippet + .sourceCode { margin-top: 0.5em; }
+    .sourceCode { margin-top: 0; margin-bottom: 0; }
+  </style>
+</head>
+<body>
+<script id="setup-pets-null-food" type="text/plain">
+CREATE TABLE pets (name text, age int, food text);
+INSERT INTO pets VALUES ('Casa', 9, 'chicken');
+INSERT INTO pets VALUES (NULL, NULL, 'grass');
+INSERT INTO pets VALUES ('Kira', 7, 'fish');
+INSERT INTO pets VALUES (NULL, NULL, 'grass');
+##CODE##
+</script>
+<h1>Dependencies</h1>
+<p>A key difference between a DB and a spreadsheet is that, in a DB,
+data is stored in multiple, interconnected tables. This raises the
+question of how to organize data across tables.</p>
+<p>Let’s consider our favorite pets again:</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>name</th>
+<th>age</th>
+<th>food</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Casa</td>
+<td>9</td>
+<td>chicken</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Casa</td>
+<td>9</td>
+<td>grass</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Kira</td>
+<td>7</td>
+<td>fish</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Kira</td>
+<td>7</td>
+<td>grass</td>
+</tr>
+</tbody>
+</table>
+<p>Here we have a new column storing their favorite food. But because
+each of them likes more than one kinds of food, we need two rows per
+cat, duplicating their name and age.</p>
+<p>You may be tempted to replace the duplicated data with
+<code>NULL</code>s to save space:</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>name</th>
+<th>age</th>
+<th>food</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Casa</td>
+<td>9</td>
+<td>chicken</td>
+</tr>
+<tr>
+<td>1</td>
+<td>NULL</td>
+<td>NULL</td>
+<td>grass</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Kira</td>
+<td>7</td>
+<td>fish</td>
+</tr>
+<tr>
+<td>2</td>
+<td>NULL</td>
+<td>NULL</td>
+<td>grass</td>
+</tr>
+</tbody>
+</table>
+<p>But now the natural query looking for cats who like grass breaks!</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> name</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> pets</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a> <span class="kw">WHERE</span> food <span class="op">=</span> <span class="st">&#39;grass&#39;</span></span></code></pre></div>
+<codapi-snippet sandbox="sqlite" engine="wasi" editor="basic" template="#setup-pets-null-food"></codapi-snippet>
+<p>So let’s go back to duplicating the entries.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>name</th>
+<th>age</th>
+<th>food</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Casa</td>
+<td>9</td>
+<td>chicken</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Casa</td>
+<td>9</td>
+<td>grass</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Kira</td>
+<td>7</td>
+<td>fish</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Kira</td>
+<td>7</td>
+<td>grass</td>
+</tr>
+</tbody>
+</table>
+<p>Can you think of a way to break up the data into multiple tables to
+remove the redundancy?</p>
+<p>We can have two tables, one storing name and age, and another storing
+food:</p>
+<div class="columns">
+<div class="column">
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>name</th>
+<th>age</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Casa</td>
+<td>9</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Kira</td>
+<td>7</td>
+</tr>
+</tbody>
+</table>
+</div><div class="column">
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>food</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>chicken</td>
+</tr>
+<tr>
+<td>1</td>
+<td>grass</td>
+</tr>
+<tr>
+<td>2</td>
+<td>fish</td>
+</tr>
+<tr>
+<td>2</td>
+<td>grass</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Now <em>name</em> and <em>age</em> are no longer repeated! You may
+notice the duplicated IDs in the second table, but that’s unavoidable,
+and an integer takes up little space.<a href="#fn1" class="footnote-ref"
+id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<p>Taking a step back, we see the root cause of the data redundancy is
+that although ID <em>uniquely determines</em> name and age, we repeat
+the information for every occurance of ID:</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>name</th>
+<th>age</th>
+<th>food</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Casa</td>
+<td>9</td>
+<td>chicken</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Casa</td>
+<td>9</td>
+<td>grass</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Kira</td>
+<td>7</td>
+<td>fish</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Kira</td>
+<td>7</td>
+<td>grass</td>
+</tr>
+</tbody>
+</table>
+<p>Formally, there is a <strong>functional dependency</strong> (FD)
+<span class="math inline">\text{ID} \to \text{name}</span>, as well as
+<span class="math inline">\text{ID} \to \text{age}</span>.</p>
+<p>In general, an FD <span class="math inline">X \to Y</span> (where
+<span class="math inline">X</span> and <span
+class="math inline">Y</span> are sets of attributes) holds for a table
+<span class="math inline">t</span>, if the value of <span
+class="math inline">X</span> uniquely determines the value of <span
+class="math inline">Y</span>.</p>
+<p>In our example, we also have <span class="math inline">\text{ID} \to
+\text{name, age}</span>, but <span class="math inline">\text{ID} \to
+\text{food}</span> does not hold.</p>
+<p>For an example with multiple attribute on the left, consider a table
+storing GPS coordinates and zipcode:</p>
+<table>
+<thead>
+<tr>
+<th>long.</th>
+<th>lat.</th>
+<th>zip</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>34N</td>
+<td>118W</td>
+<td>90095</td>
+</tr>
+<tr>
+<td>47N</td>
+<td>122W</td>
+<td>98195</td>
+</tr>
+</tbody>
+</table>
+<p>Neither the longitude nor the latitude along uniquely determines the
+zipcode, but they do together, so we have <span
+class="math inline">\text{long., lat.} \to \text{zip}</span></p>
+<p>There’s also some “trivial” FDs:</p>
+<ul>
+<li>For any attribute <span class="math inline">x</span>, <span
+class="math inline">x \to x</span> holds</li>
+<li>For any sets <span class="math inline">Y \subseteq X</span>, <span
+class="math inline">X \to Y</span> holds</li>
+</ul>
+<p>We say <span class="math inline">k</span> is a <em>key</em> if <span
+class="math inline">k \to x</span> holds for every attribute <span
+class="math inline">x</span> in the table.<a href="#fn2"
+class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> In
+our example, ID is a key after we break the table up, but it was not
+when we had one big table.</p>
+<div class="columns">
+<div class="column">
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>name</th>
+<th>age</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Casa</td>
+<td>9</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Kira</td>
+<td>7</td>
+</tr>
+</tbody>
+</table>
+</div><div class="column">
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>food</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>chicken</td>
+</tr>
+<tr>
+<td>1</td>
+<td>grass</td>
+</tr>
+<tr>
+<td>2</td>
+<td>fish</td>
+</tr>
+<tr>
+<td>2</td>
+<td>grass</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>“Breaking the table up” is formally known as <em>decomposition</em>
+or <em>normalization</em>, and the goal is to exploit FDs to remove
+redundancy.</p>
+<p>In our example, we decomposed with the FD <span
+class="math inline">\text{ID} \to \text{name, age}</span>.</p>
+<p>In general we want to decompose so that for every FD <span
+class="math inline">X \to Y</span>, <span class="math inline">X</span>
+is a key.<a href="#fn3" class="footnote-ref" id="fnref3"
+role="doc-noteref"><sup>3</sup></a><a href="#fn4" class="footnote-ref"
+id="fnref4" role="doc-noteref"><sup>4</sup></a></p>
+<p>But we could have decomposed in 2 steps: first with <span
+class="math inline">\text{ID} \to \text{name}</span>, then with <span
+class="math inline">\text{ID} \to \text{age}</span>:</p>
+<div class="columns onlytextwidth">
+<div class="column" style="width:30%;">
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Casa</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Kira</td>
+</tr>
+</tbody>
+</table>
+</div><div class="column" style="width:30%;">
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>age</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>9</td>
+</tr>
+<tr>
+<td>2</td>
+<td>7</td>
+</tr>
+</tbody>
+</table>
+</div><div class="column" style="width:30%;">
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>food</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>chicken</td>
+</tr>
+<tr>
+<td>1</td>
+<td>grass</td>
+</tr>
+<tr>
+<td>2</td>
+<td>fish</td>
+</tr>
+<tr>
+<td>2</td>
+<td>grass</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>This however takes up more space because the ID column is now
+duplicated.</p>
+<p>Intuitively, when we break up, we want to take as much as possible,
+i.e., we want to decompose with an FD that has many attributes on the
+right.</p>
+<p>To do this, we compute the <em>FD closure</em>: given a set of FDs
+<span class="math inline">\Phi</span>, the <em>closure</em> <span
+class="math inline">X^+</span> of a set <span
+class="math inline">X</span> is the largest set such that <span
+class="math inline">X \to X^+</span> follows from <span
+class="math inline">\Phi</span></p>
+<p>Here, an FD <span class="math inline">\phi</span> <em>follows
+from</em> <span class="math inline">\Phi</span> if <span
+class="math inline">\phi</span> holds in any table <span
+class="math inline">t</span> satisfying <span
+class="math inline">\Phi</span>.</p>
+<p>That’s all very abstract, so let’s look at some cats. Suppose we have
+a table with these columns:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>birth day</th>
+<th>age</th>
+<th>astrology sign</th>
+<th>personality</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+</tr>
+</tbody>
+</table>
+<p>Then we have: <span class="math display">
+\begin{aligned}
+    \text{bday} &amp;\to \text{age}  \\
+    \text{bday} &amp;\to \text{astro}  \\
+    \text{astro} &amp;\to \text{personality}
+\end{aligned}
+</span></p>
+<p>We can deduce <span class="math inline">\text{bday} \to
+\text{personality}</span> by <em>composing</em> the FDs <span
+class="math inline">\text{bday} \to \text{astro}</span> and <span
+class="math inline">\text{astro} \to \text{personality}</span>.</p>
+<p>In general, we can deduce additional FDs using the “Armstrong
+axioms”:</p>
+<ul>
+<li><strong>Reflexivity</strong>: <span class="math inline">X \to
+Y</span> if <span class="math inline">Y \subseteq X</span></li>
+<li><strong>Augmentation</strong>: if <span class="math inline">X \to
+Y</span>, then <span class="math inline">XZ \to YZ</span></li>
+<li><strong>Transitivity</strong>: if <span class="math inline">X \to
+Y</span> and <span class="math inline">Y \to Z</span>, then <span
+class="math inline">X \to Z</span></li>
+</ul>
+<p>We’ve seen examples of reflexivity and transitivity. Augmentation is
+also intuitive: from <span class="math inline">\text{bday} \to
+\text{age}</span> we can conclude <span class="math inline">\text{bday,
+name} \to \text{age, name}</span>.</p>
+<p>Actually, you don’t need to remember the rules. There’s a even
+simpler way to directly compute <span class="math inline">X^+</span>.
+The intuition can be explained with the <em>tableux method</em></p>
+<p>Given the FDs <span class="math inline">\text{bday} \to
+\text{age}</span>, <span class="math inline">\text{bday} \to
+\text{astro}</span>, and <span class="math inline">\text{astro} \to
+\text{pers.}</span>, let’s compute <span
+class="math inline">\text{bday}^+</span>. First we write down a table
+with just two rows:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>birth day</th>
+<th>age</th>
+<th>astrology sign</th>
+<th>personality</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Casa</td>
+<td>3/20/2017</td>
+<td>9</td>
+<td>Pisces</td>
+<td>dreamy</td>
+</tr>
+<tr>
+<td>?</td>
+<td>3/20/2017</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+</tr>
+</tbody>
+</table>
+<p>Then, we <em>apply</em> each FD to see if we can infer the unknown
+values.</p>
+<p><strong>Step 1:</strong> Apply <span class="math inline">\text{bday}
+\to \text{age}</span>. Both rows share the same birthday, so the unknown
+age must equal 9.</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>birth day</th>
+<th>age</th>
+<th>astrology sign</th>
+<th>personality</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Casa</td>
+<td>3/20/2017</td>
+<td>9</td>
+<td>Pisces</td>
+<td>dreamy</td>
+</tr>
+<tr>
+<td>?</td>
+<td>3/20/2017</td>
+<td><strong>9</strong></td>
+<td>?</td>
+<td>?</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Step 2:</strong> Apply <span class="math inline">\text{bday}
+\to \text{astro}</span>. Both rows share the same birthday, so the
+unknown astrology sign must equal Pisces.</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>birth day</th>
+<th>age</th>
+<th>astrology sign</th>
+<th>personality</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Casa</td>
+<td>3/20/2017</td>
+<td>9</td>
+<td>Pisces</td>
+<td>dreamy</td>
+</tr>
+<tr>
+<td>?</td>
+<td>3/20/2017</td>
+<td>9</td>
+<td><strong>Pisces</strong></td>
+<td>?</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Step 3:</strong> Apply <span class="math inline">\text{astro}
+\to \text{pers.}</span> Both rows now share the same astrology sign, so
+the unknown personality must equal dreamy.</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>birth day</th>
+<th>age</th>
+<th>astrology sign</th>
+<th>personality</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Casa</td>
+<td>3/20/2017</td>
+<td>9</td>
+<td>Pisces</td>
+<td>dreamy</td>
+</tr>
+<tr>
+<td>?</td>
+<td>3/20/2017</td>
+<td>9</td>
+<td>Pisces</td>
+<td><strong>dreamy</strong></td>
+</tr>
+</tbody>
+</table>
+<p>No more FDs can fill in new values — we’ve reached a
+<em>fixpoint</em>. The final result is:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>birth day</th>
+<th>age</th>
+<th>astrology sign</th>
+<th>personality</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Casa</td>
+<td>3/20/2017</td>
+<td>9</td>
+<td>Pisces</td>
+<td>dreamy</td>
+</tr>
+<tr>
+<td>?</td>
+<td>3/20/2017</td>
+<td>9</td>
+<td>Pisces</td>
+<td>dreamy</td>
+</tr>
+</tbody>
+</table>
+<p>This tell us the closure <span class="math inline">\text{bday}^+ =
+\{\text{bday, age, astro., pers.}\}</span>, i.e., birthday uniquely
+determines all of these attributes.</p>
+<p>More abstractly, the algorithm works like this:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> clos(FDs, V):</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  C <span class="op">=</span> V</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">while</span> C changes:</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (X, Y) <span class="kw">in</span> FDs:</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> C contains X:</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>        add Y to C</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> C</span></code></pre></div>
+<p>In words: we start with the set <span class="math inline">V</span>,
+then keep applying each FD to grow the set, until doing so doesn’t
+change it anymore.</p>
+<p>We can use the closure algorithm to check if a given FD <span
+class="math inline">\varphi = X \to Y</span> follows from a given set of
+FDs <span class="math inline">\Phi</span>, denoted <span
+class="math inline">\Phi \vdash \varphi</span>:</p>
+<ol type="1">
+<li>Compute the closure <span class="math inline">X^+</span> of <span
+class="math inline">X</span> over <span
+class="math inline">\Phi</span></li>
+<li>Check if <span class="math inline">Y \subseteq X^+</span></li>
+<li>If so, <span class="math inline">\Phi \vdash \varphi</span>,
+otherwise <span class="math inline">\Phi \not\vdash \varphi</span></li>
+</ol>
+<p>That’s a lot of new concepts! Let’s step back and think about our
+motivation.</p>
+<p>Our original table had <em>redundancy</em>, which we now understand
+is caused by <em>functional dependencies</em>:</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>name</th>
+<th>age</th>
+<th>food</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Casa</td>
+<td>9</td>
+<td>chicken</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Casa</td>
+<td>9</td>
+<td>grass</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Kira</td>
+<td>7</td>
+<td>fish</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Kira</td>
+<td>7</td>
+<td>grass</td>
+</tr>
+</tbody>
+</table>
+<p>In particular, we have FDs like <span class="math inline">\text{ID}
+\to \text{name}</span> where the left-hand-side <span
+class="math inline">\text{ID}</span> is <em>not</em> a key.</p>
+<p>To fix the redundancy, we break the table up according to the
+FDs:</p>
+<div class="columns">
+<div class="column">
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>name</th>
+<th>age</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Casa</td>
+<td>9</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Kira</td>
+<td>7</td>
+</tr>
+</tbody>
+</table>
+</div><div class="column">
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>food</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>chicken</td>
+</tr>
+<tr>
+<td>1</td>
+<td>grass</td>
+</tr>
+<tr>
+<td>2</td>
+<td>fish</td>
+</tr>
+<tr>
+<td>2</td>
+<td>grass</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>We also want to “take as much as possible” when breaking up, so we
+want to compute the <em>closure</em> which tells us <em>all</em> the
+dependent attributes.</p>
+<p>So our algorithm so far looks like this:</p>
+<ul>
+<li>Find any FD <span class="math inline">X \to Y</span> such that <span
+class="math inline">Y \not \subseteq X</span> and <span
+class="math inline">X</span> does not contain a key</li>
+<li>Compute the closure <span class="math inline">X^+</span> of <span
+class="math inline">X</span></li>
+<li>Move <span class="math inline">X^+</span> to a new table while
+keeping <span class="math inline">X</span> in the old one</li>
+</ul>
+<p>Let’s also clarify some terminology:</p>
+<div class="incremental">
+<ul class="incremental">
+<li>A single attribute <span class="math inline">k</span> is a
+<em>key</em> if <span class="math inline">k \to y</span> for every other
+attribute <span class="math inline">y</span></li>
+<li>We can also have multi-attribute keys (composite keys):
+<ul class="incremental">
+<li><span class="math inline">K</span> is a <em>superkey</em><a
+href="#fn5" class="footnote-ref" id="fnref5"
+role="doc-noteref"><sup>5</sup></a> if <span class="math inline">K \to
+y</span> for every <span class="math inline">y</span></li>
+<li>A superkey <span class="math inline">K</span> is a <em>key</em> if
+no <span class="math inline">K&#39; \subset K</span> is a superkey,
+i.e. <span class="math inline">K</span> is <em>minimal</em></li>
+</ul></li>
+</ul>
+</div>
+<p>The idea is, once we have a composite key <span
+class="math inline">K</span>, we can always keep adding stuff to <span
+class="math inline">K</span> to get another superkey, but <span
+class="math inline">K</span> is more interesting because it doesn’t
+contain “junk”.</p>
+<p>Let’s practice this on the larger table as well:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>birth day</th>
+<th>age</th>
+<th>astrology sign</th>
+<th>personality</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+</tr>
+</tbody>
+</table>
+<div class="incremental">
+<ol class="incremental" type="1">
+<li>We have <span class="math inline">\text{bday} \to \text{age}</span>
+yet <span class="math inline">\text{bday}</span> is not a key</li>
+<li>Compute <span class="math inline">\text{bday}^+ = \{ \text{bday},
+\text{age}, \text{astro}, \text{pers.}\}</span></li>
+<li>Break the table into two</li>
+</ol>
+</div>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>birth day</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>…</td>
+<td>…</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>birth day</th>
+<th>age</th>
+<th>astrology sign</th>
+<th>personality</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+</tr>
+</tbody>
+</table>
+<p>But we’re not done! In the second table, we still have
+redundancy:</p>
+<table>
+<thead>
+<tr>
+<th>birth day</th>
+<th>age</th>
+<th>astrology sign</th>
+<th>personality</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3/20/2017</td>
+<td>9</td>
+<td><strong>Pisces</strong></td>
+<td><strong>dreamy</strong></td>
+</tr>
+<tr>
+<td>2/19/2016</td>
+<td>10</td>
+<td><strong>Pisces</strong></td>
+<td><strong>dreamy</strong></td>
+</tr>
+</tbody>
+</table>
+<p>To fix this, we <em>repeat the same process</em> to decompose this
+table</p>
+<div class="incremental">
+<ol class="incremental" type="1">
+<li><span class="math inline">\text{astro} \to \text{pers.}</span> yet
+<span class="math inline">\text{astro}</span> is not a key</li>
+<li>Compute <span class="math inline">\text{astro}^+ = \{\text{astro},
+\text{pers.}\}</span></li>
+<li><em>Factor out</em> <span class="math inline">\{\text{astro},
+\text{pers.}\}</span></li>
+</ol>
+</div>
+<p>We end up with 3 tables that cannot be decomposed further:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>birth day</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>…</td>
+<td>…</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>birth day</th>
+<th>age</th>
+<th>astrology sign</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>astrology sign</th>
+<th>personality</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>…</td>
+<td>…</td>
+</tr>
+</tbody>
+</table>
+<p>The general decomposition algorithm is also a <em>fixpoint</em>
+algorithm:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> decompose(R):</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  S <span class="op">=</span> attributes of R</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  find nontrivial X<span class="op">-&gt;</span>Y s.t. X contains no key</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> <span class="kw">not</span> found:</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">else</span>:</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    C <span class="op">=</span> clos(X)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">break</span> R into R1(C), R2(S <span class="op">-</span> (C <span class="op">-</span> X))</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    decompose(R1)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    decompose(R2)</span></code></pre></div>
+<p>At the end of this process, the tables are in <em>Boyce-Codd Normal
+Form</em>, meaning that any FD <span class="math inline">X \to Y</span>
+that still hold in any table will satisfy either:</p>
+<ul>
+<li><span class="math inline">Y \subseteq X</span> (“trivial” FD)</li>
+<li>Some <span class="math inline">K \subseteq X</span> is a key (<span
+class="math inline">X</span> is a <em>superkey</em>)</li>
+</ul>
+<section id="footnotes" class="footnotes footnotes-end-of-document"
+role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1"><p>There’s also a duplicate of <em>grass</em> which can be
+eliminated. Try to do that after you learn about decomposition.<a
+href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>rigorously, a key must be <em>minimal</em>, otherwise
+it’s a <em>superkey</em>.<a href="#fnref2" class="footnote-back"
+role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>Or <span class="math inline">X \to Y</span> is
+<em>trivial</em>, meaning <span class="math inline">Y \subseteq
+X</span>.<a href="#fnref3" class="footnote-back"
+role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>More rigorously, <span class="math inline">X</span> is a
+<em>superkey</em> meaning it contains a key.<a href="#fnref4"
+class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>superset of a key<a href="#fnref5" class="footnote-back"
+role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+<script src="https://unpkg.com/@antonz/runno@0.6.1/dist/runno.js"></script>
+<script src="https://unpkg.com/@antonz/codapi@0.20.0/dist/engine/wasi.js"></script>
+<script src="https://unpkg.com/@antonz/codapi@0.20.0/dist/snippet.js"></script>
+</body>
+</html>

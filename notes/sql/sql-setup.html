@@ -1,0 +1,59 @@
+<script id="setup-pets-basic" type="text/plain">
+CREATE TABLE pets (name text, age int, weight int);
+INSERT INTO pets VALUES ('Casa', 9, 12);
+INSERT INTO pets VALUES ('Kira', 7, 10);
+INSERT INTO pets VALUES ('Toby', 17, 40);
+INSERT INTO pets VALUES ('Maya', 10, 34);
+##CODE##
+</script>
+<script id="setup-pets-kind" type="text/plain">
+CREATE TABLE pets (name text, age int, weight int, kind text);
+INSERT INTO pets VALUES ('Casa', 9, 12, 'cat');
+INSERT INTO pets VALUES ('Kira', 7, 10, 'cat');
+INSERT INTO pets VALUES ('Toby', 17, 40, 'dog');
+INSERT INTO pets VALUES ('Maya', 10, 34, 'dog');
+##CODE##
+</script>
+<script id="setup-pets-owner" type="text/plain">
+CREATE TABLE pets (name text, age int, weight int, kind text, owner text);
+INSERT INTO pets VALUES ('Casa', 9, 12, 'cat', 'Alice');
+INSERT INTO pets VALUES ('Kira', 7, 10, 'cat', 'Alice');
+INSERT INTO pets VALUES ('Toby', 17, 40, 'dog', 'Bob');
+INSERT INTO pets VALUES ('Maya', 10, 34, 'dog', 'Alice');
+##CODE##
+</script>
+<script id="setup-pets-views" type="text/plain">
+CREATE TABLE pets (name text, age int, weight int, kind text, owner text);
+INSERT INTO pets VALUES ('Casa', 9, 12, 'cat', 'Alice');
+INSERT INTO pets VALUES ('Kira', 7, 10, 'cat', 'Alice');
+INSERT INTO pets VALUES ('Toby', 17, 40, 'dog', 'Bob');
+INSERT INTO pets VALUES ('Maya', 10, 34, 'dog', 'Alice');
+CREATE VIEW catpeople AS SELECT owner FROM pets WHERE kind = 'cat';
+CREATE VIEW dogpeople AS SELECT owner FROM pets WHERE kind = 'dog';
+##CODE##
+</script>
+<script id="setup-averages" type="text/plain">
+CREATE TABLE pets (name text, age int, weight int, kind text);
+INSERT INTO pets VALUES ('Casa', 9, 12, 'cat');
+INSERT INTO pets VALUES ('Kira', 7, 10, 'cat');
+INSERT INTO pets VALUES ('Toby', 17, 40, 'dog');
+INSERT INTO pets VALUES ('Maya', 10, 34, 'dog');
+CREATE TABLE averages AS SELECT kind, AVG(age) AS a FROM pets GROUP BY kind;
+##CODE##
+</script>
+<script id="setup-r-null" type="text/plain">
+CREATE TABLE r (x int);
+INSERT INTO r VALUES (1);
+INSERT INTO r VALUES (2);
+INSERT INTO r VALUES (NULL);
+##CODE##
+</script>
+<script id="setup-join" type="text/plain">
+CREATE TABLE Pname (ID int, name text);
+INSERT INTO Pname VALUES (1, 'Casa');
+INSERT INTO Pname VALUES (2, 'Kira');
+CREATE TABLE Page (ID int, age int);
+INSERT INTO Page VALUES (1, 9);
+INSERT INTO Page VALUES (2, 7);
+##CODE##
+</script>
