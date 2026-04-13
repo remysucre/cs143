@@ -1,4 +1,4 @@
-index.html: README.md
+index.html: index.md
 	pandoc $< -s -V mainfont=sans-serif -V linestretch=1.4 -o $@
 
 clean:
