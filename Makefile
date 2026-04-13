@@ -8,13 +8,9 @@ NOTES_PDF  := $(NOTES_MD:.md=.pdf)
 HW_MD   := $(wildcard homeworks/*.md)
 HW_HTML := $(HW_MD:.md=.html)
 
-QUIZ_MD   := $(wildcard quizzzes/*.md)
-QUIZ_HTML := $(QUIZ_MD:.md=.html)
-QUIZ_PDF  := $(QUIZ_MD:.md=.pdf)
-
 .PHONY: all clean
 
-all: index.html $(NOTES_HTML) $(NOTES_PDF) $(HW_HTML) $(QUIZ_HTML) $(QUIZ_PDF)
+all: index.html $(NOTES_HTML) $(NOTES_PDF) $(HW_HTML)
 
 index.html: index.md
 	pandoc $< -s -V mainfont=sans-serif -V linestretch=1.4 --katex -o $@
@@ -31,11 +27,5 @@ notes/%.pdf: notes/%.md $(LUA)
 homeworks/%.html: homeworks/%.md
 	pandoc $< -s --katex -o $@
 
-quizzzes/%.html: quizzzes/%.md
-	pandoc $< -s --katex -o $@
-
-quizzzes/%.pdf: quizzzes/%.md
-	pandoc $< -s -o $@
-
 clean:
-	rm -f index.html $(NOTES_HTML) $(NOTES_PDF) $(HW_HTML) $(QUIZ_HTML) $(QUIZ_PDF)
+	rm -f index.html $(NOTES_HTML) $(NOTES_PDF) $(HW_HTML)
