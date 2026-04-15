@@ -998,6 +998,851 @@ that still hold in any table will satisfy either:</p>
 <li>Some <span class="math inline">K \subseteq X</span> is a key (<span
 class="math inline">X</span> is a <em>superkey</em>)</li>
 </ul>
+<p>So far, we’ve been focusing on redudancy caused by functional
+dependencies, which can be addressed by decomposing according to the
+FDs. However, this can at most save use linear amount of space (why?).
+Let’s now consider a more severe form of redundancy caused by
+<em>independence</em>.</p>
+<p>Suppose we have a single table storing the favorite toy and food for
+each cat:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>toy</th>
+<th>food</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>casa</td>
+<td>ball</td>
+<td>chicken</td>
+</tr>
+<tr>
+<td>casa</td>
+<td>bag</td>
+<td>chicken</td>
+</tr>
+<tr>
+<td>casa</td>
+<td>TP</td>
+<td>chicken</td>
+</tr>
+<tr>
+<td>casa</td>
+<td>ball</td>
+<td>grass</td>
+</tr>
+<tr>
+<td>casa</td>
+<td>bag</td>
+<td>grass</td>
+</tr>
+<tr>
+<td>casa</td>
+<td>TP</td>
+<td>grass</td>
+</tr>
+</tbody>
+</table>
+<p>The issue here is that <strong>toy</strong> is independent of
+<strong>food</strong> for each cat, yet we store them in the same
+table.</p>
+<p>The solution is once again breaking the table up:</p>
+<div class="columns">
+<div class="column">
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>toy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>casa</td>
+<td>ball</td>
+</tr>
+<tr>
+<td>casa</td>
+<td>bag</td>
+</tr>
+<tr>
+<td>casa</td>
+<td>TP</td>
+</tr>
+</tbody>
+</table>
+</div><div class="column">
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>food</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>casa</td>
+<td>chicken</td>
+</tr>
+<tr>
+<td>casa</td>
+<td>grass</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Formally, the redundancy can be described with (conditional)
+independence. For that, let’s review some basic probability theory.</p>
+<p>A <em>distribution</em> assigns a probability to each event. If we
+draw a row uniformly at random from our data, there’s <span
+class="math inline">1/2</span> chance we get a row with <span
+class="math inline">\text{food} = \text{chicken}</span> or <span
+class="math inline">\text{food} = \text{grass}</span>, So the
+distribution over <span class="math inline">\text{foo}</span> is:</p>
+<table>
+<thead>
+<tr>
+<th>food</th>
+<th><span class="math inline">p</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>chicken</td>
+<td><span class="math inline">1/2</span></td>
+</tr>
+<tr>
+<td>grass</td>
+<td><span class="math inline">1/2</span></td>
+</tr>
+</tbody>
+</table>
+<p>Similarly, the distribution over toy is:</p>
+<table>
+<thead>
+<tr>
+<th>toy</th>
+<th><span class="math inline">p</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ball</td>
+<td><span class="math inline">1/3</span></td>
+</tr>
+<tr>
+<td>bag</td>
+<td><span class="math inline">1/3</span></td>
+</tr>
+<tr>
+<td>TP</td>
+<td><span class="math inline">1/3</span></td>
+</tr>
+</tbody>
+</table>
+<p>A <em>joint distribution</em> describes the probablities of different
+types of events occuring at the same time. If we draw a random row, the
+probability of <span class="math inline">\text{toy} = \text{ball} \land
+\text{food} = \text{chicken}</span> is <span
+class="math inline">1/6</span>, and so is for any other pairing of toy
+and food:</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>toy</th>
+<th>food</th>
+<th><span class="math inline">p</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>casa</td>
+<td>ball</td>
+<td>chicken</td>
+<td><span class="math inline">1/6</span></td>
+</tr>
+<tr>
+<td>casa</td>
+<td>bag</td>
+<td>chicken</td>
+<td><span class="math inline">1/6</span></td>
+</tr>
+<tr>
+<td>casa</td>
+<td>TP</td>
+<td>chicken</td>
+<td><span class="math inline">1/6</span></td>
+</tr>
+<tr>
+<td>casa</td>
+<td>ball</td>
+<td>grass</td>
+<td><span class="math inline">1/6</span></td>
+</tr>
+<tr>
+<td>casa</td>
+<td>bag</td>
+<td>grass</td>
+<td><span class="math inline">1/6</span></td>
+</tr>
+<tr>
+<td>casa</td>
+<td>TP</td>
+<td>grass</td>
+<td><span class="math inline">1/6</span></td>
+</tr>
+</tbody>
+</table>
+<p>The <em>conditional</em> distribution focuses a “slice” of the larger
+distribution. For example, <span class="math inline">P(\text{toy} |
+\text{food} = \text{chicken})</span> is:</p>
+<table>
+<thead>
+<tr>
+<th>toy</th>
+<th>food</th>
+<th><span class="math inline">p</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ball</td>
+<td>chicken</td>
+<td><span class="math inline">1/3</span></td>
+</tr>
+<tr>
+<td>bag</td>
+<td>chicken</td>
+<td><span class="math inline">1/3</span></td>
+</tr>
+<tr>
+<td>TP</td>
+<td>chicken</td>
+<td><span class="math inline">1/3</span></td>
+</tr>
+</tbody>
+</table>
+<p>Two things happened to obtain this distribution:</p>
+<ol type="1">
+<li>We are focusing only on the rows where <span
+class="math inline">\text{food} = \text{}</span></li>
+<li>We <em>re-normalized</em> the probabilities so that they sum to
+1</li>
+</ol>
+<p>Two types of events are <em>independent</em> if all conditional
+distributions agree with the unconditional ones. Formally, <span
+class="math inline">\forall b : P(A | B = b) = P(A)</span> In the
+example above, <span class="math inline">P(\text{toy}) = P(\text{toy} |
+\text{food} = \text{chicken})</span>, so knowing the cat likes chicken
+doesn’t tell us anything about the toy preference, and this also needs
+to hold for <span class="math inline">\text{food} = \text{grass}</span>
+to establish the independence.</p>
+<p>Another way to check independence is to see if the joint distribution
+is simply a product of the single ones<a href="#fn6"
+class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a>:
+<span class="math inline">P(\text{toy}, \text{food}) = P(\text{toy})
+\times P(\text{food})</span></p>
+<p>If you are traumatized by probabilities, here’s a different way to
+understand independence. To check if toy is independent from food, first
+<code>GROUP BY</code> one of them, say food:</p>
+<div class="columns">
+<div class="column">
+<table>
+<thead>
+<tr>
+<th>food</th>
+<th>toy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>chicken</td>
+<td>ball</td>
+</tr>
+<tr>
+<td>chicken</td>
+<td>bag</td>
+</tr>
+<tr>
+<td>chicken</td>
+<td>TP</td>
+</tr>
+</tbody>
+</table>
+</div><div class="column">
+<table>
+<thead>
+<tr>
+<th>food</th>
+<th>toy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>grass</td>
+<td>ball</td>
+</tr>
+<tr>
+<td>grass</td>
+<td>bag</td>
+</tr>
+<tr>
+<td>grass</td>
+<td>TP</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>We see that across different food groups, the set of different values
+for toy remains the same. This tells us that the toy preference is not
+affected by the food preference.</p>
+<p>You can also see that the large table is the <em>cartesian
+product</em> of the small ones:</p>
+<div class="columns">
+<div class="column">
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>toy</th>
+<th>food</th>
+<th><span class="math inline">p</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>casa</td>
+<td>ball</td>
+<td>chicken</td>
+<td><span class="math inline">1/6</span></td>
+</tr>
+<tr>
+<td>casa</td>
+<td>bag</td>
+<td>chicken</td>
+<td><span class="math inline">1/6</span></td>
+</tr>
+<tr>
+<td>casa</td>
+<td>TP</td>
+<td>chicken</td>
+<td><span class="math inline">1/6</span></td>
+</tr>
+<tr>
+<td>casa</td>
+<td>ball</td>
+<td>grass</td>
+<td><span class="math inline">1/6</span></td>
+</tr>
+<tr>
+<td>casa</td>
+<td>bag</td>
+<td>grass</td>
+<td><span class="math inline">1/6</span></td>
+</tr>
+<tr>
+<td>casa</td>
+<td>TP</td>
+<td>grass</td>
+<td><span class="math inline">1/6</span></td>
+</tr>
+</tbody>
+</table>
+</div><div class="column">
+<table>
+<thead>
+<tr>
+<th>food</th>
+<th>toy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>chicken</td>
+<td>ball</td>
+</tr>
+<tr>
+<td>chicken</td>
+<td>bag</td>
+</tr>
+<tr>
+<td>chicken</td>
+<td>TP</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>food</th>
+<th>toy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>grass</td>
+<td>ball</td>
+</tr>
+<tr>
+<td>grass</td>
+<td>bag</td>
+</tr>
+<tr>
+<td>grass</td>
+<td>TP</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>This is why redundancy caused by independence costs a lot more space
+than dependencies.</p>
+<p>But we’re not done yet. I’ve been having some relationship issues
+with my cats lately, so I gathered some data:</p>
+<table>
+<thead>
+<tr>
+<th>love<sub>c</sub></th>
+<th>love<sub>k</sub></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5</td>
+<td>4</td>
+</tr>
+<tr>
+<td>5</td>
+<td>5</td>
+</tr>
+<tr>
+<td>4</td>
+<td>5</td>
+</tr>
+<tr>
+<td>4</td>
+<td>4</td>
+</tr>
+<tr>
+<td>1</td>
+<td>2</td>
+</tr>
+<tr>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>2</td>
+<td>1</td>
+</tr>
+<tr>
+<td>2</td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+<p>It looks like Kira’s love towards me is depedent upon Casa’s love!
+How can this be?</p>
+<p>It turns out they love me more when they are hungry:</p>
+<table>
+<thead>
+<tr>
+<th>hungery?</th>
+<th>love<sub>c</sub></th>
+<th>love<sub>k</sub></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>y</td>
+<td>5</td>
+<td>4</td>
+</tr>
+<tr>
+<td>y</td>
+<td>5</td>
+<td>5</td>
+</tr>
+<tr>
+<td>y</td>
+<td>4</td>
+<td>5</td>
+</tr>
+<tr>
+<td>y</td>
+<td>4</td>
+<td>4</td>
+</tr>
+<tr>
+<td>n</td>
+<td>1</td>
+<td>2</td>
+</tr>
+<tr>
+<td>n</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>n</td>
+<td>2</td>
+<td>1</td>
+</tr>
+<tr>
+<td>n</td>
+<td>2</td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+<p>In statistics, hungery is called a <em>confounding factor</em>.</p>
+<p>Now, if we <em>condition</em> on hunger, we will see the cats become
+independent again:</p>
+<div class="columns">
+<div class="column">
+<table>
+<thead>
+<tr>
+<th>hungery?</th>
+<th>love<sub>c</sub></th>
+<th>love<sub>k</sub></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>y</td>
+<td>5</td>
+<td>4</td>
+</tr>
+<tr>
+<td>y</td>
+<td>5</td>
+<td>5</td>
+</tr>
+<tr>
+<td>y</td>
+<td>4</td>
+<td>5</td>
+</tr>
+<tr>
+<td>y</td>
+<td>4</td>
+<td>4</td>
+</tr>
+</tbody>
+</table>
+</div><div class="column">
+<table>
+<thead>
+<tr>
+<th>hungery?</th>
+<th>love<sub>c</sub></th>
+<th>love<sub>k</sub></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>n</td>
+<td>1</td>
+<td>2</td>
+</tr>
+<tr>
+<td>n</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>n</td>
+<td>2</td>
+<td>1</td>
+</tr>
+<tr>
+<td>n</td>
+<td>2</td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Formally, we say two types of events <span class="math inline">X,
+Y</span> are <em>conditionally independent</em> on another type <span
+class="math inline">Z</span>, if they are independent for every
+possibility of <span class="math inline">Z</span>, written <span
+class="math inline">X \perp Y \mid Z</span>.</p>
+<p>When we have conditional independence in a table, we can break it up
+along the column conditioned on:</p>
+<div class="columns">
+<div class="column">
+<table>
+<thead>
+<tr>
+<th>hungery?</th>
+<th>love<sub>c</sub></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>y</td>
+<td>5</td>
+</tr>
+<tr>
+<td>y</td>
+<td>4</td>
+</tr>
+<tr>
+<td>n</td>
+<td>1</td>
+</tr>
+<tr>
+<td>n</td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+</div><div class="column">
+<table>
+<thead>
+<tr>
+<th>hungery?</th>
+<th>love<sub>k</sub></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>y</td>
+<td>5</td>
+</tr>
+<tr>
+<td>y</td>
+<td>4</td>
+</tr>
+<tr>
+<td>n</td>
+<td>1</td>
+</tr>
+<tr>
+<td>n</td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>But we need to be careful! Suppose we have another column that
+somewhat depends on the rest:</p>
+<table>
+<thead>
+<tr>
+<th>hungery?</th>
+<th>love<sub>c</sub></th>
+<th>love<sub>k</sub></th>
+<th>happy<sub>r</sub></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>y</td>
+<td>5</td>
+<td>4</td>
+<td>2</td>
+</tr>
+<tr>
+<td>y</td>
+<td>5</td>
+<td>5</td>
+<td>1</td>
+</tr>
+<tr>
+<td>y</td>
+<td>4</td>
+<td>5</td>
+<td>2</td>
+</tr>
+<tr>
+<td>y</td>
+<td>4</td>
+<td>4</td>
+<td>3</td>
+</tr>
+<tr>
+<td>n</td>
+<td>1</td>
+<td>2</td>
+<td>2</td>
+</tr>
+<tr>
+<td>n</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>n</td>
+<td>2</td>
+<td>1</td>
+<td>2</td>
+</tr>
+<tr>
+<td>n</td>
+<td>2</td>
+<td>2</td>
+<td>3</td>
+</tr>
+</tbody>
+</table>
+<p>This shows I’m happy if my cats love/hate me a little bit, but not
+too much.</p>
+<p>Suppose we decompose and take out love<sub>k</sub>:</p>
+<table>
+<thead>
+<tr>
+<th>hungery?</th>
+<th>love<sub>c</sub></th>
+<th>happy<sub>r</sub></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>y</td>
+<td>5</td>
+<td>?</td>
+</tr>
+<tr>
+<td>y</td>
+<td>4</td>
+<td>?</td>
+</tr>
+<tr>
+<td>n</td>
+<td>1</td>
+<td>?</td>
+</tr>
+<tr>
+<td>n</td>
+<td>2</td>
+<td>?</td>
+</tr>
+</tbody>
+</table>
+<p>Now since we have two rows with love<sub>c</sub> = 5 but different
+happy<sub>r</sub>, we can’t collapse them any more.</p>
+<p>But now we’re in trouble: if we join these tables back together, we
+don’t get back the original one!</p>
+<div class="columns">
+<div class="column">
+<table>
+<thead>
+<tr>
+<th>hungery?</th>
+<th>love<sub>c</sub></th>
+<th>happy<sub>r</sub></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>y</td>
+<td>5</td>
+<td>2</td>
+</tr>
+<tr>
+<td>y</td>
+<td>5</td>
+<td>1</td>
+</tr>
+<tr>
+<td>y</td>
+<td>4</td>
+<td>2</td>
+</tr>
+<tr>
+<td>y</td>
+<td>4</td>
+<td>3</td>
+</tr>
+<tr>
+<td>n</td>
+<td>1</td>
+<td>2</td>
+</tr>
+<tr>
+<td>n</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>n</td>
+<td>2</td>
+<td>2</td>
+</tr>
+<tr>
+<td>n</td>
+<td>2</td>
+<td>3</td>
+</tr>
+</tbody>
+</table>
+</div><div class="column">
+<table>
+<thead>
+<tr>
+<th>hungery?</th>
+<th>love<sub>k</sub></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>y</td>
+<td>5</td>
+</tr>
+<tr>
+<td>y</td>
+<td>4</td>
+</tr>
+<tr>
+<td>n</td>
+<td>1</td>
+</tr>
+<tr>
+<td>n</td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>The reason is that, although love<sub>c</sub> and love<sub>k</sub>
+are conditionally independent, happy<sub>r</sub> depends on both of them
+in a nontrivial way, and to represent this dependency faithfully, we
+<em>have</em> to put them in the same table.</p>
+<p>Another example is to think about chemical experiments:</p>
+<table>
+<thead>
+<tr>
+<th>alt.</th>
+<th>temp.</th>
+<th>pressure</th>
+<th>color</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+</tr>
+</tbody>
+</table>
+<p>Although temperature and pressure are independent for each altitude,
+the color of your material depends on both, and you certainly don’t want
+to decouple the pressure data in your records!</p>
 <section id="footnotes" class="footnotes footnotes-end-of-document"
 role="doc-endnotes">
 <hr />
@@ -1017,6 +1862,8 @@ role="doc-backlink">↩︎</a></p></li>
 class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn5"><p>superset of a key<a href="#fnref5" class="footnote-back"
 role="doc-backlink">↩︎</a></p></li>
+<li id="fn6"><p>A.k.a. marginal distributions.<a href="#fnref6"
+class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
 <script src="https://unpkg.com/@antonz/runno@0.6.1/dist/runno.js"></script>

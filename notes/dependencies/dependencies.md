@@ -597,3 +597,349 @@ At the end of this process, the tables are in *Boyce-Codd Normal Form*,
 Define BCNF
 
 :::
+
+---
+
+So far, we've been focusing on redudancy caused by functional dependencies,
+ which can be addressed by decomposing according to the FDs.
+However, this can at most save use linear amount of space (why?).
+Let's now consider a more severe form of redundancy caused by *independence*.
+
+---
+
+Suppose we have a single table storing the favorite toy and food for each cat:
+
+| name | toy | food |
+|------|-----|------|
+| casa | ball | chicken |
+| casa | bag | chicken |
+| casa | TP | chicken |
+| casa | ball | grass |
+| casa | bag | grass |
+| casa | TP | grass |
+
+The issue here is that **toy** is independent of **food**
+ for each cat, yet we store them in the same table.
+
+---
+
+The solution is once again breaking the table up:
+
+:::: {.columns}
+::: {.column}
+| name | toy |
+|------|-----|
+| casa | ball |
+| casa | bag |
+| casa | TP |
+:::
+::: {.column}
+| name | food    |
+|----|---------|
+| casa | chicken |
+| casa | grass   |
+:::
+::::
+
+---
+
+Formally, the redundancy can be described with (conditional) independence.
+For that, let's review some basic probability theory.
+
+---
+
+A *distribution* assigns a probability to each event.
+If we draw a row uniformly at random from our data,
+ there's $1/2$ chance we get a row with $\text{food} = \text{chicken}$
+ or $\text{food} = \text{grass}$,
+So the distribution over $\text{foo}$ is:
+
+| food | $p$ |
+|-|-|
+| chicken | $1/2$ |
+| grass | $1/2$ |
+
+Similarly, the distribution over toy is:
+
+| toy | $p$ |
+|-|-|
+| ball | $1/3$ |
+| bag | $1/3$ |
+| TP | $1/3$ |
+
+---
+
+A *joint distribution* describes the probablities
+ of different types of events occuring at the same time.
+If we draw a random row, the probability of
+ $\text{toy} = \text{ball} \land \text{food} = \text{chicken}$
+ is $1/6$, and so is for any other pairing of toy and food:
+
+
+| name | toy | food | $p$ |
+|------|-----|------|-|
+| casa | ball | chicken | $1/6$ |
+| casa | bag | chicken | $1/6$ |
+| casa | TP | chicken | $1/6$ |
+| casa | ball | grass | $1/6$ |
+| casa | bag | grass | $1/6$ |
+| casa | TP | grass | $1/6$ |
+
+---
+
+The *conditional* distribution focuses a "slice" of
+ the larger distribution.
+For example, $P(\text{toy} | \text{food} = \text{chicken})$ is:
+
+| toy | food | $p$ |
+|-----|------|-|
+| ball | chicken | $1/3$ |
+| bag | chicken | $1/3$ |
+| TP | chicken | $1/3$ |
+
+Two things happened to obtain this distribution:
+
+1. We are focusing only on the rows where $\text{food} = \text{}$
+2. We *re-normalized* the probabilities so that they sum to 1
+
+---
+
+Two types of events are *independent* if all conditional distributions
+ agree with the unconditional ones.
+Formally, $\forall b : P(A | B = b) = P(A)$
+In the example above, $P(\text{toy}) = P(\text{toy} | \text{food} = \text{chicken})$,
+ so knowing the cat likes chicken doesn't tell us anything about the toy preference,
+ and this also needs to hold for $\text{food} = \text{grass}$ to establish the independence.
+
+---
+
+Another way to check independence is to see if the joint distribution is simply a product
+ of the single ones^[A.k.a. marginal distributions.]:
+ $P(\text{toy}, \text{food}) = P(\text{toy}) \times P(\text{food})$
+
+---
+
+If you are traumatized by probabilities, here's a different way to understand independence.
+To check if toy is independent from food,
+ first `GROUP BY` one of them, say food:
+
+:::: {.columns}
+::: {.column}
+| food | toy |
+|------|-----|
+| chicken | ball |
+| chicken | bag |
+| chicken | TP |
+:::
+::: {.column}
+| food | toy |
+|----|---------|
+| grass | ball |
+| grass | bag |
+| grass | TP |
+:::
+::::
+
+We see that across different food groups, the set of different values for toy remains the same.
+This tells us that the toy preference is not affected by the food preference.
+
+---
+
+You can also see that the large table is the *cartesian product* of the small ones:
+
+
+:::: {.columns}
+::: {.column}
+| name | toy | food | $p$ |
+|------|-----|------|-|
+| casa | ball | chicken | $1/6$ |
+| casa | bag | chicken | $1/6$ |
+| casa | TP | chicken | $1/6$ |
+| casa | ball | grass | $1/6$ |
+| casa | bag | grass | $1/6$ |
+| casa | TP | grass | $1/6$ |
+:::
+::: {.column}
+| food | toy |
+|------|-----|
+| chicken | ball |
+| chicken | bag |
+| chicken | TP |
+
+| food | toy |
+|----|---------|
+| grass | ball |
+| grass | bag |
+| grass | TP |
+:::
+::::
+
+This is why redundancy caused by independence costs a lot more space than dependencies.
+
+---
+
+But we're not done yet. I've been having some relationship issues with my cats lately, 
+so I gathered some data:
+
+| love~c~ | love~k~ |
+|-|-|
+| 5 | 4 | 
+| 5 | 5 | 
+| 4 | 5 | 
+| 4 | 4 | 
+| 1 | 2 | 
+| 1 | 1 | 
+| 2 | 1 | 
+| 2 | 2 | 
+
+It looks like Kira's love towards me is depedent upon Casa's love!
+How can this be?
+
+---
+
+It turns out they love me more when they are hungry:
+
+|hungery?| love~c~ | love~k~ |
+|-|-|-|
+|y| 5 | 4 | 
+|y| 5 | 5 | 
+|y| 4 | 5 | 
+|y| 4 | 4 | 
+|n| 1 | 2 | 
+|n| 1 | 1 | 
+|n| 2 | 1 | 
+|n| 2 | 2 | 
+
+In statistics, hungery is called a *confounding factor*.
+
+---
+
+Now, if we *condition* on hunger, we will see the cats become independent again:
+
+:::: columns
+::: column
+|hungery?| love~c~ | love~k~ |
+|-|-|-|
+|y| 5 | 4 | 
+|y| 5 | 5 | 
+|y| 4 | 5 | 
+|y| 4 | 4 | 
+:::
+::: column
+|hungery?| love~c~ | love~k~ |
+|-|-|-|
+|n| 1 | 2 | 
+|n| 1 | 1 | 
+|n| 2 | 1 | 
+|n| 2 | 2 | 
+:::
+::::
+
+Formally, we say two types of events $X, Y$ are *conditionally independent* on another type $Z$,
+ if they are independent for every possibility of $Z$, written $X \perp Y \mid Z$.
+
+---
+
+When we have conditional independence in a table, we can break it up along the column conditioned on:
+
+
+:::: columns
+::: column
+|hungery?| love~c~ |
+|-|-|
+|y| 5 |
+|y| 4 |
+|n| 1 |
+|n| 2 |
+:::
+::: column
+|hungery?| love~k~ |
+|-|-|
+|y| 5 |
+|y| 4 |
+|n| 1 |
+|n| 2 |
+:::
+::::
+
+---
+
+But we need to be careful! Suppose we have another column that somewhat depends on the rest:
+
+
+|hungery?| love~c~ | love~k~ | happy~r~ |
+|-|-|-|-|
+|y| 5 | 4 | 2 | 
+|y| 5 | 5 | 1 |
+|y| 4 | 5 | 2 |
+|y| 4 | 4 | 3 |
+|n| 1 | 2 | 2 |
+|n| 1 | 1 | 1 |
+|n| 2 | 1 | 2 |
+|n| 2 | 2 | 3 |
+
+This shows I'm happy if my cats love/hate me a little bit, but not too much.
+
+---
+
+Suppose we decompose and take out love~k~:
+
+|hungery?| love~c~ | happy~r~|
+|-|-|-|
+|y| 5 | ? |
+|y| 4 | ? |
+|n| 1 | ? |
+|n| 2 | ? |
+
+Now since we have two rows with love~c~ = 5 but different happy~r~,
+ we can't collapse them any more.
+
+---
+
+But now we're in trouble:
+ if we join these tables back together,
+ we don't get back the original one!
+
+:::: columns
+::: column
+|hungery?| love~c~ | happy~r~ |
+|-|-|-|
+|y| 5 | 2 | 
+|y| 5 | 1 |
+|y| 4 | 2 |
+|y| 4 | 3 |
+|n| 1 | 2 |
+|n| 1 | 1 |
+|n| 2 | 2 |
+|n| 2 | 3 |
+:::
+::: column
+|hungery?| love~k~ |
+|-|-|
+|y| 5 |
+|y| 4 |
+|n| 1 |
+|n| 2 |
+:::
+::::
+
+---
+
+The reason is that, although love~c~ and love~k~ are conditionally independent,
+ happy~r~ depends on both of them in a nontrivial way,
+ and to represent this dependency faithfully,
+ we *have* to put them in the same table.
+
+---
+
+Another example is to think about chemical experiments:
+
+|alt.|temp.|pressure|color|
+|-|-|-|-|
+|...|...|...|...|
+
+Although temperature and pressure are independent 
+ for each altitude,
+ the color of your material depends on both,
+ and you certainly don't want to decouple
+ the pressure data in your records!
