@@ -603,7 +603,7 @@ Define BCNF
 So far, we've been focusing on redudancy caused by functional dependencies,
  which can be addressed by decomposing according to the FDs.
 
-However, this can at most save use linear amount of space (why?).
+However, this can at most save us $O(N)$ space (why?).
 Let's now consider a more severe form of redundancy caused by *independence*.
 
 ---
@@ -653,20 +653,23 @@ A *distribution* assigns a probability to each event.
 If we draw a row uniformly at random from our data,
  there's $1/2$ chance we get a row with $\text{food} = \text{chicken}$
  or $\text{food} = \text{grass}$,
-So the distribution over $\text{food}$ is:
+So the distributions over **food** and **toy** are:
 
+:::: columns
+::: column
 | food | $p$ |
 |-|-|
 | chicken | $1/2$ |
 | grass | $1/2$ |
-
-Similarly, the distribution over toy is:
-
+:::
+::: column
 | toy | $p$ |
 |-|-|
 | ball | $1/3$ |
 | bag | $1/3$ |
 | TP | $1/3$ |
+:::
+::::
 
 ---
 
@@ -700,23 +703,27 @@ For example, $P(\text{toy} | \text{food} = \text{chicken})$ is:
 
 Two things happened to obtain this distribution:
 
-1. We are focusing only on the rows where $\text{food} = \text{}$
+1. We are focusing only on the rows where $\text{food} = \text{chicken}$
 2. We *re-normalized* the probabilities so that they sum to 1
 
 ---
 
 Two types of events are *independent* if all conditional distributions
- agree with the unconditional ones.
-Formally, $\forall b : P(A | B = b) = P(A)$
+ agree with the unconditional ones:
+
+$$\forall b : P(A | B = b) = P(A)$$
+
 In the example above, $P(\text{toy}) = P(\text{toy} | \text{food} = \text{chicken})$,
- so knowing the cat likes chicken doesn't tell us anything about the toy preference,
- and this also needs to hold for $\text{food} = \text{grass}$ to establish the independence.
+ so knowing the cat likes chicken doesn't tell us anything about the toy preference.
+
+Note that this also needs to hold for $\text{food} = \text{grass}$ to establish the independence.
 
 ---
 
 Another way to check independence is to see if the joint distribution is simply a product
  of the single ones^[A.k.a. marginal distributions.]:
- $P(\text{toy}, \text{food}) = P(\text{toy}) \times P(\text{food})$
+
+$$P(\text{toy}, \text{food}) = P(\text{toy}) \times P(\text{food})$$
 
 ---
 
@@ -751,27 +758,27 @@ You can also see that the large table is the *cartesian product* of the small on
 
 :::: {.columns}
 ::: {.column}
-| name | toy | food | $p$ |
-|------|-----|------|-|
-| casa | ball | chicken | $1/6$ |
-| casa | bag | chicken | $1/6$ |
-| casa | TP | chicken | $1/6$ |
-| casa | ball | grass | $1/6$ |
-| casa | bag | grass | $1/6$ |
-| casa | TP | grass | $1/6$ |
+| toy | food | $p$ |
+|-----|------|-|
+| ball | chicken |
+| bag | chicken |
+| TP | chicken |
+| ball | grass |
+| bag | grass |
+| TP | grass |
 :::
-::: {.column}
-| food | toy |
-|------|-----|
-| chicken | ball |
-| chicken | bag |
-| chicken | TP |
-
-| food | toy |
-|----|---------|
-| grass | ball |
-| grass | bag |
-| grass | TP |
+::: {.column width="25%"}
+| toy |
+|-----|
+| ball |
+| bag |
+| TP |
+:::
+::: {.column width="25%"}
+| food |
+|---------|
+| chicken |
+| grass |
 :::
 ::::
 
@@ -800,7 +807,7 @@ How can this be?
 
 It turns out they love me more when they are hungry:
 
-|hungery?| love~c~ | love~k~ |
+|hungry?| love~c~ | love~k~ |
 |-|-|-|
 |y| 5 | 4 | 
 |y| 5 | 5 | 
@@ -811,7 +818,7 @@ It turns out they love me more when they are hungry:
 |n| 2 | 1 | 
 |n| 2 | 2 | 
 
-In statistics, hungery is called a *confounding factor*.
+In statistics, hungry is called a *confounding factor*.
 
 ---
 
@@ -819,7 +826,7 @@ Now, if we *condition* on hunger, we will see the cats become independent again:
 
 :::: columns
 ::: column
-|hungery?| love~c~ | love~k~ |
+|hungry?| love~c~ | love~k~ |
 |-|-|-|
 |y| 5 | 4 | 
 |y| 5 | 5 | 
@@ -827,7 +834,7 @@ Now, if we *condition* on hunger, we will see the cats become independent again:
 |y| 4 | 4 | 
 :::
 ::: column
-|hungery?| love~c~ | love~k~ |
+|hungry?| love~c~ | love~k~ |
 |-|-|-|
 |n| 1 | 2 | 
 |n| 1 | 1 | 
@@ -837,7 +844,7 @@ Now, if we *condition* on hunger, we will see the cats become independent again:
 ::::
 
 Formally, we say two types of events $X, Y$ are *conditionally independent* on another type $Z$,
- if they are independent for every possibility of $Z$, written $X \perp Y \mid Z$.
+ if they are independent for every case of $Z$, written $X \perp Y \mid Z$.
 
 ---
 
@@ -846,7 +853,7 @@ When we have conditional independence in a table, we can break it up along the c
 
 :::: columns
 ::: column
-|hungery?| love~c~ |
+|hungry?| love~c~ |
 |-|-|
 |y| 5 |
 |y| 4 |
@@ -854,7 +861,7 @@ When we have conditional independence in a table, we can break it up along the c
 |n| 2 |
 :::
 ::: column
-|hungery?| love~k~ |
+|hungry?| love~k~ |
 |-|-|
 |y| 5 |
 |y| 4 |
@@ -868,7 +875,7 @@ When we have conditional independence in a table, we can break it up along the c
 But we need to be careful! Suppose we have another column that somewhat depends on the rest:
 
 
-|hungery?| love~c~ | love~k~ | happy~r~ |
+|hungry?| love~c~ | love~k~ | happy~r~ |
 |-|-|-|-|
 |y| 5 | 4 | 2 | 
 |y| 5 | 5 | 1 |
@@ -885,7 +892,7 @@ This shows I'm happy if my cats love/hate me a little bit, but not too much.
 
 Suppose we decompose and take out love~k~:
 
-|hungery?| love~c~ | happy~r~|
+|hungry?| love~c~ | happy~r~|
 |-|-|-|
 |y| 5 | ? |
 |y| 4 | ? |
@@ -903,7 +910,7 @@ But now we're in trouble:
 
 :::: columns
 ::: column
-|hungery?| love~c~ | happy~r~ |
+|hungry?| love~c~ | happy~r~ |
 |-|-|-|
 |y| 5 | 2 | 
 |y| 5 | 1 |
@@ -915,7 +922,7 @@ But now we're in trouble:
 |n| 2 | 3 |
 :::
 ::: column
-|hungery?| love~k~ |
+|hungry?| love~k~ |
 |-|-|
 |y| 5 |
 |y| 4 |
@@ -933,7 +940,7 @@ The reason is that, although love~c~ and love~k~ are conditionally independent,
 
 ---
 
-Another example is to think about chemical experiments:
+Another example is to think about science experiments:
 
 |alt.|temp.|pressure|color|
 |-|-|-|-|
@@ -944,3 +951,16 @@ Although temperature and pressure are independent
  the color of your material depends on both,
  and you certainly don't want to decouple
  the pressure data in your records!
+
+---
+
+So we only use a conditional independence $X \perp Y \mid Z$ to decompose tables, 
+ if $X \cup Y \cup Z$ cover *all* table attributes.
+
+This also explains the traditional definition of *multi-valued dependency*:
+
+$$R \models Z \twoheadrightarrow X \iff R \models X \perp Y \mid Z$$
+$$\text{ where } Y = \Sigma(R) - (X \cup Z)$$
+
+In words: there's a MVD from $Z$ to $X$^[Or, $X$ multi-value depends on $Z$], if $X$ is conditionally independent
+ with the other attributes ($Y$) given $Z$.

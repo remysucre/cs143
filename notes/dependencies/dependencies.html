@@ -1001,9 +1001,9 @@ class="math inline">X</span> is a <em>superkey</em>)</li>
 <p>So far, we’ve been focusing on redudancy caused by functional
 dependencies, which can be addressed by decomposing according to the
 FDs.</p>
-<p>However, this can at most save use linear amount of space (why?).
-Let’s now consider a more severe form of redundancy caused by
-<em>independence</em>.</p>
+<p>However, this can at most save us <span
+class="math inline">O(N)</span> space (why?). Let’s now consider a more
+severe form of redundancy caused by <em>independence</em>.</p>
 <p>Suppose we have a single table storing the favorite toy and food for
 each cat:</p>
 <table>
@@ -1103,7 +1103,10 @@ draw a row uniformly at random from our data, there’s <span
 class="math inline">1/2</span> chance we get a row with <span
 class="math inline">\text{food} = \text{chicken}</span> or <span
 class="math inline">\text{food} = \text{grass}</span>, So the
-distribution over <span class="math inline">\text{food}</span> is:</p>
+distributions over <strong>food</strong> and <strong>toy</strong>
+are:</p>
+<div class="columns">
+<div class="column">
 <table>
 <thead>
 <tr>
@@ -1122,7 +1125,7 @@ distribution over <span class="math inline">\text{food}</span> is:</p>
 </tr>
 </tbody>
 </table>
-<p>Similarly, the distribution over toy is:</p>
+</div><div class="column">
 <table>
 <thead>
 <tr>
@@ -1145,6 +1148,8 @@ distribution over <span class="math inline">\text{food}</span> is:</p>
 </tr>
 </tbody>
 </table>
+</div>
+</div>
 <p>A <em>joint distribution</em> describes the probablities of different
 types of events occuring at the same time. If we draw a random row, the
 probability of <span class="math inline">\text{toy} = \text{ball} \land
@@ -1231,22 +1236,24 @@ distribution. For example, <span class="math inline">P(\text{toy} |
 <p>Two things happened to obtain this distribution:</p>
 <ol type="1">
 <li>We are focusing only on the rows where <span
-class="math inline">\text{food} = \text{}</span></li>
+class="math inline">\text{food} = \text{chicken}</span></li>
 <li>We <em>re-normalized</em> the probabilities so that they sum to
 1</li>
 </ol>
 <p>Two types of events are <em>independent</em> if all conditional
-distributions agree with the unconditional ones. Formally, <span
-class="math inline">\forall b : P(A | B = b) = P(A)</span> In the
-example above, <span class="math inline">P(\text{toy}) = P(\text{toy} |
-\text{food} = \text{chicken})</span>, so knowing the cat likes chicken
-doesn’t tell us anything about the toy preference, and this also needs
-to hold for <span class="math inline">\text{food} = \text{grass}</span>
-to establish the independence.</p>
+distributions agree with the unconditional ones:</p>
+<p><span class="math display">\forall b : P(A | B = b) = P(A)</span></p>
+<p>In the example above, <span class="math inline">P(\text{toy}) =
+P(\text{toy} | \text{food} = \text{chicken})</span>, so knowing the cat
+likes chicken doesn’t tell us anything about the toy preference.</p>
+<p>Note that this also needs to hold for <span
+class="math inline">\text{food} = \text{grass}</span> to establish the
+independence.</p>
 <p>Another way to check independence is to see if the joint distribution
 is simply a product of the single ones<a href="#fn6"
-class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a>:
-<span class="math inline">P(\text{toy}, \text{food}) = P(\text{toy})
+class="footnote-ref" id="fnref6"
+role="doc-noteref"><sup>6</sup></a>:</p>
+<p><span class="math display">P(\text{toy}, \text{food}) = P(\text{toy})
 \times P(\text{food})</span></p>
 <p>If you are traumatized by probabilities, here’s a different way to
 understand independence. To check if toy is independent from food, first
@@ -1310,7 +1317,6 @@ product</em> of the small ones:</p>
 <table>
 <thead>
 <tr>
-<th>name</th>
 <th>toy</th>
 <th>food</th>
 <th><span class="math inline">p</span></th>
@@ -1318,85 +1324,69 @@ product</em> of the small ones:</p>
 </thead>
 <tbody>
 <tr>
-<td>casa</td>
 <td>ball</td>
 <td>chicken</td>
-<td><span class="math inline">1/6</span></td>
+<td></td>
 </tr>
 <tr>
-<td>casa</td>
 <td>bag</td>
 <td>chicken</td>
-<td><span class="math inline">1/6</span></td>
+<td></td>
 </tr>
 <tr>
-<td>casa</td>
 <td>TP</td>
 <td>chicken</td>
-<td><span class="math inline">1/6</span></td>
+<td></td>
 </tr>
 <tr>
-<td>casa</td>
 <td>ball</td>
 <td>grass</td>
-<td><span class="math inline">1/6</span></td>
+<td></td>
 </tr>
 <tr>
-<td>casa</td>
 <td>bag</td>
 <td>grass</td>
-<td><span class="math inline">1/6</span></td>
+<td></td>
 </tr>
 <tr>
-<td>casa</td>
 <td>TP</td>
 <td>grass</td>
-<td><span class="math inline">1/6</span></td>
+<td></td>
 </tr>
 </tbody>
 </table>
-</div><div class="column">
+</div><div class="column" style="width:25%;">
 <table>
 <thead>
 <tr>
-<th>food</th>
 <th>toy</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>chicken</td>
 <td>ball</td>
 </tr>
 <tr>
-<td>chicken</td>
 <td>bag</td>
 </tr>
 <tr>
-<td>chicken</td>
 <td>TP</td>
 </tr>
 </tbody>
 </table>
+</div><div class="column" style="width:25%;">
 <table>
 <thead>
 <tr>
 <th>food</th>
-<th>toy</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>grass</td>
-<td>ball</td>
+<td>chicken</td>
 </tr>
 <tr>
 <td>grass</td>
-<td>bag</td>
-</tr>
-<tr>
-<td>grass</td>
-<td>TP</td>
 </tr>
 </tbody>
 </table>
@@ -1454,7 +1444,7 @@ How can this be?</p>
 <table>
 <thead>
 <tr>
-<th>hungery?</th>
+<th>hungry?</th>
 <th>love<sub>c</sub></th>
 <th>love<sub>k</sub></th>
 </tr>
@@ -1502,7 +1492,7 @@ How can this be?</p>
 </tr>
 </tbody>
 </table>
-<p>In statistics, hungery is called a <em>confounding factor</em>.</p>
+<p>In statistics, hungry is called a <em>confounding factor</em>.</p>
 <p>Now, if we <em>condition</em> on hunger, we will see the cats become
 independent again:</p>
 <div class="columns">
@@ -1510,7 +1500,7 @@ independent again:</p>
 <table>
 <thead>
 <tr>
-<th>hungery?</th>
+<th>hungry?</th>
 <th>love<sub>c</sub></th>
 <th>love<sub>k</sub></th>
 </tr>
@@ -1542,7 +1532,7 @@ independent again:</p>
 <table>
 <thead>
 <tr>
-<th>hungery?</th>
+<th>hungry?</th>
 <th>love<sub>c</sub></th>
 <th>love<sub>k</sub></th>
 </tr>
@@ -1574,9 +1564,9 @@ independent again:</p>
 </div>
 <p>Formally, we say two types of events <span class="math inline">X,
 Y</span> are <em>conditionally independent</em> on another type <span
-class="math inline">Z</span>, if they are independent for every
-possibility of <span class="math inline">Z</span>, written <span
-class="math inline">X \perp Y \mid Z</span>.</p>
+class="math inline">Z</span>, if they are independent for every case of
+<span class="math inline">Z</span>, written <span class="math inline">X
+\perp Y \mid Z</span>.</p>
 <p>When we have conditional independence in a table, we can break it up
 along the column conditioned on:</p>
 <div class="columns">
@@ -1584,7 +1574,7 @@ along the column conditioned on:</p>
 <table>
 <thead>
 <tr>
-<th>hungery?</th>
+<th>hungry?</th>
 <th>love<sub>c</sub></th>
 </tr>
 </thead>
@@ -1611,7 +1601,7 @@ along the column conditioned on:</p>
 <table>
 <thead>
 <tr>
-<th>hungery?</th>
+<th>hungry?</th>
 <th>love<sub>k</sub></th>
 </tr>
 </thead>
@@ -1641,7 +1631,7 @@ somewhat depends on the rest:</p>
 <table>
 <thead>
 <tr>
-<th>hungery?</th>
+<th>hungry?</th>
 <th>love<sub>c</sub></th>
 <th>love<sub>k</sub></th>
 <th>happy<sub>r</sub></th>
@@ -1704,7 +1694,7 @@ too much.</p>
 <table>
 <thead>
 <tr>
-<th>hungery?</th>
+<th>hungry?</th>
 <th>love<sub>c</sub></th>
 <th>happy<sub>r</sub></th>
 </tr>
@@ -1741,7 +1731,7 @@ don’t get back the original one!</p>
 <table>
 <thead>
 <tr>
-<th>hungery?</th>
+<th>hungry?</th>
 <th>love<sub>c</sub></th>
 <th>happy<sub>r</sub></th>
 </tr>
@@ -1793,7 +1783,7 @@ don’t get back the original one!</p>
 <table>
 <thead>
 <tr>
-<th>hungery?</th>
+<th>hungry?</th>
 <th>love<sub>k</sub></th>
 </tr>
 </thead>
@@ -1822,7 +1812,7 @@ don’t get back the original one!</p>
 are conditionally independent, happy<sub>r</sub> depends on both of them
 in a nontrivial way, and to represent this dependency faithfully, we
 <em>have</em> to put them in the same table.</p>
-<p>Another example is to think about chemical experiments:</p>
+<p>Another example is to think about science experiments:</p>
 <table>
 <thead>
 <tr>
@@ -1844,6 +1834,21 @@ in a nontrivial way, and to represent this dependency faithfully, we
 <p>Although temperature and pressure are independent for each altitude,
 the color of your material depends on both, and you certainly don’t want
 to decouple the pressure data in your records!</p>
+<p>So we only use a conditional independence <span class="math inline">X
+\perp Y \mid Z</span> to decompose tables, if <span
+class="math inline">X \cup Y \cup Z</span> cover <em>all</em> table
+attributes.</p>
+<p>This also explains the traditional definition of <em>multi-valued
+dependency</em>:</p>
+<p><span class="math display">R \models Z \twoheadrightarrow X \iff R
+\models X \perp Y \mid Z</span> <span class="math display">\text{ where
+} Y = \Sigma(R) - (X \cup Z)</span></p>
+<p>In words: there’s a MVD from <span class="math inline">Z</span> to
+<span class="math inline">X</span><a href="#fn7" class="footnote-ref"
+id="fnref7" role="doc-noteref"><sup>7</sup></a>, if <span
+class="math inline">X</span> is conditionally independent with the other
+attributes (<span class="math inline">Y</span>) given <span
+class="math inline">Z</span>.</p>
 <section id="footnotes" class="footnotes footnotes-end-of-document"
 role="doc-endnotes">
 <hr />
@@ -1864,6 +1869,9 @@ class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn5"><p>superset of a key<a href="#fnref5" class="footnote-back"
 role="doc-backlink">↩︎</a></p></li>
 <li id="fn6"><p>A.k.a. marginal distributions.<a href="#fnref6"
+class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn7"><p>Or, <span class="math inline">X</span> multi-value
+depends on <span class="math inline">Z</span><a href="#fnref7"
 class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
