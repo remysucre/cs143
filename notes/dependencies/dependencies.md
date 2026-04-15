@@ -602,6 +602,7 @@ Define BCNF
 
 So far, we've been focusing on redudancy caused by functional dependencies,
  which can be addressed by decomposing according to the FDs.
+
 However, this can at most save use linear amount of space (why?).
 Let's now consider a more severe form of redundancy caused by *independence*.
 
@@ -652,7 +653,7 @@ A *distribution* assigns a probability to each event.
 If we draw a row uniformly at random from our data,
  there's $1/2$ chance we get a row with $\text{food} = \text{chicken}$
  or $\text{food} = \text{grass}$,
-So the distribution over $\text{foo}$ is:
+So the distribution over $\text{food}$ is:
 
 | food | $p$ |
 |-|-|
