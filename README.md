@@ -1,7 +1,7 @@
 # Introduction to Databases
 
 This repository contains the course material for
- the Introduction to Databases class taught at UCLA.
+ the [Introduction to Databases](https://remy.wang/cs143/index.html) class taught at UCLA.
 Each Markdown file under [notes](notes/) simultaneously
  compiles to an interactive notebook (using [codapi](https://codapi.org))
  and a slide deck.
