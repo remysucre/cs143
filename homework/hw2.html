@@ -60,10 +60,6 @@
     img {
       max-width: 100%;
     }
-    svg {
-      height: auto;
-      max-width: 100%;
-    }
     h1, h2, h3, h4, h5, h6 {
       margin-top: 1.4em;
     }
@@ -107,8 +103,8 @@
      overflow: visible;
     }
     hr {
+      background-color: #1a1a1a;
       border: none;
-      border-top: 1px solid #1a1a1a;
       height: 1px;
       margin: 1em 0;
     }
@@ -166,7 +162,6 @@
       vertical-align: middle;
     }
     /* CSS for syntax highlighting */
-    html { -webkit-text-size-adjust: 100%; }
     pre > code.sourceCode { white-space: pre; position: relative; }
     pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
     pre > code.sourceCode > span:empty { height: 1.2em; }
@@ -232,7 +227,7 @@
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
   <script defer=""
-  src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  src="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.js"></script>
   <script>document.addEventListener("DOMContentLoaded", function () {
  var mathElements = document.getElementsByClassName("math");
  var macros = [];
@@ -248,7 +243,10 @@
 }}});
   </script>
   <link rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css" />
+  href="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
 </head>
 <body>
 <header id="title-block-header">
@@ -259,6 +257,11 @@ href="https://docs.python.org/3/tutorial/datastructures.html#sets">set</a>
 in Python.</p>
 <p>🤖 Find out how to check if a set is contained in another set, and
 how to take the union of two sets in Python.</p>
+<p>🤖 Find out how to compute the <a
+href="https://en.wikipedia.org/wiki/Power_set">power set</a> of a set in
+Python (my favorite way to do that is by <a
+href="https://stackoverflow.com/q/62336668/3694032">using a bit
+vector</a>).</p>
 <hr />
 <p>Implement the closure algorithm in Python:</p>
 <div class="sourceCode" id="cb1"><pre
@@ -303,27 +306,44 @@ Z</span></li>
 Z</span></li>
 </ul>
 <hr />
+<p>Write a function to check if a given set of attributes <span
+class="math inline">X</span> is a superkey, i.e., if <span
+class="math inline">X \to \Sigma</span> where <span
+class="math inline">\Sigma</span> is the set of all table attributes.
+The function takes 3 arguments: the set <span
+class="math inline">X</span>, the FDs <span
+class="math inline">\Phi</span> that hold over the table, and the set of
+all table attributes <code>\Sigma</code>.</p>
+<hr />
 <p>The decomposition algorithm shown in class looks for nontrivial FDs
 <span class="math inline">X \to Y</span> such that <span
 class="math inline">X</span> does not contain a key. This is expensive
 to implement, as we would have to try each possible pair of <span
 class="math inline">X</span> and <span class="math inline">Y</span>, and
 there are <span class="math inline">(2^n)^2 = 2^{2n}</span> many such
-pairs. Instead, we can just look for <span class="math inline">X</span>
-s.t. <span class="math inline">X^+ \neq X</span> and <span
-class="math inline">X^+</span> does not cover all table attributes:</p>
+pairs. Specifically, we would implement the following nested loop:</p>
 <div class="sourceCode" id="cb3"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> decompose(R):</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  S <span class="op">=</span> attributes of R</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  find X s.t. X<span class="op">+</span> <span class="op">!=</span> X <span class="op">&amp;</span> X<span class="op">+</span> <span class="op">!=</span> S</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> <span class="kw">not</span> found:</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">else</span>:</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">break</span> R into X<span class="op">+</span>, R2(S <span class="op">-</span> (X<span class="op">+</span> <span class="op">-</span> X))</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    decompose(R1) </span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    decompose(R2)</span></code></pre></div>
-<p>Prove this optimized algorithm also correctly decomposes the
-table.</p>
+class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> xs <span class="kw">in</span> powerset(sigma):</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> ys <span class="kw">in</span> powerset(sigma):</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> contains(xs, ys) <span class="kw">and</span> <span class="kw">not</span> isKey(xs, fds, sigma):</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>      ...</span></code></pre></div>
+<p>Instead, we can just look for <span class="math inline">X</span> s.t.
+<span class="math inline">X^+ \neq X</span> and <span
+class="math inline">X^+</span> does not cover all table attributes:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> decompose(R):</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  S <span class="op">=</span> attributes of R</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  find X s.t. X<span class="op">+</span> <span class="op">!=</span> X <span class="op">&amp;</span> X<span class="op">+</span> <span class="op">!=</span> S</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> <span class="kw">not</span> found:</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">else</span>:</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">break</span> R into X<span class="op">+</span>, R2(S <span class="op">-</span> (X<span class="op">+</span> <span class="op">-</span> X))</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    decompose(R1) </span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    decompose(R2)</span></code></pre></div>
+<p>Prove this optimized algorithm also correctly decomposes the table.
+Specifically, we can find a set <span class="math inline">X</span>
+satisfying the conditions above if and only if we can find an FD
+satisfying the conditions in the original algorithm.</p>
 <p>Implement the optimized algorithm in Python: the function takes as
 inputs a set of table arguments <code>S</code> and a list of functional
 dependencies <code>fd</code>, and returns a list containing the

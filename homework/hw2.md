@@ -7,6 +7,9 @@ title: "HW 2: Dependencies"
 🤖 Find out how to check if a set is contained in another set,
  and how to take the union of two sets in Python.
 
+🤖 Find out how to compute the [power set](https://en.wikipedia.org/wiki/Power_set) of a set in Python
+(my favorite way to do that is by [using a bit vector](https://stackoverflow.com/q/62336668/3694032)).
+
 ---
 
 Implement the closure algorithm in Python:
@@ -56,10 +59,26 @@ Run the `check` algorithm above by hand to prove the Armstrong axioms:
 
 ---
 
+Write a function to check if a given set of attributes $X$ is a superkey, i.e.,
+ if $X \to \Sigma$ where $\Sigma$ is the set of all table attributes.
+The function takes 3 arguments: the set $X$, the FDs $\Phi$ that hold over the table,
+ and the set of all table attributes `\Sigma`.
+
+---
+
 The decomposition algorithm shown in class looks for nontrivial FDs $X \to Y$
  such that $X$ does not contain a key.
 This is expensive to implement, as we would have to try each possible pair of $X$
  and $Y$, and there are $(2^n)^2 = 2^{2n}$ many such pairs.
+Specifically, we would implement the following nested loop:
+
+```python
+for xs in powerset(sigma):
+  for ys in powerset(sigma):
+    if not contains(xs, ys) and not isKey(xs, fds, sigma):
+      ...
+```
+
 Instead, we can just look for $X$ s.t. $X^+ \neq X$ and $X^+$ does not cover all table attributes:
 
 ```python
@@ -75,6 +94,8 @@ def decompose(R):
 ```
 
 Prove this optimized algorithm also correctly decomposes the table.
+Specifically, we can find a set $X$ satisfying the conditions above
+ if and only if we can find an FD satisfying the conditions in the original algorithm.
 
 Implement the optimized algorithm in Python:
  the function takes as inputs a set of table arguments `S`
