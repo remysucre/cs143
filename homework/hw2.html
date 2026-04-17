@@ -252,6 +252,9 @@
 <header id="title-block-header">
 <h1 class="title">HW 2: Dependencies</h1>
 </header>
+<p><em>This homework involves coding to help you understand how the
+algorithms work. You should be able to run the algorithms by hand during
+the quiz.</em></p>
 <p>🤖 Find out how to create a <a
 href="https://docs.python.org/3/tutorial/datastructures.html#sets">set</a>
 in Python.</p>
@@ -313,7 +316,7 @@ class="math inline">\Sigma</span> is the set of all table attributes.
 The function takes 3 arguments: the set <span
 class="math inline">X</span>, the FDs <span
 class="math inline">\Phi</span> that hold over the table, and the set of
-all table attributes <code>\Sigma</code>.</p>
+all table attributes <span class="math inline">\Sigma</span>.</p>
 <hr />
 <p>The decomposition algorithm shown in class looks for nontrivial FDs
 <span class="math inline">X \to Y</span> such that <span
@@ -356,6 +359,50 @@ would can produce different result tables after decomposition. Hint: you
 need 2 FDs such that decomposing along one of them would “destroy” the
 other FD. Another hint: for one of these FDs, try having multiple
 attributes on the left.</p>
-<p><strong>To be continued…</strong></p>
+<hr />
+<p>A decomposition is <em>lossless</em> if joining the decomposed tables
+produces exactly the original table. Prove that decomposing with both
+functional dependencies and conditional independence are lossless.
+Specifically, every time we break up a table along an FD, joining the
+resulting tables recovers the original, and similar for when we break up
+a table along an independence.</p>
+<hr />
+<p>Consider the converse to the previous problem: given a table <span
+class="math inline">t</span> over attributes <span
+class="math inline">x, y, z</span>, suppose we break it up into two
+tables <span class="math inline">t_1</span>, <span
+class="math inline">t_2</span> as follows:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode sql"><code class="sourceCode sql"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">create</span> <span class="kw">table</span> t1 <span class="kw">as</span> <span class="kw">select</span> <span class="kw">distinct</span>(x, y) <span class="kw">from</span> t;</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">create</span> <span class="kw">table</span> t2 <span class="kw">as</span> <span class="kw">select</span> <span class="kw">distinct</span>(x, z) <span class="kw">from</span> t;</span></code></pre></div>
+<p>If <span class="math inline">t_1 \Join_{t_1.x = t_2.x} t_2 =
+t</span>, does that imply either <span class="math inline">x\to y</span>
+or <span class="math inline">x \to z</span> must hold over <span
+class="math inline">t</span>? Or does that imply <span
+class="math inline">y \perp z \mid x</span>?</p>
+<hr />
+<p>Consider a table over attributes <span class="math inline">x, a_1,
+a_2, \ldots, a_k</span>, where <span class="math inline">x\to a_i</span>
+for each <span class="math inline">i</span>. How many tables would we
+get if we decompose according to the FDs? If every decomposed tables has
+<span class="math inline">n</span> rows, how many rows are there in the
+original table?</p>
+<hr />
+<p>Consider a table over attributes <span class="math inline">x, a_1,
+a_2, \ldots, a_k</span>, where <span class="math inline">a_i</span> are
+all conditionally independent given <span class="math inline">x</span>.
+How many tables would we get if we decompose according to independence?
+If every decomposed tables has <span class="math inline">n</span> rows,
+how many rows are there in the original table?</p>
+<hr />
+<p><strong>Challenge</strong> (won’t be on the quiz): If a conditional
+independence <span class="math inline">X \perp Y \mid Z</span> holds
+over a table and <span class="math inline">X \cup Y \cup Z</span> cover
+all table attributes, we say there is a <em>multi-valued dependency</em>
+(MVD) <span class="math inline">Z \twoheadrightarrow X</span> (or <span
+class="math inline">Z \twoheadrightarrow Y</span>). Prove that MVD
+generalizes FD, i.e., <span class="math inline">Z \to X</span> implies
+<span class="math inline">Z \twoheadrightarrow X</span>. Do the
+Armstrong Axioms also hold for MVDs?</p>
 </body>
 </html>

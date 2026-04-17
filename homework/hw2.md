@@ -2,6 +2,8 @@
 title: "HW 2: Dependencies"
 ---
 
+*This homework involves coding to help you understand how the algorithms work. You should be able to run the algorithms by hand during the quiz.*
+
 🤖 Find out how to create a [set](https://docs.python.org/3/tutorial/datastructures.html#sets) in Python.
 
 🤖 Find out how to check if a set is contained in another set,
@@ -62,7 +64,7 @@ Run the `check` algorithm above by hand to prove the Armstrong axioms:
 Write a function to check if a given set of attributes $X$ is a superkey, i.e.,
  if $X \to \Sigma$ where $\Sigma$ is the set of all table attributes.
 The function takes 3 arguments: the set $X$, the FDs $\Phi$ that hold over the table,
- and the set of all table attributes `\Sigma`.
+ and the set of all table attributes $\Sigma$.
 
 ---
 
@@ -116,4 +118,42 @@ Hint: you need 2 FDs such that decomposing along one of them
 Another hint: for one of these FDs, try having multiple attributes
  on the left.
 
-**To be continued...**
+---
+
+A decomposition is *lossless* if joining the decomposed tables produces exactly the original table.
+Prove that decomposing with both functional dependencies and conditional independence are lossless.
+Specifically, every time we break up a table along an FD, joining the resulting tables recovers the original,
+ and similar for when we break up a table along an independence.
+
+---
+
+Consider the converse to the previous problem: given a table $t$ over attributes $x, y, z$,
+ suppose we break it up into two tables $t_1$, $t_2$ as follows:
+
+```sql
+create table t1 as select distinct(x, y) from t;
+create table t2 as select distinct(x, z) from t;
+```
+
+If $t_1 \Join_{t_1.x = t_2.x} t_2 = t$, does that imply either $x\to y$ or $x \to z$ must hold over $t$?
+Or does that imply $y \perp z \mid x$?
+
+---
+
+Consider a table over attributes $x, a_1, a_2, \ldots, a_k$, where $x\to a_i$ for each $i$.
+How many tables would we get if we decompose according to the FDs?
+If every decomposed tables has $n$ rows, how many rows are there in the original table?
+
+---
+
+Consider a table over attributes $x, a_1, a_2, \ldots, a_k$, where $a_i$ are all conditionally independent given $x$.
+How many tables would we get if we decompose according to independence?
+If every decomposed tables has $n$ rows, how many rows are there in the original table?
+
+---
+
+**Challenge** (won't be on the quiz):
+If a conditional independence $X \perp Y \mid Z$ holds over a table and $X \cup Y \cup Z$ cover all table attributes,
+ we say there is a *multi-valued dependency* (MVD) $Z \twoheadrightarrow X$ (or $Z \twoheadrightarrow Y$).
+Prove that MVD generalizes FD, i.e., $Z \to X$ implies $Z \twoheadrightarrow X$.
+Do the Armstrong Axioms also hold for MVDs?
