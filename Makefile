@@ -31,7 +31,7 @@ notes/%-notes.pdf: notes/%.md $(LUA)
 notes: $(NOTES_ANNOT_PDF)
 
 homework/%.html: homework/%.md
-	pandoc $< -s --katex -o $@
+	pandoc $< -s --katex --bibliography=homework/references.bib --citeproc -o $@
 
 clean:
 	rm -f index.html $(NOTES_HTML) $(NOTES_PDF) $(NOTES_ANNOT_PDF) $(HW_HTML)
