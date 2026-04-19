@@ -387,4 +387,4 @@ See [@fagin1977] for rigorous proofs, including one for transitivity, and more d
 
 </details>
 
-**References**
+## References
