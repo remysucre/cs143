@@ -397,6 +397,23 @@ $$ T_1 \to T_2 \to T_3 $$
 
 ---
 
+Let's also check the schedule that we know is not serializable:
+
+|T~1~|T~2~|
+|-|-|
+|`x=`R(A)||
+|`y=2x`|`u=`R(A)|
+|W(A)`=y`|`v=2u`|
+||W(A)`=v`|
+
+. . .
+
+Its precedence graph has a cycle:
+
+$$ T_1 \leftrightarrows T_2 $$
+
+---
+
 *A schedule is (conflict-)serializable iff its precedence graph has no cycle*
 
 . . .

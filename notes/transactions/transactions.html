@@ -574,6 +574,35 @@ class="math inline">a_j</span></li>
 <li>they conflict with each other</li>
 </ul>
 <p><span class="math display"> T_1 \to T_2 \to T_3 </span></p>
+<p>Let’s also check the schedule that we know is not serializable:</p>
+<table>
+<thead>
+<tr>
+<th>T<sub>1</sub></th>
+<th>T<sub>2</sub></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>x=</code>R(A)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>y=2x</code></td>
+<td><code>u=</code>R(A)</td>
+</tr>
+<tr>
+<td>W(A)<code>=y</code></td>
+<td><code>v=2u</code></td>
+</tr>
+<tr>
+<td></td>
+<td>W(A)<code>=v</code></td>
+</tr>
+</tbody>
+</table>
+<p>Its precedence graph has a cycle:</p>
+<p><span class="math display"> T_1 \leftrightarrows T_2 </span></p>
 <p><em>A schedule is (conflict-)serializable iff its precedence graph
 has no cycle</em></p>
 <p>Intuitively, an edge <span class="math inline">T_i \to T_j</span>
