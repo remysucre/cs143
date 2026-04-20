@@ -4,6 +4,24 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>transactions</title>
+  <script defer=""
+  src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <link rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css" />
   <link rel="stylesheet" href="https://unpkg.com/@antonz/codapi@0.20.0/dist/snippet.css">
   <style>
     body { max-width: 48em; margin: 2em auto; padding: 0 1em; font-family: system-ui, sans-serif; line-height: 1.6; }
@@ -313,6 +331,272 @@ basically says “first come, first serve”:</p>
 schedule that runs the TXs in the same order they arrive.</li>
 </ul>
 <p>This can be important for e.g. ticket sales.</p>
+<p>To check if a schedule is serializable, we first need to know how to
+check if 2 schedules are equivalent.</p>
+<p>To do that, we check if we can <em>reorder</em> one into another,
+while avoiding <em>conflicts</em>:</p>
+<div class="columns">
+<div class="column" style="width:30%;">
+<table>
+<thead>
+<tr>
+<th>T<sub>1</sub></th>
+<th>T<sub>2</sub></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R(A)</td>
+<td>R(B)</td>
+</tr>
+<tr>
+<td>W(A)</td>
+<td>W(B)</td>
+</tr>
+</tbody>
+</table>
+</div><div class="column" style="width:30%;">
+<table>
+<thead>
+<tr>
+<th>T<sub>1</sub></th>
+<th>T<sub>2</sub></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R(A)</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>R(B)</td>
+</tr>
+<tr>
+<td>W(A)</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>W(B)</td>
+</tr>
+</tbody>
+</table>
+</div><div class="column" style="width:30%;">
+<table>
+<thead>
+<tr>
+<th>T<sub>1</sub></th>
+<th>T<sub>2</sub></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R(A)</td>
+<td></td>
+</tr>
+<tr>
+<td>W(A)</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>R(B)</td>
+</tr>
+<tr>
+<td></td>
+<td>W(B)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="incremental">
+<ol class="incremental" type="1">
+<li><p>Because reading data never causes conflict, we are free to
+reorder R(A) and R(B) any way we like.</p></li>
+<li><p>Since writing to different items do not conflict, we can also
+reorder W(A) and W(B).</p></li>
+<li><p>There’s also no conflict between W(A) and R(B), so we swap one
+more time and the schedule is serial.</p></li>
+</ol>
+</div>
+<p>In general, two actions are in conflict if they:</p>
+<ul>
+<li>operate on the same DB item</li>
+<li>one of them is a write</li>
+</ul>
+<p>For example, the following schedules are not equivalent, because they
+cannot be reordered into each other:</p>
+<div class="columns">
+<div class="column">
+<table>
+<thead>
+<tr>
+<th>T<sub>1</sub></th>
+<th>T<sub>2</sub></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R(A)</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>R(A)</td>
+</tr>
+<tr>
+<td>W(A)</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>W(A)</td>
+</tr>
+</tbody>
+</table>
+</div><div class="column">
+<table>
+<thead>
+<tr>
+<th>T<sub>1</sub></th>
+<th>T<sub>2</sub></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R(A)</td>
+<td></td>
+</tr>
+<tr>
+<td>W(A)</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>R(A)</td>
+</tr>
+<tr>
+<td></td>
+<td>W(A)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Indeed, the first schedule is not <em>serializable</em>, and the two
+TXs are attempting to change the same item at the same time.</p>
+<p>For a concrete example:</p>
+<table>
+<thead>
+<tr>
+<th>T<sub>1</sub></th>
+<th>T<sub>2</sub></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>x=</code>R(A)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>y=2x</code></td>
+<td><code>u=</code>R(A)</td>
+</tr>
+<tr>
+<td>W(A)<code>=y</code></td>
+<td><code>v=2u</code></td>
+</tr>
+<tr>
+<td></td>
+<td>W(A)<code>=v</code></td>
+</tr>
+</tbody>
+</table>
+<p>If the TXs run in sequence, we would multiply A by 4, but the
+schedule above would only multiply by 2.</p>
+<p>In other words, <em>no serial schedule</em> would have produced the
+same result.</p>
+<p>This gives us an algorithm to check for serializability:</p>
+<ul>
+<li>First compute all possible serial schedules involving the TXs</li>
+<li>For each serial schedule, check if it can be reordered into the
+given one</li>
+</ul>
+<p>But this is hopelessly slow: there are exponentially many serial
+schedules, and each can have exponentially many reorderings.</p>
+<p>We can check serializability with a powerful tool called the
+<em>precedence graph</em>. Consider the following schedule:</p>
+<table>
+<thead>
+<tr>
+<th>T<sub>1</sub></th>
+<th>T<sub>2</sub></th>
+<th>T<sub>3</sub></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R(B)</td>
+<td>R(A)</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>W(A)</td>
+<td></td>
+</tr>
+<tr>
+<td>W(B)</td>
+<td></td>
+<td>R(A)</td>
+</tr>
+<tr>
+<td></td>
+<td>R(B)</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>W(B)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>The graph has a node per transaction, and an edge <span
+class="math inline">T_i \to T_j</span> if there’s a pair of actions
+<span class="math inline">a_i \in T_i</span> and <span
+class="math inline">a_j \in T_j</span> s.t.:</p>
+<ul>
+<li><span class="math inline">a_i</span> occurs no later than <span
+class="math inline">a_j</span></li>
+<li>they conflict with each other</li>
+</ul>
+<p><span class="math display"> T_1 \to T_2 \to T_3 </span></p>
+<p><em>A schedule is (conflict-)serializable iff its precedence graph
+has no cycle</em></p>
+<p>Intuitively, an edge <span class="math inline">T_i \to T_j</span>
+means there’s a pair actions <span class="math inline">a_i, a_j</span>
+that cannot be reordered due to a conflict, so <span
+class="math inline">a_i</span> must occur first in any reordering,
+meaning some part of <span class="math inline">T_i</span> must happen
+before <span class="math inline">T_j</span>.</p>
+<p>But if there’s another edge <span class="math inline">T_j \to
+T_i</span>, some part of <span class="math inline">T_j</span> would also
+happen before <span class="math inline">T_i</span>, which is impossible
+in a serial schedule.</p>
+<p>That was a lot of new concepts to learn! Let’s review:</p>
+<div class="incremental">
+<ul class="incremental">
+<li>We want to guarantee ACID when the DB is modified</li>
+<li>So we group actions into TXs as units</li>
+<li>Serial execution would lead to ACID, but slow</li>
+<li>We want serializable concurrent schedules</li>
+<li>Which are schedules equivalent to some serial ones</li>
+<li>Which we can check with the precedence graph</li>
+</ul>
+</div>
 <section id="footnotes" class="footnotes footnotes-end-of-document"
 role="doc-endnotes">
 <hr />

@@ -266,4 +266,161 @@ This can be important for e.g. ticket sales.
 
 ---
 
+To check if a schedule is serializable,
+ we first need to know how to check if 2 schedules are equivalent.
 
+To do that, we check if we can *reorder* one into another,
+ while avoiding *conflicts*:
+
+:::: columns
+::: {.column width=30%}
+|T~1~|T~2~|
+|-|-|
+|R(A)|R(B)|
+|W(A)|W(B)|
+:::
+::: {.column width=30%}
+|T~1~|T~2~|
+|-|-|
+|R(A)|    |
+|    |R(B)|
+|W(A)|    |
+|    |W(B)|
+:::
+::: {.column width=30%}
+|T~1~|T~2~|
+|-|-|
+|R(A)|    |
+|W(A)|    |
+|    |R(B)|
+|    |W(B)|
+:::
+::::
+
+::: incremental
+
+1. Because reading data never causes conflict,
+ we are free to reorder R(A) and R(B) any way we like.
+
+2. Since writing to different items do not conflict,
+ we can also reorder W(A) and W(B).
+
+3. There's also no conflict between W(A) and R(B),
+ so we swap one more time and the schedule is serial.
+
+:::
+
+---
+
+In general, two actions are in conflict if they:
+
+- operate on the same DB item
+- one of them is a write
+
+---
+
+For example, the following schedules are not equivalent,
+ because they cannot be reordered into each other:
+
+
+:::: columns
+::: column
+|T~1~|T~2~|
+|-|-|
+|R(A)||
+||R(A)|
+|W(A)||
+||W(A)|
+:::
+::: column
+|T~1~|T~2~|
+|-|-|
+|R(A)||
+|W(A)||
+||R(A)|
+||W(A)|
+:::
+::::
+
+Indeed, the first schedule is not *serializable*, and the
+ two TXs are attempting to change the same item at the same time.
+
+---
+
+For a concrete example:
+
+|T~1~|T~2~|
+|-|-|
+|`x=`R(A)||
+|`y=2x`|`u=`R(A)|
+|W(A)`=y`|`v=2u`|
+||W(A)`=v`|
+
+If the TXs run in sequence, we would multiply A by 4,
+ but the schedule above would only multiply by 2.
+
+In other words, *no serial schedule* would have produced the
+ same result.
+
+---
+
+This gives us an algorithm to check for serializability:
+
+- First compute all possible serial schedules involving the TXs
+- For each serial schedule, check if it can be reordered into the given one
+
+But this is hopelessly slow:
+ there are exponentially many serial schedules,
+ and each can have exponentially many reorderings.
+
+---
+
+We can check serializability with a powerful tool called the *precedence graph*.
+Consider the following schedule:
+
+|T~1~|T~2~|T~3~|
+|-|-|-|
+|R(B)|R(A)||
+||W(A)||
+|W(B)||R(A)|
+||R(B)||
+||W(B)||
+
+The graph has a node per transaction,
+ and an edge $T_i \to T_j$ if there's a
+ pair of actions $a_i \in T_i$ and $a_j \in T_j$ s.t.:
+
+- $a_i$ occurs no later than $a_j$
+- they conflict with each other
+
+$$ T_1 \to T_2 \to T_3 $$
+
+---
+
+*A schedule is (conflict-)serializable iff its precedence graph has no cycle*
+
+. . .
+
+Intuitively, an edge $T_i \to T_j$ means there's a pair actions $a_i, a_j$
+ that cannot be reordered due to a conflict,
+ so $a_i$ must occur first in any reordering, meaning
+ some part of $T_i$ must happen before $T_j$.
+
+But if there's another edge $T_j \to T_i$,
+ some part of $T_j$ would also happen before $T_i$,
+ which is impossible in a serial schedule.
+
+---
+
+That was a lot of new concepts to learn! Let's review:
+
+::: incremental
+
+- We want to guarantee ACID when the DB is modified
+- So we group actions into TXs as units
+- Serial execution would lead to ACID, but slow
+- We want serializable concurrent schedules
+- Which are schedules equivalent to some serial ones
+- Which we can check with the precedence graph
+
+:::
