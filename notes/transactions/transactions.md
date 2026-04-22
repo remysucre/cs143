@@ -558,3 +558,63 @@ Then, we must have this pattern:
 $$U_1, L_2, U_2, L_3, U_3, L_1$$
 
 But this violates 2PL, contradiction!
+
+---
+
+So far, we have assumed every tx will eventually `COMMIT`,
+ in which case 2PL is sufficient.
+
+But in many cases a tx may acutally get cancelled,
+ e.g. if your card declines when buying tickets.
+
+|T~1~|T~2~|
+|-|-|
+|L(A); R(A); W(A); U(A)||
+||L(A); R(A); W(A); U(A); `COMMIT`|
+|`ROLLBACK`||
+
+Because tx is atomic, a cancelled tx needs to be undone.
+But here it's too late!
+The effect of T~1~ is taken in by T~2~ and `COMMIT`ted into the DB.
+
+---
+
+To fix this, we need **strict 2PL**,
+ which additionally requires unlock to happen
+ exactly at commit/rollback time.^[If you find "exactly the same time" confusing, 
+ think of it as unlocking *after* commit/rollback.]
+
+
+|T~1~|T~2~|
+|-|-|
+|L(A); R(A); W(A); ROLLBACK, U(A)||
+||L(A); R(A); W(A); U(A); `COMMIT`|
+
+---
+
+Another issue with locking is *deadlocks*:
+
+|T~1~: W(A),W(B)|T~1~: W(B),W(C)|T~1~: W(C),W(A)|
+|L(A),W(A)|||
+||L(B),W(B)||
+|||L(C),W(C)|
+|L(B)?|L(C)?|L(A)?|
+
+Here, after each thread grabs its lock, they then want
+ each other's lock for the next action.
+But because of 2PL, they can't release any locks.
+Impasse!
+
+---
+
+To resolve the deadlock, someone has to back up.
+
+First, to detect deadlocks, we need to construct
+ the *wait-for* graph,
+ where an edge $i \to j$ means $i$ is waiting for the lock held by $j$.
+
+In our example, we have $1\to 2, 2\to 3, 3\to 1$ -- a cycle!
+
+Whenever there's a cycle in the wait-for graph, there's a deadlock.
+
+In that case, we must rollback a tx to break the cycle.

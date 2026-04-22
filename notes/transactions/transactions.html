@@ -781,6 +781,73 @@ before T<sub>j</sub> locks it.</p>
 <p>Then, we must have this pattern:</p>
 <p><span class="math display">U_1, L_2, U_2, L_3, U_3, L_1</span></p>
 <p>But this violates 2PL, contradiction!</p>
+<p>So far, we have assumed every tx will eventually <code>COMMIT</code>,
+in which case 2PL is sufficient.</p>
+<p>But in many cases a tx may acutally get cancelled, e.g. if your card
+declines when buying tickets.</p>
+<table>
+<thead>
+<tr>
+<th>T<sub>1</sub></th>
+<th>T<sub>2</sub></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L(A); R(A); W(A); U(A)</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>L(A); R(A); W(A); U(A); <code>COMMIT</code></td>
+</tr>
+<tr>
+<td><code>ROLLBACK</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Because tx is atomic, a cancelled tx needs to be undone. But here
+it’s too late! The effect of T<sub>1</sub> is taken in by T<sub>2</sub>
+and <code>COMMIT</code>ted into the DB.</p>
+<p>To fix this, we need <strong>strict 2PL</strong>, which additionally
+requires unlock to happen exactly at commit/rollback time.<a href="#fn6"
+class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a></p>
+<table>
+<thead>
+<tr>
+<th>T<sub>1</sub></th>
+<th>T<sub>2</sub></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L(A); R(A); W(A); ROLLBACK, U(A)</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>L(A); R(A); W(A); U(A); <code>COMMIT</code></td>
+</tr>
+</tbody>
+</table>
+<p>Another issue with locking is <em>deadlocks</em>:</p>
+<p>|T<sub>1</sub>: W(A),W(B)|T<sub>1</sub>: W(B),W(C)|T<sub>1</sub>:
+W(C),W(A)| |L(A),W(A)||| ||L(B),W(B)|| |||L(C),W(C)|
+|L(B)?|L(C)?|L(A)?|</p>
+<p>Here, after each thread grabs its lock, they then want each other’s
+lock for the next action. But because of 2PL, they can’t release any
+locks. Impasse!</p>
+<p>To resolve the deadlock, someone has to back up.</p>
+<p>First, to detect deadlocks, we need to construct the
+<em>wait-for</em> graph, where an edge <span class="math inline">i \to
+j</span> means <span class="math inline">i</span> is waiting for the
+lock held by <span class="math inline">j</span>.</p>
+<p>In our example, we have <span class="math inline">1\to 2, 2\to 3,
+3\to 1</span> – a cycle!</p>
+<p>Whenever there’s a cycle in the wait-for graph, there’s a
+deadlock.</p>
+<p>In that case, we must rollback a tx to break the cycle.</p>
 <section id="footnotes" class="footnotes footnotes-end-of-document"
 role="doc-endnotes">
 <hr />
@@ -798,6 +865,9 @@ href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn5"><p>There <em>are</em> also approaches that check
 after-the-fact, covered later.<a href="#fnref5" class="footnote-back"
 role="doc-backlink">↩︎</a></p></li>
+<li id="fn6"><p>If you find “exactly the same time” confusing, think of
+it as unlocking <em>after</em> commit/rollback.<a href="#fnref6"
+class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
 <script src="https://unpkg.com/@antonz/runno@0.6.1/dist/runno.js"></script>
