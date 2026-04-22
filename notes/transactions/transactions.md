@@ -441,3 +441,120 @@ That was a lot of new concepts to learn! Let's review:
 - Which we can check with the precedence graph
 
 :::
+
+---
+
+The way things are going might make you think this is
+ how DB systems work:
+
+::: incremental
+
+- A bunch of transaction actions get submitted to the DB
+- Everytime the DB sees a new action, it checks serializability
+- Which is done by constructing the precedence graph and checking for cycles
+- If there's a cycle, ???
+
+:::
+
+. . .
+
+The problem with this is that, if we check serializability *after the fact*,
+ it might be too late.
+
+---
+
+In reality, the DB guarantees serializable schedule *by construction*
+ by using locks.^[There *are* also approaches that check after-the-fact, covered later.]
+
+The simplest approach is locking the whole DB every time:
+
+|T~1~|T~2~|
+|-|-|
+|L(DB)||
+|...|||
+|U(DB)||
+||L(DB)|
+||...|
+||U(DB)|
+
+Each tx takes the lock before it starts, and unlocks after it's done.
+This would result in a *serial* schedule.
+
+---
+
+But locking the whole DB is too conservative! 
+What if we "only lock what we need"?
+
+|T~1~|T~2~|
+|-|-|
+|L(A); R(A)||
+|W(A); U(A)||
+||L(A), R(A)|
+||W(A), U(A)|
+||L(B), R(B)|
+||W(B), U(B)|
+|L(B); R(B)||
+|W(B); U(B)||
+
+The schedule is not serializable!
+Try out a concrete example to see.
+
+---
+
+Again, we're facing a dilemma:
+
+- locking everything is correct, but slow
+- locking individual items is fast, but wrong
+
+. . .
+
+The middle ground taken by most DBs is **2-phase locking**(2PL):
+
+- an item must be locked before being read/written
+- within each tx, all locks must precede all unlocks
+
+---
+
+This still allows *some* degree of concurrency:
+
+|T~1~|T~2~|
+|-|-|
+|L(A),R(A),W(A)|L(B),R(B),W(B),U(B)|
+|L(B),R(B),W(B),U(A),U(B)||
+
+Here, because the tx need different items in the beginning, they can run in parallel;
+ then once T~2~ is done with B, T~1~ can lock it.
+
+---
+
+The main result in DB transactions is:
+
+**Theorem**: 2PL guarantees serializability
+
+---
+
+Some notations first:
+
+- Let $i \to j$ denote an edge in the graph
+- Let $L_i(X), U_i(X)$ denote tx $i$ locking/unlocking $X$
+
+. . .
+
+We'll also use this lemma:
+
+*Lemma*: and edge $i \to j$ means the schedule contains a pattern $U_i(X), \ldots, L_j(X)$
+
+This is because the conflict edge means T~i~ acts on $X$ before T~j~, and for that to happen,
+ T~i~ must unlock $X$ before T~j~ locks it.
+
+---
+
+Now, suppose we have a cycle involving 3 tx: 
+
+$$1 \to 2, 2\to 3, 3\to 1$$
+
+Then, we must have this pattern:
+
+$$U_1, L_2, U_2, L_3, U_3, L_1$$
+
+But this violates 2PL, contradiction!

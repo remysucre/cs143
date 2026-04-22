@@ -626,6 +626,161 @@ in a serial schedule.</p>
 <li>Which we can check with the precedence graph</li>
 </ul>
 </div>
+<p>The way things are going might make you think this is how DB systems
+work:</p>
+<div class="incremental">
+<ul class="incremental">
+<li>A bunch of transaction actions get submitted to the DB</li>
+<li>Everytime the DB sees a new action, it checks serializability</li>
+<li>Which is done by constructing the precedence graph and checking for
+cycles</li>
+<li>If there’s a cycle, ???</li>
+</ul>
+</div>
+<p>The problem with this is that, if we check serializability <em>after
+the fact</em>, it might be too late.</p>
+<p>In reality, the DB guarantees serializable schedule <em>by
+construction</em> by using locks.<a href="#fn5" class="footnote-ref"
+id="fnref5" role="doc-noteref"><sup>5</sup></a></p>
+<p>The simplest approach is locking the whole DB every time:</p>
+<table>
+<thead>
+<tr>
+<th>T<sub>1</sub></th>
+<th>T<sub>2</sub></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L(DB)</td>
+<td></td>
+</tr>
+<tr>
+<td>…</td>
+<td></td>
+</tr>
+<tr>
+<td>U(DB)</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>L(DB)</td>
+</tr>
+<tr>
+<td></td>
+<td>…</td>
+</tr>
+<tr>
+<td></td>
+<td>U(DB)</td>
+</tr>
+</tbody>
+</table>
+<p>Each tx takes the lock before it starts, and unlocks after it’s done.
+This would result in a <em>serial</em> schedule.</p>
+<p>But locking the whole DB is too conservative! What if we “only lock
+what we need”?</p>
+<table>
+<thead>
+<tr>
+<th>T<sub>1</sub></th>
+<th>T<sub>2</sub></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L(A); R(A)</td>
+<td></td>
+</tr>
+<tr>
+<td>W(A); U(A)</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>L(A), R(A)</td>
+</tr>
+<tr>
+<td></td>
+<td>W(A), U(A)</td>
+</tr>
+<tr>
+<td></td>
+<td>L(B), R(B)</td>
+</tr>
+<tr>
+<td></td>
+<td>W(B), U(B)</td>
+</tr>
+<tr>
+<td>L(B); R(B)</td>
+<td></td>
+</tr>
+<tr>
+<td>W(B); U(B)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>The schedule is not serializable! Try out a concrete example to
+see.</p>
+<p>Again, we’re facing a dilemma:</p>
+<ul>
+<li>locking everything is correct, but slow</li>
+<li>locking individual items is fast, but wrong</li>
+</ul>
+<p>The middle ground taken by most DBs is <strong>2-phase
+locking</strong>(2PL):</p>
+<ul>
+<li>an item must be locked before being read/written</li>
+<li>within each tx, all locks must precede all unlocks</li>
+</ul>
+<p>This still allows <em>some</em> degree of concurrency:</p>
+<table>
+<thead>
+<tr>
+<th>T<sub>1</sub></th>
+<th>T<sub>2</sub></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L(A),R(A),W(A)</td>
+<td>L(B),R(B),W(B),U(B)</td>
+</tr>
+<tr>
+<td>L(B),R(B),W(B),U(A),U(B)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Here, because the tx need different items in the beginning, they can
+run in parallel; then once T<sub>2</sub> is done with B, T<sub>1</sub>
+can lock it.</p>
+<p>The main result in DB transactions is:</p>
+<p><strong>Theorem</strong>: 2PL guarantees serializability</p>
+<p>Some notations first:</p>
+<ul>
+<li>Let <span class="math inline">i \to j</span> denote an edge in the
+graph</li>
+<li>Let <span class="math inline">L_i(X), U_i(X)</span> denote tx <span
+class="math inline">i</span> locking/unlocking <span
+class="math inline">X</span></li>
+</ul>
+<p>We’ll also use this lemma:</p>
+<p><em>Lemma</em>: and edge <span class="math inline">i \to j</span>
+means the schedule contains a pattern <span class="math inline">U_i(X),
+\ldots, L_j(X)</span></p>
+<p>This is because the conflict edge means T<sub>i</sub> acts on <span
+class="math inline">X</span> before T<sub>j</sub>, and for that to
+happen, T<sub>i</sub> must unlock <span class="math inline">X</span>
+before T<sub>j</sub> locks it.</p>
+<p>Now, suppose we have a cycle involving 3 tx:</p>
+<p><span class="math display">1 \to 2, 2\to 3, 3\to 1</span></p>
+<p>Then, we must have this pattern:</p>
+<p><span class="math display">U_1, L_2, U_2, L_3, U_3, L_1</span></p>
+<p>But this violates 2PL, contradiction!</p>
 <section id="footnotes" class="footnotes footnotes-end-of-document"
 role="doc-endnotes">
 <hr />
@@ -640,6 +795,9 @@ the actions.<a href="#fnref3" class="footnote-back"
 role="doc-backlink">↩︎</a></p></li>
 <li id="fn4"><p>Make sure you know what the bold words mean by now!<a
 href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>There <em>are</em> also approaches that check
+after-the-fact, covered later.<a href="#fnref5" class="footnote-back"
+role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
 <script src="https://unpkg.com/@antonz/runno@0.6.1/dist/runno.js"></script>
