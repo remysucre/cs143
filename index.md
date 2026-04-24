@@ -47,7 +47,7 @@ There will be roughly one quiz per topic as listed below.
 |:----:|:-----------------:|:--------:|
 | 4/13 | SQL ([notes](notes/sql/sql.html), [slides](notes/sql/sql.pdf)) | [hw1](homework/hw1.html) |
 | 4/22 | Dependencies ([notes](notes/dependencies/dependencies.html), [slides](notes/dependencies/dependencies.pdf)) | [hw2](homework/hw2.html) |
-| 5/4  | Transactions ([notes](notes/transactions/transactions.html), [slides](notes/transactions/transactions.pdf)) |
+| 5/4  | Transactions ([notes](notes/transactions/transactions.html), [slides](notes/transactions/transactions.pdf)) | [hw3](homework/hw3.html) |
 | 5/13 | Query exection |
 | 5/27 | Indexes |
 | 6/8  | Advanced Topics |
