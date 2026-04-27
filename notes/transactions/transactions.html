@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>transactions</title>
+  <title>Transactions</title>
   <script defer=""
   src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
   <script>document.addEventListener("DOMContentLoaded", function () {
@@ -35,7 +35,7 @@
   </style>
 </head>
 <body>
-<h1>transactions</h1>
+<h1>Transactions</h1>
 <p>So far we’ve been treating DBs as inanimate objects: they hold data,
 we can look at the data, and that’s it. But SQL databases are so popular
 because they deal with <em>changes</em> very well. Let’s see some
@@ -848,6 +848,78 @@ lock held by <span class="math inline">j</span>.</p>
 <p>Whenever there’s a cycle in the wait-for graph, there’s a
 deadlock.</p>
 <p>In that case, we must rollback a tx to break the cycle.</p>
+<p>Although 2PL allows concurrency, it’s usually still not fast
+enough.</p>
+<p>Serializability inherently requires some sequential-ness.</p>
+<p>In practice, people sacrifice serializability for better performance
+by adopting <strong>weak isolation levels</strong>.</p>
+<p>We will look at one such level – snapshot isolation.</p>
+<p>The idea is simple: each tx acts on a DB snapshot, then merge at
+<code>COMMIT</code>:</p>
+<figure>
+<img src="notes/transactions/SI.png" style="width:50.0%"
+alt="Snapshot Isolation" />
+<figcaption aria-hidden="true">Snapshot Isolation</figcaption>
+</figure>
+<p>The merge succeeds as long as there’s no <em>write-write</em>
+conflict.</p>
+<p>SI is attractive because it is intuitively <em>atomic</em> and
+<em>isolating</em>:</p>
+<ul>
+<li>Each tx operates on own snapshot, and either <code>COMMIT</code> or
+<code>ROLLBACK</code></li>
+<li>Local operations <em>cannot</em> interfere with each other</li>
+</ul>
+<p>Surprisingly, snapshot isolation does <em>not</em> guarantee
+serializability!</p>
+<p>The reason is that it breaks <em>consistency</em>.</p>
+<p>Suppose you have 2 tx:</p>
+<table>
+<thead>
+<tr>
+<th>T<sub>1</sub></th>
+<th>T<sub>2</sub></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>x=R(A)</td>
+<td>y=R(B)</td>
+</tr>
+<tr>
+<td>x=2x</td>
+<td>y=2y</td>
+</tr>
+<tr>
+<td>W(B)=x</td>
+<td>W(A)=y</td>
+</tr>
+</tbody>
+</table>
+<p>In any serial ordering, we would end up with one value being twice of
+the other.</p>
+<p>But under SI, because the writes don’t conflict, the tx’s run
+concurrently and end up with A=B.</p>
+<p>For another example, suppose you’re working on a project with your
+partner.</p>
+<div class="incremental">
+<ul class="incremental">
+<li>Your codebase implements <code>def f(): return 1</code></li>
+<li>You add <code>def g(): return f() + 1</code></li>
+<li>Your friend changes <code>def f(): return 2</code></li>
+</ul>
+</div>
+<p>Now although there’s no git conflict, your code is broken!</p>
+<p>This is known as <em>merge skew</em>, and can happen even if you add
+tests.</p>
+<p>There have been work fixing this, resulting the so-called
+<em>serializable snapshot isolation</em> (SSI).</p>
+<p>What’s also surprising is that people seem to use <em>even
+weaker</em> levels of isolation in practice.</p>
+<p>For example, PostgreSQL defaults to Read Commited.</p>
+<p>There’s research showing anything weaker than <em>serializable</em>
+is vulnerable to attacks, but no one really knows why things just don’t
+break!</p>
 <section id="footnotes" class="footnotes footnotes-end-of-document"
 role="doc-endnotes">
 <hr />

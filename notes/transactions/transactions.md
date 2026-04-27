@@ -1,5 +1,5 @@
 ---
-title: transactions
+title: Transactions
 author: Remy Wang
 date: April 2026
 ---
@@ -618,3 +618,82 @@ In our example, we have $1\to 2, 2\to 3, 3\to 1$ -- a cycle!
 Whenever there's a cycle in the wait-for graph, there's a deadlock.
 
 In that case, we must rollback a tx to break the cycle.
+
+---
+
+Although 2PL allows concurrency, it's usually still not fast enough.
+
+Serializability inherently requires some sequential-ness.
+
+In practice, people sacrifice serializability for better performance
+ by adopting **weak isolation levels**.
+
+---
+
+We will look at one such level -- snapshot isolation.
+
+The idea is simple: each tx acts on a DB snapshot, then merge at `COMMIT`:
+
+![Snapshot Isolation](notes/transactions/SI.png){width=50%}
+
+The merge succeeds as long as there's no *write-write* conflict.
+
+---
+
+SI is attractive because it is intuitively *atomic* and *isolating*:
+
+- Each tx operates on own snapshot, and either `COMMIT` or `ROLLBACK`
+- Local operations *cannot* interfere with each other
+
+. . .
+
+Surprisingly, snapshot isolation does *not* guarantee serializability!
+
+The reason is that it breaks *consistency*.
+
+---
+
+Suppose you have 2 tx:
+
+|T~1~|T~2~|
+|-|-|
+|x=R(A)|y=R(B)|
+|x=2x|y=2y|
+|W(B)=x|W(A)=y|
+
+In any serial ordering, we would end up with
+ one value being twice of the other.
+
+But under SI, because the writes don't conflict, 
+ the tx's run concurrently and end up with A=B. 
+
+---
+
+For another example, suppose you're working on a project with your partner.
+
+::: incremental
+
+- Your codebase implements `def f(): return 1`
+- You add `def g(): return f() + 1`
+- Your friend changes `def f(): return 2`
+
+:::
+
+. . .
+
+Now although there's no git conflict, your code is broken!
+
+This is known as *merge skew*, and can happen even if you add tests.
+
+. . .
+
+There have been work fixing this, resulting the so-called *serializable snapshot isolation* (SSI).
+
+---
+
+What's also surprising is that people seem to use *even weaker* levels of isolation in practice.
+
+For example, PostgreSQL defaults to Read Commited.
+
+There's research showing anything weaker than *serializable* is vulnerable to attacks,
+ but no one really knows why things just don't break!
