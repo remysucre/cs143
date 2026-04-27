@@ -595,6 +595,7 @@ To fix this, we need **strict 2PL**,
 Another issue with locking is *deadlocks*:
 
 |T~1~: W(A),W(B)|T~1~: W(B),W(C)|T~1~: W(C),W(A)|
+|-|-|-|
 |L(A),W(A)|||
 ||L(B),W(B)||
 |||L(C),W(C)|

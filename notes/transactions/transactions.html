@@ -832,9 +832,37 @@ class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a></p>
 </tbody>
 </table>
 <p>Another issue with locking is <em>deadlocks</em>:</p>
-<p>|T<sub>1</sub>: W(A),W(B)|T<sub>1</sub>: W(B),W(C)|T<sub>1</sub>:
-W(C),W(A)| |L(A),W(A)||| ||L(B),W(B)|| |||L(C),W(C)|
-|L(B)?|L(C)?|L(A)?|</p>
+<table>
+<thead>
+<tr>
+<th>T<sub>1</sub>: W(A),W(B)</th>
+<th>T<sub>1</sub>: W(B),W(C)</th>
+<th>T<sub>1</sub>: W(C),W(A)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L(A),W(A)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>L(B),W(B)</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>L(C),W(C)</td>
+</tr>
+<tr>
+<td>L(B)?</td>
+<td>L(C)?</td>
+<td>L(A)?</td>
+</tr>
+</tbody>
+</table>
 <p>Here, after each thread grabs its lock, they then want each other’s
 lock for the next action. But because of 2PL, they can’t release any
 locks. Impasse!</p>
