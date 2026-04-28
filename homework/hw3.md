@@ -204,3 +204,161 @@ where u.item = h.item
 
 </details>
 
+---
+
+Implement a lock manager:
+ write a Python function
+ that takes in an action `(tx, op, x)`
+ where `tx` is the tx ID (int),
+ `op` is one of `R`, `W`, `ROLLBACK`, `COMMIT`,
+ and `x` is a DB item (int).
+A global variable `locks` is a [dictionary](https://docs.python.org/3/tutorial/datastructures.html#dictionaries)
+ mapping each DB item to the tx holding the lock, if any.
+Your function should implement strict 2PL:
+ for each action,
+ check if the item is already locked
+ by the tx, and attempt to lock if not;
+ the function should return `true` if the action can proceed,
+ and `false` if it fails to acquire a lock.
+All locks should be released at commit/rollback time (ignore the DB item for commit/rollback actions).
+
+<details>
+<summary>Solution</summary>
+
+```python
+locks = {}  # item -> tx holding the lock
+
+def lock_manager(tx, op, x):
+    if op in ('COMMIT', 'ROLLBACK'):
+        to_release = [item for item, holder in locks.items() if holder == tx]
+        for item in to_release:
+            del locks[item]
+        return True
+    # R or W: need the lock on x
+    if x not in locks:
+        locks[x] = tx
+        return True
+    return locks[x] == tx  # True if we already hold it, False if another tx does
+```
+
+On COMMIT/ROLLBACK, release every lock held by this tx (strict 2PL: hold all locks until end).
+On R/W, acquire the lock if free; succeed silently if we already hold it; fail if another tx holds it.
+
+</details>
+
+---
+
+Make sure you understand the proof of why 2PL guarantees serializability.
+You don't need to memorize it, but you should be able to explain it
+ to someone else while looking at the slides.
+A good excercise is to write down the proof in a more formal & detailed way
+ and fill in the gaps.
+
+<details>
+<summary>Solution</summary>
+
+First, we show that an edge $i \to j$ in the precedence graph
+ implies $T_i$  unlocks an item $X$ before $T_j$ locks $X$.
+If there's an edge $i \to j$, there must be a pair of conflicting
+ actions $a_i \in T_i$ and $a_j \in T_j$ such that $a_i$
+ occurs before $a_j$, and they act on the same DB item $X$.
+When $a_i$ acts on $X$, $T_i$ must hold a lock on $X$; 
+ but for $a_j$ to act on $X$, $T_j$ must have first locked $X$, 
+ which can only happen *after* $T_i$ releases its lock.
+Therefore, $T_i$ must unlock on $X$ before $T_j$ locks it.
+
+Now, assume for the sake of contradiction that
+ a schedule follows 2PL but is *not* serializable.
+Then there must be a cycle in the precedence graph.
+Without loss of generality suppose the cycle
+ is $1 \to 2 \to \cdots \to k \to 1$.
+Using the result we proved above, 
+ there exists items $X_1, X_2, \ldots, X_k$
+ such that: 
+
+- $T_1$ unlocks $X_1$ before $T_2$ locks $X_1$
+- $T_2$ unlocks $X_2$ before $T_3$ locks $X_2$
+- ...
+- $T_k$ unlocks $X_k$ before $T_1$ locks $X_k$
+
+According to 2PL, all unlocks must happen *after* all locks within the same tx,
+ i.e., $T_i$ unlocks $X$ after $T_i$ locks $X'$ for all $i$.
+This means that we can put the events above in a strict sequential order:
+
+$U_1(X_1) < L_2(X_1) < U_2(X_2) < L_3(X_2) < \cdots < U_k(X_k) < L_1(X_k)$
+
+Where $U_i(X)$ and $L_i(X)$ denote the event of $T_i$ unlocking/locking $X$, respectively.
+But this would require $T_1$ to lock $X_k$ *after* it unlocks $X_1$, which violates
+ 2PL -- contradiction!
+
+</details>
+
+---
+
+The basic 2PL only has one kind of lock.
+We can allow for even more concurrency using read/write locks:
+ a read lock on X allows a tx to read X,
+ and multiple read locks on the same item can coexist;
+ a write lock on X allows writing,
+ but if a tx holds a write lock on X,
+ no other tx can hold any kind of lock.
+Another name for read locks is "shared locks",
+ and for write locks "exclusive locks".
+Find an example where there would be more concurrency
+ under read/write locks compared to just a single type of locks.
+
+<details>
+<summary>Solution</summary>
+
+Any schedule where two transactions read the same item without writing it:
+
+|T~1~|T~2~|
+|-|-|
+|R(A)|R(A)|
+|W(B)|W(C)|
+
+Under single-type (exclusive) locks, T~1~ and T~2~ cannot both hold the lock on $A$ at the same time — one must wait. Under read/write locks, both can hold shared locks on $A$ simultaneously (reads don't conflict), then proceed to write their respective items $B$ and $C$ in parallel. The single-type scheme serializes the reads unnecessarily; the r/w scheme does not.
+
+</details>
+
+---
+
+Convince yourself that 2PL still guarantees serializability.
+This involves carefully revisiting each step in the original proof,
+ and showing the reasoning still holds up under read/write locks.
+
+---
+
+Under read/write locking, it's possible for there to be no deadlock,
+ but a tx still gets blocked indefinitely,
+ leading to what's known as *starvation*.
+Can you come up with an example of this?
+Hint: this can happen when you have lots of tx reading an item,
+ while 1 other tx tries to write.
+
+<details>
+<summary>Solution</summary>
+
+Starvation can happen if a tx wants to write, 
+ but some other tx's hold a read lock,
+ and new tx's keep arriving locking the item for reading:
+
+|T~w~|T~1~|T~2~|T~3~|T~4~|...|
+|-|-|-|-|-|-|
+|~~X(A)~~|S(A)|S(A)||||
+|~~X(A)~~||S(A)|S(A)|||
+|~~X(A)~~|||S(A)|S(A)||
+|~~X(A)~~||||S(A)|...|
+|~~X(A)~~|||||...|
+
+Here ~~X(A)~~ denotes a failed attempt to acquire an exclusive (write) lock on A,
+ and S(A) denotes the corresponding tx is holding a shared (read) lock on A.
+Because read locks do not conflict, the arriving tx's can keep
+ getting new locks, making it impossible for the exclusive lock to succeed.
+Imagine you're trying to fix a busy road: if the cars keep coming (read locks),
+ you can't work on the road (write lock).
+The solution is also similar:
+ for roadwork, you stop letting people through once you want to start work;
+ for transactions, block all incoming reads if you have a pending write.
+
+</details>

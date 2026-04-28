@@ -1,14 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>HW 3: Transactions</title>
   <style>
-    /* Default styles provided by pandoc.
-    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
-    */
     html {
       color: #1a1a1a;
       background-color: #fdfdfd;
@@ -91,7 +88,6 @@
       color: #606060;
     }
     code {
-      white-space: pre-wrap;
       font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
       font-size: 85%;
       margin: 0;
@@ -155,6 +151,7 @@
     #TOC a:not(:hover) {
       text-decoration: none;
     }
+    code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
     div.columns{display: flex; gap: min(4vw, 1.5em);}
     div.column{flex: auto; overflow-x: auto;}
@@ -513,6 +510,233 @@ class="sourceCode sql"><code class="sourceCode sql"><span id="cb9-1"><a href="#c
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="kw">from</span> upcoming u, held h</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="kw">where</span> u.item <span class="op">=</span> h.item</span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">and</span> u.tx <span class="op">!=</span> h.tx;</span></code></pre></div>
+</details>
+<hr />
+<p>Implement a lock manager: write a Python function that takes in an
+action <code>(tx, op, x)</code> where <code>tx</code> is the tx ID
+(int), <code>op</code> is one of <code>R</code>, <code>W</code>,
+<code>ROLLBACK</code>, <code>COMMIT</code>, and <code>x</code> is a DB
+item (int). A global variable <code>locks</code> is a <a
+href="https://docs.python.org/3/tutorial/datastructures.html#dictionaries">dictionary</a>
+mapping each DB item to the tx holding the lock, if any. Your function
+should implement strict 2PL: for each action, check if the item is
+already locked by the tx, and attempt to lock if not; the function
+should return <code>true</code> if the action can proceed, and
+<code>false</code> if it fails to acquire a lock. All locks should be
+released at commit/rollback time (ignore the DB item for commit/rollback
+actions).</p>
+<details>
+<summary>
+Solution
+</summary>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>locks <span class="op">=</span> {}  <span class="co"># item -&gt; tx holding the lock</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> lock_manager(tx, op, x):</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> op <span class="kw">in</span> (<span class="st">&#39;COMMIT&#39;</span>, <span class="st">&#39;ROLLBACK&#39;</span>):</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>        to_release <span class="op">=</span> [item <span class="cf">for</span> item, holder <span class="kw">in</span> locks.items() <span class="cf">if</span> holder <span class="op">==</span> tx]</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> item <span class="kw">in</span> to_release:</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>            <span class="kw">del</span> locks[item]</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">True</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># R or W: need the lock on x</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> x <span class="kw">not</span> <span class="kw">in</span> locks:</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>        locks[x] <span class="op">=</span> tx</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">True</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> locks[x] <span class="op">==</span> tx  <span class="co"># True if we already hold it, False if another tx does</span></span></code></pre></div>
+<p>On COMMIT/ROLLBACK, release every lock held by this tx (strict 2PL:
+hold all locks until end). On R/W, acquire the lock if free; succeed
+silently if we already hold it; fail if another tx holds it.</p>
+</details>
+<hr />
+<p>Make sure you understand the proof of why 2PL guarantees
+serializability. You don’t need to memorize it, but you should be able
+to explain it to someone else while looking at the slides. A good
+excercise is to write down the proof in a more formal &amp; detailed way
+and fill in the gaps.</p>
+<details>
+<summary>
+Solution
+</summary>
+<p>First, we show that an edge <span class="math inline">i \to j</span>
+in the precedence graph implies <span class="math inline">T_i</span>
+unlocks an item <span class="math inline">X</span> before <span
+class="math inline">T_j</span> locks <span class="math inline">X</span>.
+If there’s an edge <span class="math inline">i \to j</span>, there must
+be a pair of conflicting actions <span class="math inline">a_i \in
+T_i</span> and <span class="math inline">a_j \in T_j</span> such that
+<span class="math inline">a_i</span> occurs before <span
+class="math inline">a_j</span>, and they act on the same DB item <span
+class="math inline">X</span>. When <span class="math inline">a_i</span>
+acts on <span class="math inline">X</span>, <span
+class="math inline">T_i</span> must hold a lock on <span
+class="math inline">X</span>; but for <span
+class="math inline">a_j</span> to act on <span
+class="math inline">X</span>, <span class="math inline">T_j</span> must
+have first locked <span class="math inline">X</span>, which can only
+happen <em>after</em> <span class="math inline">T_i</span> releases its
+lock. Therefore, <span class="math inline">T_i</span> must unlock on
+<span class="math inline">X</span> before <span
+class="math inline">T_j</span> locks it.</p>
+<p>Now, assume for the sake of contradiction that a schedule follows 2PL
+but is <em>not</em> serializable. Then there must be a cycle in the
+precedence graph. Without loss of generality suppose the cycle is <span
+class="math inline">1 \to 2 \to \cdots \to k \to 1</span>. Using the
+result we proved above, there exists items <span
+class="math inline">X_1, X_2, \ldots, X_k</span> such that:</p>
+<ul>
+<li><span class="math inline">T_1</span> unlocks <span
+class="math inline">X_1</span> before <span
+class="math inline">T_2</span> locks <span
+class="math inline">X_1</span></li>
+<li><span class="math inline">T_2</span> unlocks <span
+class="math inline">X_2</span> before <span
+class="math inline">T_3</span> locks <span
+class="math inline">X_2</span></li>
+<li>…</li>
+<li><span class="math inline">T_k</span> unlocks <span
+class="math inline">X_k</span> before <span
+class="math inline">T_1</span> locks <span
+class="math inline">X_k</span></li>
+</ul>
+<p>According to 2PL, all unlocks must happen <em>after</em> all locks
+within the same tx, i.e., <span class="math inline">T_i</span> unlocks
+<span class="math inline">X</span> after <span
+class="math inline">T_i</span> locks <span
+class="math inline">X&#39;</span> for all <span
+class="math inline">i</span>. This means that we can put the events
+above in a strict sequential order:</p>
+<p><span class="math inline">U_1(X_1) &lt; L_2(X_1) &lt; U_2(X_2) &lt;
+L_3(X_2) &lt; \cdots &lt; U_k(X_k) &lt; L_1(X_k)</span></p>
+<p>Where <span class="math inline">U_i(X)</span> and <span
+class="math inline">L_i(X)</span> denote the event of <span
+class="math inline">T_i</span> unlocking/locking <span
+class="math inline">X</span>, respectively. But this would require <span
+class="math inline">T_1</span> to lock <span
+class="math inline">X_k</span> <em>after</em> it unlocks <span
+class="math inline">X_1</span>, which violates 2PL – contradiction!</p>
+</details>
+<hr />
+<p>The basic 2PL only has one kind of lock. We can allow for even more
+concurrency using read/write locks: a read lock on X allows a tx to read
+X, and multiple read locks on the same item can coexist; a write lock on
+X allows writing, but if a tx holds a write lock on X, no other tx can
+hold any kind of lock. Another name for read locks is “shared locks”,
+and for write locks “exclusive locks”. Find an example where there would
+be more concurrency under read/write locks compared to just a single
+type of locks.</p>
+<details>
+<summary>
+Solution
+</summary>
+<p>Any schedule where two transactions read the same item without
+writing it:</p>
+<table>
+<thead>
+<tr>
+<th>T<sub>1</sub></th>
+<th>T<sub>2</sub></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R(A)</td>
+<td>R(A)</td>
+</tr>
+<tr>
+<td>W(B)</td>
+<td>W(C)</td>
+</tr>
+</tbody>
+</table>
+<p>Under single-type (exclusive) locks, T<sub>1</sub> and T<sub>2</sub>
+cannot both hold the lock on <span class="math inline">A</span> at the
+same time — one must wait. Under read/write locks, both can hold shared
+locks on <span class="math inline">A</span> simultaneously (reads don’t
+conflict), then proceed to write their respective items <span
+class="math inline">B</span> and <span class="math inline">C</span> in
+parallel. The single-type scheme serializes the reads unnecessarily; the
+r/w scheme does not.</p>
+</details>
+<hr />
+<p>Convince yourself that 2PL still guarantees serializability. This
+involves carefully revisiting each step in the original proof, and
+showing the reasoning still holds up under read/write locks.</p>
+<hr />
+<p>Under read/write locking, it’s possible for there to be no deadlock,
+but a tx still gets blocked indefinitely, leading to what’s known as
+<em>starvation</em>. Can you come up with an example of this? Hint: this
+can happen when you have lots of tx reading an item, while 1 other tx
+tries to write.</p>
+<details>
+<summary>
+Solution
+</summary>
+<p>Starvation can happen if a tx wants to write, but some other tx’s
+hold a read lock, and new tx’s keep arriving locking the item for
+reading:</p>
+<table>
+<thead>
+<tr>
+<th>T<sub>w</sub></th>
+<th>T<sub>1</sub></th>
+<th>T<sub>2</sub></th>
+<th>T<sub>3</sub></th>
+<th>T<sub>4</sub></th>
+<th>…</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><del>X(A)</del></td>
+<td>S(A)</td>
+<td>S(A)</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><del>X(A)</del></td>
+<td></td>
+<td>S(A)</td>
+<td>S(A)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><del>X(A)</del></td>
+<td></td>
+<td></td>
+<td>S(A)</td>
+<td>S(A)</td>
+<td></td>
+</tr>
+<tr>
+<td><del>X(A)</del></td>
+<td></td>
+<td></td>
+<td></td>
+<td>S(A)</td>
+<td>…</td>
+</tr>
+<tr>
+<td><del>X(A)</del></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>…</td>
+</tr>
+</tbody>
+</table>
+<p>Here <del>X(A)</del> denotes a failed attempt to acquire an exclusive
+(write) lock on A, and S(A) denotes the corresponding tx is holding a
+shared (read) lock on A. Because read locks do not conflict, the
+arriving tx’s can keep getting new locks, making it impossible for the
+exclusive lock to succeed. Imagine you’re trying to fix a busy road: if
+the cars keep coming (read locks), you can’t work on the road (write
+lock). The solution is also similar: for roadwork, you stop letting
+people through once you want to start work; for transactions, block all
+incoming reads if you have a pending write.</p>
 </details>
 </body>
 </html>
