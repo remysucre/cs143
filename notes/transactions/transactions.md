@@ -588,13 +588,13 @@ To fix this, we need **strict 2PL**,
 |T~1~|T~2~|
 |-|-|
 |L(A); R(A); W(A); ROLLBACK, U(A)||
-||L(A); R(A); W(A); U(A); `COMMIT`|
+||L(A); R(A); W(A); `COMMIT`; U(A)|
 
 ---
 
 Another issue with locking is *deadlocks*:
 
-|T~1~: W(A),W(B)|T~1~: W(B),W(C)|T~1~: W(C),W(A)|
+|T~1~: W(A),W(B)|T~2~: W(B),W(C)|T~3~: W(C),W(A)|
 |-|-|-|
 |L(A),W(A)|||
 ||L(B),W(B)||
