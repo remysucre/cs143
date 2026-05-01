@@ -1,11 +1,14 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>HW 3: Transactions</title>
   <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
     html {
       color: #1a1a1a;
       background-color: #fdfdfd;
@@ -88,6 +91,7 @@
       color: #606060;
     }
     code {
+      white-space: pre-wrap;
       font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
       font-size: 85%;
       margin: 0;
@@ -151,7 +155,6 @@
     #TOC a:not(:hover) {
       text-decoration: none;
     }
-    code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
     div.columns{display: flex; gap: min(4vw, 1.5em);}
     div.column{flex: auto; overflow-x: auto;}
@@ -738,5 +741,40 @@ lock). The solution is also similar: for roadwork, you stop letting
 people through once you want to start work; for transactions, block all
 incoming reads if you have a pending write.</p>
 </details>
+<hr />
+<p>Implement snapshot isolation (SI). Use a global dictionary to map
+each DB item to its last-updated timestamp (<code>int</code>). Write a
+function that checks if a given transaction should commit. The function
+takes as arguments:</p>
+<ol type="1">
+<li>The transaction start time (<code>int</code>)</li>
+<li>The set of DB items read</li>
+<li>The set of DB items written</li>
+<li>The commit time (“current” time) (<code>int</code>)</li>
+</ol>
+<p>It should return <code>true</code> and update the global timestamps
+if the transaction should commit, otherwise return
+<code>false</code>.</p>
+<hr />
+<p>Implement write-snapshot isolation (WSI) similarly.</p>
+<hr />
+<p>Find a serializable schedule that’s forbidden under SI. Find a
+non-serializable schedule that’s allowd by SI. Find a serializable
+schedule that’s forbidden by WSI (Hint: check the <a
+href="https://arxiv.org/abs/2405.18393">paper</a> 🤖). Is it possible to
+find a non-serializable schedule that’s allowed by WSI?</p>
+<hr />
+<p><strong>Challenge</strong>: (open problem): The existence of
+serializable schedules forbidden by WSI shows WSI is not necessary for
+serializability. However, the example in the paper violates <em>strict
+serializability</em>, which requires the comit order to be preserved.
+Can you prove if WSI is necessary for strict serializability?</p>
+<hr />
+<p><strong>Challenge</strong>: The full implementation of WSI actually
+includes an additional optimization: instead of reading from the DB
+snapshot, each read accesses the <em>live</em> value from the original
+DB directly. This explains the “write” in WSI: unlike SI which reads
+from a snapshot, WSI only “writes to the snapshot”. The motivation is
+that reading fresh values reduces aborts - do you see why?</p>
 </body>
 </html>

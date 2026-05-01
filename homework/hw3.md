@@ -362,3 +362,47 @@ The solution is also similar:
  for transactions, block all incoming reads if you have a pending write.
 
 </details>
+
+---
+
+Implement snapshot isolation (SI).
+Use a global dictionary to map each DB item to its last-updated timestamp (`int`).
+Write a function that checks if a given transaction should commit.
+The function takes as arguments:
+
+1. The transaction start time (`int`)
+2. The set of DB items read
+3. The set of DB items written
+4. The commit time ("current" time) (`int`)
+
+It should return `true` and update the global timestamps if the transaction
+ should commit, otherwise return `false`.
+
+---
+
+Implement write-snapshot isolation (WSI) similarly.
+
+---
+
+Find a serializable schedule that's forbidden under SI.
+Find a non-serializable schedule that's allowd by SI.
+Find a serializable schedule that's forbidden by WSI (Hint: check the [paper](https://arxiv.org/abs/2405.18393) 🤖).
+Is it possible to find a non-serializable schedule that's allowed by WSI?
+
+---
+
+**Challenge**: (open problem):
+The existence of serializable schedules forbidden by WSI shows WSI is not necessary for serializability.
+However, the example in the paper violates *strict serializability*, which requires the comit order to be preserved.
+Can you prove if WSI is necessary for strict serializability?
+
+---
+
+**Challenge**:
+The full implementation of WSI actually includes an additional optimization:
+ instead of reading from the DB snapshot,
+ each read accesses the *live* value from the original DB directly.
+This explains the "write" in WSI:
+ unlike SI which reads from a snapshot, 
+ WSI only "writes to the snapshot".
+The motivation is that reading fresh values reduces aborts - do you see why?
