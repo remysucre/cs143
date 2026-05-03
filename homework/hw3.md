@@ -378,9 +378,43 @@ The function takes as arguments:
 It should return `true` and update the global timestamps if the transaction
  should commit, otherwise return `false`.
 
+<details>
+<summary>Solution</summary>
+
+```python
+last_written = {}  # item -> commit time of the last tx that wrote it
+
+def si_commit(start, read_set, write_set, commit):
+    for x in write_set:
+        if last_written.get(x, 0) > start:
+            return False  # a concurrent tx already committed a write on x
+    for x in write_set:
+        last_written[x] = commit
+    return True
+```
+
+</details>
+
 ---
 
 Implement write-snapshot isolation (WSI) similarly.
+
+<details>
+<summary>Solution</summary>
+
+```python
+last_written = {}
+
+def wsi_commit(start, read_set, write_set, commit):
+    for x in read_set:
+        if last_written.get(x, 0) > start:
+            return False  # a concurrent tx wrote something we read
+    for x in write_set:
+        last_written[x] = commit
+    return True
+```
+
+</details>
 
 ---
 
@@ -388,6 +422,41 @@ Find a serializable schedule that's forbidden under SI.
 Find a non-serializable schedule that's allowd by SI.
 Find a serializable schedule that's forbidden by WSI (Hint: check the [paper](https://arxiv.org/abs/2405.18393) 🤖).
 Is it possible to find a non-serializable schedule that's allowed by WSI?
+
+<details>
+<summary>Solution</summary>
+
+**Serializable, forbidden by SI** — concurrent blind writes to the same item:
+
+|T~1~|T~2~|
+|-|-|
+|W(A)||
+||W(A)|
+||COMMIT|
+|COMMIT||
+
+**Non-serializable, allowed by SI**:
+
+|T~1~ (start=1)|T~2~ (start=1)|
+|-|-|
+|R(A), R(B)|R(A), R(B)|
+|W(A := 0)||
+||W(B := 0)|
+|COMMIT|COMMIT|
+
+**Serializable, forbidden by WSI** — a "stale read" that's logically fine:
+
+|T~1~ (start=1, commit=4)|T~2~ (start=2, commit=3)|
+|-|-|
+|R(X)||
+||W(X)|
+||COMMIT|
+|W(Y), COMMIT||
+
+
+**Non-serializable, allowed by WSI?** No — WSI is sufficient for serializability.
+
+</details>
 
 ---
 
@@ -406,3 +475,25 @@ This explains the "write" in WSI:
  unlike SI which reads from a snapshot, 
  WSI only "writes to the snapshot".
 The motivation is that reading fresh values reduces aborts - do you see why?
+
+<details>
+<summary>Solution</summary>
+
+WSI aborts T whenever `last_written[x] > start_T` for some $x \in R_T$ — i.e.,
+ when a concurrent tx committed a write to something T read. The relevant
+ "danger window" is between T's *read* of $x$ and T's commit: a write inside
+ that window is a real anti-dependency, while a write that lands *before* T
+ reads $x$ is harmless (T would just see the new value).
+
+With snapshot reads, T can't tell the difference. The check uses `start_T` as a
+ conservative proxy for the read time, so any write committed during
+ `[start_T, commit_T]` triggers an abort — including writes that landed before
+ T even got around to reading $x$, which would have been benign.
+
+With live reads, T reads the fresh value at the moment it asks. Now any write
+ committed before that read is automatically reflected in what T saw, so it
+ *can't* be a conflict. The abort window shrinks from `[start_T, commit_T]`
+ down to `[read_time(x), commit_T]`, which is strictly smaller. Fewer windows
+ → fewer false-positive aborts → better throughput.
+
+</details>

@@ -755,14 +755,134 @@ takes as arguments:</p>
 <p>It should return <code>true</code> and update the global timestamps
 if the transaction should commit, otherwise return
 <code>false</code>.</p>
+<details>
+<summary>
+Solution
+</summary>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>last_written <span class="op">=</span> {}  <span class="co"># item -&gt; commit time of the last tx that wrote it</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> si_commit(start, read_set, write_set, commit):</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> x <span class="kw">in</span> write_set:</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> last_written.get(x, <span class="dv">0</span>) <span class="op">&gt;</span> start:</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="va">False</span>  <span class="co"># a concurrent tx already committed a write on x</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> x <span class="kw">in</span> write_set:</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>        last_written[x] <span class="op">=</span> commit</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="va">True</span></span></code></pre></div>
+</details>
 <hr />
 <p>Implement write-snapshot isolation (WSI) similarly.</p>
+<details>
+<summary>
+Solution
+</summary>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>last_written <span class="op">=</span> {}</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> wsi_commit(start, read_set, write_set, commit):</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> x <span class="kw">in</span> read_set:</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> last_written.get(x, <span class="dv">0</span>) <span class="op">&gt;</span> start:</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="va">False</span>  <span class="co"># a concurrent tx wrote something we read</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> x <span class="kw">in</span> write_set:</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>        last_written[x] <span class="op">=</span> commit</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="va">True</span></span></code></pre></div>
+</details>
 <hr />
 <p>Find a serializable schedule that’s forbidden under SI. Find a
 non-serializable schedule that’s allowd by SI. Find a serializable
 schedule that’s forbidden by WSI (Hint: check the <a
 href="https://arxiv.org/abs/2405.18393">paper</a> 🤖). Is it possible to
 find a non-serializable schedule that’s allowed by WSI?</p>
+<details>
+<summary>
+Solution
+</summary>
+<p><strong>Serializable, forbidden by SI</strong> — concurrent blind
+writes to the same item:</p>
+<table>
+<thead>
+<tr>
+<th>T<sub>1</sub></th>
+<th>T<sub>2</sub></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>W(A)</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>W(A)</td>
+</tr>
+<tr>
+<td></td>
+<td>COMMIT</td>
+</tr>
+<tr>
+<td>COMMIT</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Non-serializable, allowed by SI</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>T<sub>1</sub> (start=1)</th>
+<th>T<sub>2</sub> (start=1)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R(A), R(B)</td>
+<td>R(A), R(B)</td>
+</tr>
+<tr>
+<td>W(A := 0)</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>W(B := 0)</td>
+</tr>
+<tr>
+<td>COMMIT</td>
+<td>COMMIT</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Serializable, forbidden by WSI</strong> — a “stale read”
+that’s logically fine:</p>
+<table>
+<thead>
+<tr>
+<th>T<sub>1</sub> (start=1, commit=4)</th>
+<th>T<sub>2</sub> (start=2, commit=3)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R(X)</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>W(X)</td>
+</tr>
+<tr>
+<td></td>
+<td>COMMIT</td>
+</tr>
+<tr>
+<td>W(Y), COMMIT</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Non-serializable, allowed by WSI?</strong> No — WSI is
+sufficient for serializability.</p>
+</details>
 <hr />
 <p><strong>Challenge</strong>: (open problem): The existence of
 serializable schedules forbidden by WSI shows WSI is not necessary for
@@ -776,5 +896,29 @@ snapshot, each read accesses the <em>live</em> value from the original
 DB directly. This explains the “write” in WSI: unlike SI which reads
 from a snapshot, WSI only “writes to the snapshot”. The motivation is
 that reading fresh values reduces aborts - do you see why?</p>
+<details>
+<summary>
+Solution
+</summary>
+<p>WSI aborts T whenever <code>last_written[x] &gt; start_T</code> for
+some <span class="math inline">x \in R_T</span> — i.e., when a
+concurrent tx committed a write to something T read. The relevant
+“danger window” is between T’s <em>read</em> of <span
+class="math inline">x</span> and T’s commit: a write inside that window
+is a real anti-dependency, while a write that lands <em>before</em> T
+reads <span class="math inline">x</span> is harmless (T would just see
+the new value).</p>
+<p>With snapshot reads, T can’t tell the difference. The check uses
+<code>start_T</code> as a conservative proxy for the read time, so any
+write committed during <code>[start_T, commit_T]</code> triggers an
+abort — including writes that landed before T even got around to reading
+<span class="math inline">x</span>, which would have been benign.</p>
+<p>With live reads, T reads the fresh value at the moment it asks. Now
+any write committed before that read is automatically reflected in what
+T saw, so it <em>can’t</em> be a conflict. The abort window shrinks from
+<code>[start_T, commit_T]</code> down to
+<code>[read_time(x), commit_T]</code>, which is strictly smaller. Fewer
+windows → fewer false-positive aborts → better throughput.</p>
+</details>
 </body>
 </html>
