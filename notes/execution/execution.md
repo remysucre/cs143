@@ -197,6 +197,91 @@ out: ..., (5, c, z)
 
 ---
 
+Instead of explicitly detecting runs and computing cartesian product,
+ we can also implement this by iterating over the matches *on the fly*.
+
+---
+
+Suppose we have found the first match:
+
+A: **(3, a)**, (3, b), (3, c), (5, d)\
+B: **(3, x)**, (3, y), (3, z), (5, u)\
+out: (3, a, x)
+
+---
+
+We'll keep iterating until one side no longer matches:
+
+A: **(3, a)**, (3, b), (3, c), (5, d)\
+B: (3, x), **(3, y)**, (3, z), (5, u)\
+out: (3, a, x), (3, a, y)
+
+---
+
+We'll keep iterating until one side no longer matches:
+
+A: **(3, a)**, (3, b), (3, c), (5, d)\
+B: (3, x), (3, y), **(3, z)**, (5, u)\
+out: (3, a, x), (3, a, y), (3, a, z)
+
+---
+
+Then we *rewind* and take a step in the other table:
+
+A: (3, a), **(3, b)**, (3, c), (5, d)\
+B: **(3, x)**, (3, y), (3, z), (5, u)\
+out: (3, a, x), (3, a, y), (3, a, z), (3, b, x)
+
+---
+
+Then keep iterating again:
+
+A: (3, a), **(3, b)**, (3, c), (5, d)\
+B: (3, x), **(3, y)**, (3, z), (5, u)\
+out: (3, a, x), (3, a, y), (3, a, z), (3, b, x), (3, b, y)
+
+---
+
+Then keep iterating again:
+
+A: (3, a), **(3, b)**, (3, c), (5, d)\
+B: (3, x), (3, y), **(3, z)**, (5, u)\
+out: (3, a, x), (3, a, y), (3, a, z), (3, b, x), (3, b, y), (3, b, z)
+
+---
+
+Rewind and step in A again:
+
+A: (3, a), (3, b), **(3, c)**, (5, d)\
+B: **(3, x)**, (3, y), (3, z), (5, u)\
+out: (3, a, x), (3, a, y), (3, a, z), (3, b, x), (3, b, y), (3, b, z), (3, c, x)
+
+---
+
+Rewind and step in A again:
+
+A: (3, a), (3, b), **(3, c)**, (5, d)\
+B: (3, x), **(3, y)**, (3, z), (5, u)\
+out: (3, a, x), (3, a, y), (3, a, z), (3, b, x), (3, b, y), (3, b, z), (3, c, x), (3, c, y)
+
+---
+
+This continues until we find the last match for the current value:
+
+A: (3, a), (3, b), **(3, c)**, (5, d)\
+B: (3, x), (3, y), **(3, z)**, (5, u)\
+out: (3, a, x), (3, a, y), (3, a, z), (3, b, x), (3, b, y), (3, b, z), (3, c, x), (3, c, y), (3, c, z)
+
+---
+
+After which we move on to find the next matching value:
+
+A: (3, a), (3, b), (3, c), **(5, d)**\
+B: (3, x), (3, y), (3, z), **(5, u)**\
+out: (3, a, x), (3, a, y), (3, a, z), (3, b, x), (3, b, y), (3, b, z), (3, c, x), (3, c, y), (3, c, z), (5, d, u)
+
+---
+
 We can also implement group-by with a *map* (dictionary in Python).
 
 For example, to group by `x` and sum over `y`:
@@ -213,3 +298,29 @@ for (x, y) in t:
 ```
 
 ---
+
+Map can also be used to implement join:
+
+```python
+
+d = {}
+
+for (k, a) in A:
+  if k not in d:
+    d[k] = [a]
+  else:
+    d[k].append(a)
+
+for (k, b) in B:
+  if k in d:
+    for a in d[k]:
+      yield (k, a, b)
+```
+
+---
+
+Under the hood, maps are implemented with *hash functions*.
+A (good) hash function has two important properties:
+
+- The same input *must* be mapped to the same output
+- Two different inputs are unlikely to be mapped to the same output

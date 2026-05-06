@@ -133,6 +133,55 @@ out: (3, a, x), (3, a, y), (3, b, x), (3, b, y)</p>
 <p>A: (3, a), (3, b), <strong>(5, c)</strong><br />
 B: (3, x), (3, y), <strong>(5, z)</strong><br />
 out: …, (5, c, z)</p>
+<p>Instead of explicitly detecting runs and computing cartesian product,
+we can also implement this by iterating over the matches <em>on the
+fly</em>.</p>
+<p>Suppose we have found the first match:</p>
+<p>A: <strong>(3, a)</strong>, (3, b), (3, c), (5, d)<br />
+B: <strong>(3, x)</strong>, (3, y), (3, z), (5, u)<br />
+out: (3, a, x)</p>
+<p>We’ll keep iterating until one side no longer matches:</p>
+<p>A: <strong>(3, a)</strong>, (3, b), (3, c), (5, d)<br />
+B: (3, x), <strong>(3, y)</strong>, (3, z), (5, u)<br />
+out: (3, a, x), (3, a, y)</p>
+<p>We’ll keep iterating until one side no longer matches:</p>
+<p>A: <strong>(3, a)</strong>, (3, b), (3, c), (5, d)<br />
+B: (3, x), (3, y), <strong>(3, z)</strong>, (5, u)<br />
+out: (3, a, x), (3, a, y), (3, a, z)</p>
+<p>Then we <em>rewind</em> and take a step in the other table:</p>
+<p>A: (3, a), <strong>(3, b)</strong>, (3, c), (5, d)<br />
+B: <strong>(3, x)</strong>, (3, y), (3, z), (5, u)<br />
+out: (3, a, x), (3, a, y), (3, a, z), (3, b, x)</p>
+<p>Then keep iterating again:</p>
+<p>A: (3, a), <strong>(3, b)</strong>, (3, c), (5, d)<br />
+B: (3, x), <strong>(3, y)</strong>, (3, z), (5, u)<br />
+out: (3, a, x), (3, a, y), (3, a, z), (3, b, x), (3, b, y)</p>
+<p>Then keep iterating again:</p>
+<p>A: (3, a), <strong>(3, b)</strong>, (3, c), (5, d)<br />
+B: (3, x), (3, y), <strong>(3, z)</strong>, (5, u)<br />
+out: (3, a, x), (3, a, y), (3, a, z), (3, b, x), (3, b, y), (3, b,
+z)</p>
+<p>Rewind and step in A again:</p>
+<p>A: (3, a), (3, b), <strong>(3, c)</strong>, (5, d)<br />
+B: <strong>(3, x)</strong>, (3, y), (3, z), (5, u)<br />
+out: (3, a, x), (3, a, y), (3, a, z), (3, b, x), (3, b, y), (3, b, z),
+(3, c, x)</p>
+<p>Rewind and step in A again:</p>
+<p>A: (3, a), (3, b), <strong>(3, c)</strong>, (5, d)<br />
+B: (3, x), <strong>(3, y)</strong>, (3, z), (5, u)<br />
+out: (3, a, x), (3, a, y), (3, a, z), (3, b, x), (3, b, y), (3, b, z),
+(3, c, x), (3, c, y)</p>
+<p>This continues until we find the last match for the current
+value:</p>
+<p>A: (3, a), (3, b), <strong>(3, c)</strong>, (5, d)<br />
+B: (3, x), (3, y), <strong>(3, z)</strong>, (5, u)<br />
+out: (3, a, x), (3, a, y), (3, a, z), (3, b, x), (3, b, y), (3, b, z),
+(3, c, x), (3, c, y), (3, c, z)</p>
+<p>After which we move on to find the next matching value:</p>
+<p>A: (3, a), (3, b), (3, c), <strong>(5, d)</strong><br />
+B: (3, x), (3, y), (3, z), <strong>(5, u)</strong><br />
+out: (3, a, x), (3, a, y), (3, a, z), (3, b, x), (3, b, y), (3, b, z),
+(3, c, x), (3, c, y), (3, c, z), (5, d, u)</p>
 <p>We can also implement group-by with a <em>map</em> (dictionary in
 Python).</p>
 <p>For example, to group by <code>x</code> and sum over
@@ -146,6 +195,21 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a hr
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    d[x] <span class="op">=</span> y</span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">else</span>:</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    d[x] <span class="op">+=</span> y</span></code></pre></div>
+<p>Map can also be used to implement join:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>d <span class="op">=</span> {}</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (k, a) <span class="kw">in</span> A:</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> k <span class="kw">not</span> <span class="kw">in</span> d:</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    d[k] <span class="op">=</span> [a]</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">else</span>:</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    d[k].append(a)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (k, b) <span class="kw">in</span> B:</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> k <span class="kw">in</span> d:</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> a <span class="kw">in</span> d[k]:</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>      <span class="cf">yield</span> (k, a, b)</span></code></pre></div>
 <script src="https://unpkg.com/@antonz/runno@0.6.1/dist/runno.js"></script>
 <script src="https://unpkg.com/@antonz/codapi@0.20.0/dist/engine/wasi.js"></script>
 <script src="https://unpkg.com/@antonz/codapi@0.20.0/dist/snippet.js"></script>
