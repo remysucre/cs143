@@ -210,6 +210,191 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a hr
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> k <span class="kw">in</span> d:</span>
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> a <span class="kw">in</span> d[k]:</span>
 <span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>      <span class="cf">yield</span> (k, a, b)</span></code></pre></div>
+<p>Under the hood, maps are implemented with <em>hash functions</em>. A
+(good) hash function has two important properties:</p>
+<ul>
+<li>The same input <em>must</em> be mapped to the same output</li>
+<li>Two different inputs are unlikely to be mapped to the same
+output</li>
+</ul>
+<p>We can implement a map by using hash functions to determine the slot
+for each item based on the key:</p>
+<p>Suppose <code>h(k) = k mod 10</code> with 10 slots. Insert 23, 91,
+47:</p>
+<table>
+<thead>
+<tr>
+<th>0</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+<th>9</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>91</td>
+<td></td>
+<td>23</td>
+<td></td>
+<td></td>
+<td></td>
+<td>47</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>A <em>hash collision</em> is when the hash function returns the same
+result for two different inputs. There are several methods to resolve
+collisions.</p>
+<p><em>Chaining</em> uses a linked list to store colliding items.</p>
+<p>Insert 33 and 13 — both hash to slot 3:</p>
+<table>
+<thead>
+<tr>
+<th>0</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+<th>9</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>91</td>
+<td></td>
+<td>23→33→13</td>
+<td></td>
+<td></td>
+<td></td>
+<td>47</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><em>Linear probing</em> places an item in the immediate next
+available slot.</p>
+<p>Starting from the same initial table, insert 33 (h=3): slot 3 is
+taken, so try slot 4.</p>
+<table>
+<thead>
+<tr>
+<th>0</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+<th>9</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>91</td>
+<td></td>
+<td>23</td>
+<td>33</td>
+<td></td>
+<td></td>
+<td>47</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>An issue with linear probing is that, collisions can create clusters,
+which in turn makes further collisions more likely.</p>
+<p>Continuing, insert 13 (h=3): slots 3, 4 taken, so it lands at slot 5.
+Then insert 4 (h=4): slots 4, 5 taken, so it lands at slot 6.</p>
+<table>
+<thead>
+<tr>
+<th>0</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+<th>9</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>91</td>
+<td></td>
+<td>23</td>
+<td>33</td>
+<td>13</td>
+<td>4</td>
+<td>47</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>The cluster now spans slots 3–6, and any future key hashing into that
+range will extend it further.</p>
+<p>To solve this, an alternative is <em>quadratic probing</em>, which
+makes increasingly larger skips for each item.</p>
+<p>Using offsets +1, +4, +9, …, starting from slots 3 and 4 occupied,
+insert 13 (h=3): +1 → slot 4 (taken), +4 → slot 7.</p>
+<table>
+<thead>
+<tr>
+<th>0</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+<th>9</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td>23</td>
+<td>33</td>
+<td></td>
+<td></td>
+<td>13</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>13 jumps over slots 5 and 6, avoiding the cluster.</p>
+<p>In practice, however, linear probing performs better than the other
+two methods due to <a
+href="https://en.wikipedia.org/wiki/Locality_of_reference#Spatial_and_temporal_locality_usage">cache
+locality</a>.</p>
 <script src="https://unpkg.com/@antonz/runno@0.6.1/dist/runno.js"></script>
 <script src="https://unpkg.com/@antonz/codapi@0.20.0/dist/engine/wasi.js"></script>
 <script src="https://unpkg.com/@antonz/codapi@0.20.0/dist/snippet.js"></script>

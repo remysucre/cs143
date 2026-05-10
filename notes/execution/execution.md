@@ -324,3 +324,76 @@ A (good) hash function has two important properties:
 
 - The same input *must* be mapped to the same output
 - Two different inputs are unlikely to be mapped to the same output
+
+---
+
+We can implement a map by using hash functions to determine the slot for each
+ item based on the key:
+
+Suppose `h(k) = k mod 10` with 10 slots.
+Insert 23, 91, 47:
+
+|0|1|2|3|4|5|6|7|8|9|
+|-|-|-|-|-|-|-|-|-|-|
+| |91| |23| | | |47| | |
+
+---
+
+A *hash collision* is when the hash function returns the same result
+ for two different inputs. 
+There are several methods to resolve collisions.
+
+---
+
+*Chaining* uses a linked list to store colliding items.
+
+Insert 33 and 13 — both hash to slot 3:
+
+|0|1|2|3|4|5|6|7|8|9|
+|-|-|-|-|-|-|-|-|-|-|
+| |91| |23→33→13| | | |47| | |
+
+---
+
+*Linear probing* places an item in the immediate next available slot.
+
+Starting from the same initial table, insert 33 (h=3): slot 3 is taken,
+ so try slot 4.
+
+|0|1|2|3|4|5|6|7|8|9|
+|-|-|-|-|-|-|-|-|-|-|
+| |91| |23|33| | |47| | |
+
+---
+
+An issue with linear probing is that, collisions can create clusters,
+ which in turn makes further collisions more likely.
+
+Continuing, insert 13 (h=3): slots 3, 4 taken, so it lands at slot 5.
+Then insert 4 (h=4): slots 4, 5 taken, so it lands at slot 6.
+
+|0|1|2|3|4|5|6|7|8|9|
+|-|-|-|-|-|-|-|-|-|-|
+| |91| |23|33|13|4|47| | |
+
+The cluster now spans slots 3–6, and any future key hashing into that
+ range will extend it further.
+
+---
+
+To solve this, an alternative is *quadratic probing*, 
+ which makes increasingly larger skips for each item.
+
+Using offsets +1, +4, +9, ..., starting from slots 3 and 4 occupied,
+ insert 13 (h=3): +1 → slot 4 (taken), +4 → slot 7.
+
+|0|1|2|3|4|5|6|7|8|9|
+|-|-|-|-|-|-|-|-|-|-|
+| | | |23|33| | |13| | |
+
+13 jumps over slots 5 and 6, avoiding the cluster.
+
+---
+
+In practice, however, linear probing performs better than the other two
+ methods due to [cache locality](https://en.wikipedia.org/wiki/Locality_of_reference#Spatial_and_temporal_locality_usage).
