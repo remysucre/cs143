@@ -4,11 +4,44 @@ author: Remy Wang
 date: May 2026
 ---
 
-I'll cover B+ Tree definitions here and will add the high-level comments later...
+One of the main reasons DBs are fast is thanks to *indexes*.
+An index is a data structure for efficiently accessing
+ parts of a table.
+
+It's like the index of a book, where key terms are displayed
+ in sorted order pointing to which pages they appear on.
 
 ---
 
-Open https://bptvisualizer.netlify.app in your browser, I'll use the examples there
+A powerful index data structure is the B+ Tree, also used
+ in file systems.
+
+B+ Tree addresses 2 problems of a simple sorted array:
+
+1. Binary searching a sorted array requires many expensive random accesses
+2. Inserting into the array requires moving a lot of data
+
+---
+
+We can fix the second problem by storing the data in a *binary search tree*,
+ where each node stores the "middle element" for that level.
+
+In a BST, insertion only touches parts of the tree (the path from the root)
+ which is more efficient than inserting into a sorted array.
+
+---
+
+A B+ Tree can be thought of as an "n-ary" search tree:
+ each level of the tree can store multiple values,
+ and each node can have multiple children.
+
+The best way to understand B+ Trees is by playing with them,
+ and the inimitable [Vincent Lin](https://github.com/vinlin24)
+ built a wonderful tool for this:
+
+https://bptvisualizer.netlify.app
+
+The rest of the slides should be read while you play with the visualizer.
 
 ---
 

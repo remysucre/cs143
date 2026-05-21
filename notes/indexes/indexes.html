@@ -36,10 +36,33 @@
 </head>
 <body>
 <h1>Indexes</h1>
-<p>I’ll cover B+ Tree definitions here and will add the high-level
-comments later…</p>
-<p>Open https://bptvisualizer.netlify.app in your browser, I’ll use the
-examples there</p>
+<p>One of the main reasons DBs are fast is thanks to <em>indexes</em>.
+An index is a data structure for efficiently accessing parts of a
+table.</p>
+<p>It’s like the index of a book, where key terms are displayed in
+sorted order pointing to which pages they appear on.</p>
+<p>A powerful index data structure is the B+ Tree, also used in file
+systems.</p>
+<p>B+ Tree addresses 2 problems of a simple sorted array:</p>
+<ol type="1">
+<li>Binary searching a sorted array requires many expensive random
+accesses</li>
+<li>Inserting into the array requires moving a lot of data</li>
+</ol>
+<p>We can fix the second problem by storing the data in a <em>binary
+search tree</em>, where each node stores the “middle element” for that
+level.</p>
+<p>In a BST, insertion only touches parts of the tree (the path from the
+root) which is more efficient than inserting into a sorted array.</p>
+<p>A B+ Tree can be thought of as an “n-ary” search tree: each level of
+the tree can store multiple values, and each node can have multiple
+children.</p>
+<p>The best way to understand B+ Trees is by playing with them, and the
+inimitable <a href="https://github.com/vinlin24">Vincent Lin</a> built a
+wonderful tool for this:</p>
+<p>https://bptvisualizer.netlify.app</p>
+<p>The rest of the slides should be read while you play with the
+visualizer.</p>
 <p>Click Import &gt; Use Initial Example &gt; Import</p>
 <p>This creates the example tree. Click “Show full nodes” or press F</p>
 <p>There are 2 kinds of notes in a B+ Tree: internal nodes and leaf
