@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Indexes</title>
+  <script defer=""
+  src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <link rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css" />
+  <link rel="stylesheet" href="https://unpkg.com/@antonz/codapi@0.20.0/dist/snippet.css">
+  <style>
+    body { max-width: 48em; margin: 2em auto; padding: 0 1em; font-family: system-ui, sans-serif; line-height: 1.6; }
+    pre { background: #f5f5f5; padding: 1em; overflow-x: auto; border-radius: 4px; }
+    code { font-size: 0.95em; }
+    table { border-collapse: collapse; border-spacing: 0; margin: 1em 0; }
+    th, td { border: 1px solid #999; padding: 0.3em 0.8em; }
+    codapi-output { line-height: 1.3; }
+    codapi-snippet + .sourceCode { margin-top: 0.5em; }
+    .sourceCode { margin-top: 0; margin-bottom: 0; }
+  </style>
+</head>
+<body>
+<h1>Indexes</h1>
+<p>I’ll cover B+ Tree definitions here and will add the high-level
+comments later…</p>
+<p>Open https://bptvisualizer.netlify.app in your browser, I’ll use the
+examples there</p>
+<p>Click Import &gt; Use Initial Example &gt; Import</p>
+<p>This creates the example tree. Click “Show full nodes” or press F</p>
+<p>There are 2 kinds of notes in a B+ Tree: internal nodes and leaf
+nodes.</p>
+<p>All actual data live in the leafs, while the internal nodes work as
+guides to search the leafs</p>
+<p>Each node has a <em>capacity</em> which is the number of values it
+stores.</p>
+<p>Some of the entries may be empty in each node.</p>
+<p>Each non-empty value <span class="math inline">v</span> in an
+internal node points to two children: the left pointer points to a
+subtree where all values are <span class="math inline">&lt; v</span>,
+and the right pointer to a subtree where values are <span
+class="math inline">\geq v</span>.</p>
+<p>So when searching, we start from the root, compare the searched value
+with each entry in the node, then follow the appropriate pointer.</p>
+<p>Try searching for a value using the web tool!</p>
+<p>That was a <em>point query</em> when we just search for one single
+value.</p>
+<p>B+ Trees also support range queries, where we look for bunch of
+values falling in a range.</p>
+<p>For example, to find values in the range [0, …, 66], we first search
+for the left boundary 0, then keep scanning to the right until we find
+66 (or a larger number).</p>
+<p>This explain what the dashed lines connecting the leafs are for: they
+are “next pointers” that let you continue scanning to the next leaf when
+doing a range query.</p>
+<p>A B+ Tree must be <em>balanced</em>, meaning all leafs must be at the
+same level</p>
+<p>Every node except for the root must also be at least half-full (give
+or take 1).</p>
+<p>In our example, because the capacity is 3, a node must at least hold
+1 entry (3/2 = 1.5, rounding down to 1).</p>
+<p>You can increase the capacity and start inserting random nodes to see
+that each node (minus the root) never goes below half-full.</p>
+<p>Because of these 2 invariants, the height of the B+ Tree is at most
+(roughly) <span class="math inline">\log_{c/2} N</span> where c is the
+capacity and N is the number of data items stored.</p>
+<p>This means while searching the tree, we need no more than <span
+class="math inline">\log_{c/2} N</span> random reads, which is very
+small with a large c.</p>
+<p>Inserting into a B+ Tree is more involved.</p>
+<p>The first step is to search for the right slot to insert into. This
+follow the same algorithm as searching.</p>
+<p>Once the slot is found, we tentativly insert into that slot.</p>
+<p>If doing so does not exceed capacity, we’re done!</p>
+<p>To see an example, load the inital tree again and try inserting
+9.</p>
+<p>But if the tentative insertion exceeds the leaf capacity, we
+<em>split the leaf</em> in half.</p>
+<p>The two halfs become siblings in the new tree, and we need to make a
+new parent for them.</p>
+<p>To do that, take the first value from the second half, and insert
+that into the parent of the old node.</p>
+<p>To see an example, try inserting 10 in the web tool (after 9 is
+inserted)</p>
+<p>In the last case, creating the new parent does not exceed the
+capacity of the parent node, so we’re done.</p>
+<p>But when it does, we need to also split the parent! This works a
+little differently.</p>
+<p>When an internal node’s capacity is exceeded, we split it into <em>3
+parts</em>:</p>
+<ul>
+<li>the first part is still the first half</li>
+<li>the second part contains just a single value right after the first
+half</li>
+<li>the last part contains the remainig values</li>
+</ul>
+<p>In other words, we single out the first value from the second
+half.</p>
+<p>To see an example, now insert 11 and 12 to the web tool (remember you
+can jump back to any earlier step by clicking on the history on the
+left). Inserting 12 first triggers a split at the leaf, which adds a new
+value to the parent; but this in turn overfills the parent, so the
+parent further splits, and the middle part is <em>promoted</em> to
+<em>its</em> parent, i.e. the root.</p>
+<p>The reason we’re splitting into 3 parts is that we don’t want to
+duplicate values on internal nodes, so we <em>move</em> the first value
+in the second half instead of copying it.</p>
+<p>At a leaf, because we must store all data values, we have no choice
+but copy the first value from the second half to the new parent.</p>
+<script src="https://unpkg.com/@antonz/runno@0.6.1/dist/runno.js"></script>
+<script src="https://unpkg.com/@antonz/codapi@0.20.0/dist/engine/wasi.js"></script>
+<script src="https://unpkg.com/@antonz/codapi@0.20.0/dist/snippet.js"></script>
+</body>
+</html>
