@@ -144,6 +144,61 @@ duplicate values on internal nodes, so we <em>move</em> the first value
 in the second half instead of copying it.</p>
 <p>At a leaf, because we must store all data values, we have no choice
 but copy the first value from the second half to the new parent.</p>
+<p>Another useful data structure (not strictly an index) is the Bloom
+filter.</p>
+<p>In real DB workloads, most probes into a hash table actually fail,
+because when joining 2 tables, the system opts to build the hash map on
+the smaller table and scan the large table to probe.</p>
+<p>But as there are more rows from the large side, most probes would
+fail.</p>
+<p>A Bloom filter helps us <em>fail faster</em></p>
+<p>A Bloom filter is an approximate data structure that remembers a set
+of values.</p>
+<p>It’s approximate, because you can ask it “has this element been added
+to your set?”, and it’ll answer “probably yes”, or “definitely not”.</p>
+<p>In other words, Bloom filters can have <em>false positives</em>, but
+never <em>false negatives</em>.</p>
+<p>The filter itself is simply implemented as a bit vector, initialized
+to be all-0.</p>
+<p>To add an element x to a Bloom filter, first hash x with k
+independent hash functions to get k positions.</p>
+<p>Then, set those positions to 1 in the bit vector.</p>
+<p>Example: a Bloom filter with an 8-bit vector and <span
+class="math inline">k = 2</span> hash functions.</p>
+<p><code>0 0 0 0 0 0 0 0</code></p>
+<p>Add “cat”: <span class="math inline">h_1(\text{cat}) = 1</span>,
+<span class="math inline">h_2(\text{cat}) = 5</span></p>
+<p><code>0 1 0 0 0 1 0 0</code></p>
+<p>Add “dog”: <span class="math inline">h_1(\text{dog}) = 5</span>,
+<span class="math inline">h_2(\text{dog}) = 6</span></p>
+<p><code>0 1 0 0 0 1 1 0</code></p>
+<p>To check if a given value is in the filter, simply hash that value
+with the same hash functions, and check if the corresponding bits are
+1.</p>
+<pre><code>0 1 0 0 0 1 1 0
+  *       *    </code></pre>
+<p>Query “cat”: positions 1 and 5 are both 1 → “probably yes”</p>
+<pre><code>0 1 0 0 0 1 1 0
+    *       *  </code></pre>
+<p>Query “fox”: <span class="math inline">h_1(\text{fox}) = 2</span>,
+<span class="math inline">h_2(\text{fox}) = 6</span> → “definitely
+not”</p>
+<pre><code>0 1 0 0 0 1 1 0
+  *         *  </code></pre>
+<p>Query “cow”: <span class="math inline">h_1(\text{cow}) = 1</span>,
+<span class="math inline">h_2(\text{cow}) = 6</span>.</p>
+<p>Positions 1 and 6 are both 1 → “probably yes” — but “cow” was never
+added! This is a <em>false positive</em>.</p>
+<p>A Bloom filter is useful because it can very compactly store a very
+large set.</p>
+<p>So for each hash table, we can create a Bloom filter storing all the
+hash keys, and the filter will be much smaller than the table and can
+fit in fast memory (e.g. CPU cache).</p>
+<p>Then, before we search the hash table, we can first check the Bloom
+filter to see if the key to be searched is present.</p>
+<p>Because we expect most probes to fail and checking the Bloom filter
+is fast, this will let us “fail faster” than doing the expensive hash
+table lookup.</p>
 <script src="https://unpkg.com/@antonz/runno@0.6.1/dist/runno.js"></script>
 <script src="https://unpkg.com/@antonz/codapi@0.20.0/dist/engine/wasi.js"></script>
 <script src="https://unpkg.com/@antonz/codapi@0.20.0/dist/snippet.js"></script>

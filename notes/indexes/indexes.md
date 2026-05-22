@@ -149,3 +149,95 @@ so the parent further splits, and the middle part is *promoted* to *its* parent,
 The reason we're splitting into 3 parts is that we don't want to duplicate values on internal nodes, so we *move* the first value in the second half instead of copying it.
 
 At a leaf, because we must store all data values, we have no choice but copy the first value from the second half to the new parent.
+
+---
+
+Another useful data structure (not strictly an index) is the Bloom filter.
+
+In real DB workloads, most probes into a hash table actually fail,
+ because when joining 2 tables, the system opts to build the hash map
+ on the smaller table and scan the large table to probe.
+
+But as there are more rows from the large side, most probes would fail.
+
+A Bloom filter helps us *fail faster*
+
+---
+
+A Bloom filter is an approximate data structure that remembers a set of values.
+
+It's approximate, because you can ask it "has this element been added to your set?",
+ and it'll answer "probably yes", or "definitely not".
+
+In other words, Bloom filters can have *false positives*, but never *false negatives*.
+
+---
+
+The filter itself is simply implemented as a bit vector, initialized to be all-0.
+
+To add an element x to a Bloom filter, 
+ first hash x with k independent hash functions
+ to get k positions.
+
+Then, set those positions to 1 in the bit vector.
+
+---
+
+Example: a Bloom filter with an 8-bit vector and $k = 2$ hash functions.
+
+`0 0 0 0 0 0 0 0`
+
+Add "cat": $h_1(\text{cat}) = 1$, $h_2(\text{cat}) = 5$
+
+`0 1 0 0 0 1 0 0`
+
+Add "dog": $h_1(\text{dog}) = 5$, $h_2(\text{dog}) = 6$
+
+`0 1 0 0 0 1 1 0`
+
+---
+
+To check if a given value is in the filter, simply hash that value with the
+ same hash functions, and check if the corresponding bits are 1.
+
+---
+
+```
+0 1 0 0 0 1 1 0
+  *       *    
+```
+
+Query "cat": positions 1 and 5 are both 1 → "probably yes"
+
+---
+
+```
+0 1 0 0 0 1 1 0
+    *       *  
+```
+
+Query "fox": $h_1(\text{fox}) = 2$, $h_2(\text{fox}) = 6$ → "definitely not" 
+
+---
+
+```
+0 1 0 0 0 1 1 0
+  *         *  
+```
+
+Query "cow": $h_1(\text{cow}) = 1$, $h_2(\text{cow}) = 6$. 
+
+Positions 1 and 6 are both 1 → "probably yes" — but "cow" was never added! This is a *false positive*.
+
+---
+
+A Bloom filter is useful because it can very compactly store a very large set.
+
+So for each hash table, we can create a Bloom filter storing all the hash keys,
+ and the filter will be much smaller than the table and can fit in fast memory (e.g. CPU cache).
+
+Then, before we search the hash table, we can first check the Bloom filter to see
+ if the key to be searched is present.
+
+Because we expect most probes to fail and checking the Bloom filter is fast,
+ this will let us "fail faster" than doing the expensive hash table lookup.
