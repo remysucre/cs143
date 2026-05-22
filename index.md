@@ -49,7 +49,7 @@ There will be roughly one quiz per topic as listed below.
 | 4/22 | Dependencies ([notes](notes/dependencies/dependencies.html), [slides](notes/dependencies/dependencies.pdf)) | [hw2](homework/hw2.html) |
 | 5/4  | Transactions ([notes](notes/transactions/transactions.html), [slides](notes/transactions/transactions.pdf)) | [hw3](homework/hw3.html) |
 | 5/13 | Query execution ([notes](notes/execution/execution.html), [slides](notes/execution/execution.pdf)) | [hw4](homework/hw4.html) |
-| 5/27 | Indexes ([notes](notes/indexes/indexes.html), [slides](notes/indexes/indexes.pdf)) |
+| 5/27 | Indexes ([notes](notes/indexes/indexes.html), [slides](notes/indexes/indexes.pdf)) | [hw5](homework/hw5.html) |
 | 6/8  | Advanced Topics |
 
 **AI Use** &nbsp;&nbsp; 
