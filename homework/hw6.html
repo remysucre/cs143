@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>HW 6: Advanced Topics</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <script defer=""
+  src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <link rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">HW 6: Advanced Topics</h1>
+</header>
+<p>To practice on these problems, ask 🤖 to generate some random queries
+for you.</p>
+<p>Make sure you know how to draw the <em>predicate graph</em> of a
+query:</p>
+<ul>
+<li>Make a node for every <em>table</em></li>
+<li>If there is a predicate <code>R.blah = S.blah</code> in the
+<code>WHERE</code> clause, add an edge between <code>R</code> and
+<code>S</code></li>
+</ul>
+<p>Make sure you know how to check if two join queries are
+equivalent:</p>
+<ul>
+<li>For each distinct <code>R.x</code> table-attribute pair in the
+query, create a group containing just that pair</li>
+<li>For each predicate <code>R.x = S.y</code>, merge the group of
+<code>R.x</code> with that of <code>S.y</code></li>
+<li>If the two queries end up with the same grouping at the end of this
+process, they are equivalent</li>
+</ul>
+<p>Make sure you know how to draw the <em>complete</em> predicate graph
+of a query:</p>
+<ul>
+<li>First, make the groups as above</li>
+<li>Then, for every pair <code>R.x, S.y</code> within the same group,
+add an edge <code>R, S</code> in the graph</li>
+</ul>
+<p>Make sure you know how to check if a given query is acyclic:</p>
+<ul>
+<li>Draw the complete query graph as above</li>
+<li>Find any maximum spanning tree (MST) of the graph, where the weight
+on an edge is the number of distinct join predicates between them</li>
+<li>Create a new query Q’ from the MST, creating <span
+class="math inline">k</span> predicates for each edge of weight <span
+class="math inline">k</span></li>
+<li>Check if Q’ is equivalent to the original query Q using the method
+above</li>
+</ul>
+<p>Make sure you know how to draw the <em>hypergraph</em> representing a
+query.</p>
+<p>Make sure you know how to test acyclicity of the hypergraph by ear
+reduction.</p>
+<p>Implement the instance-optimal join algorithm on the example shown in
+class, and compare its performance with an algorithm using pari-wise
+hash join.</p>
+<p><strong>Challenge</strong>: the general algorithm is called
+TreeTracker Join (TTJ), and works on any acyclic query. Implement the
+TTJ algorithm from <a href="https://dl.acm.org/doi/10.1145/3774325">this
+paper</a>.</p>
+</body>
+</html>

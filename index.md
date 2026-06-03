@@ -50,7 +50,7 @@ There will be roughly one quiz per topic as listed below.
 | 5/4  | Transactions ([notes](notes/transactions/transactions.html), [slides](notes/transactions/transactions.pdf)) | [hw3](homework/hw3.html) |
 | 5/13 | Query execution ([notes](notes/execution/execution.html), [slides](notes/execution/execution.pdf)) | [hw4](homework/hw4.html) |
 | 5/27 | Indexes ([notes](notes/indexes/indexes.html), [slides](notes/indexes/indexes.pdf)) | [hw5](homework/hw5.html) |
-| 6/8  | [Acyclicity](https://remy.wang/blog/perfect-joins.html), [Optimal Join](https://remy.wang/blog/ya-fast.html), [Hypergraph](http://infolab.stanford.edu/~ullman/cs345notes/slides01-3.pdf) |
+| 6/8  | [Acyclicity](https://remy.wang/blog/perfect-joins.html), [Optimal Join](https://remy.wang/blog/ya-fast.html), [Hypergraph](http://infolab.stanford.edu/~ullman/cs345notes/slides01-3.pdf) | [hw6](homework/hw6.html) |
 
 **AI Use** &nbsp;&nbsp; 
 Of course you are not allowed to use AI during the quizzes.
